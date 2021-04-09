@@ -1,0 +1,88 @@
+/*!
+	\file joystick.dox
+
+	\brief This file contains the doxygen description of HAL joystick jogging.
+
+	This file is meant to be processed with doxygen to produce formatted documentation for the application.
+*/
+/*!
+	\mainpage HAL Design
+
+	\n
+
+	\section strategy Overall Strategy
+
+	\subsection arch Database Architecture
+
+	\dot
+		digraph {
+			subgraph cluster_0 {
+				label="Each View";
+				edge [arrowhead=none,arrowtail=dot];
+				rankdir="TB";
+
+				Model [label="3D model or previous Point Cloud"] [shape=box];
+				POV_Params [label="Point of View Params"] [shape=box];
+				Detector_Params [label="Detector Params"] [shape=box];
+				general [label="Time\ndate\nlocation"] [shape=box];
+				ply [label="RGBD Point Cloud"] [shape=box];
+				
+				Model -> POV_Params -> ply -> Detector_Params -> general [style=invisible]; // Just to get them ranked in order.
+			}
+			
+			subgraph cluster_1 {
+				label="AVIT 1.0";
+				edge [arrowhead=none,arrowtail=dot];
+				rankdir="TB";
+
+				AR [label="Augmented Reality"] [shape=oval];
+				capture [label="Capture"] [shape=oval];
+				reg [label="Registration"] [shape=oval];
+				align [label="Alignment"] [shape=oval];
+				detect[label="Detector"] [shape=oval];
+
+				AR -> capture -> reg -> align -> detect;
+			}
+
+			subgraph cluster_2 {
+				label="Damage Report";
+				edge [arrowhead=none,arrowtail=dot];
+				rankdir="TB";
+
+				sheet [label="index\nCentroid XY\nArea\nM01\nM10"] [shape=oval];
+			}
+
+			subgraph cluster_3 {
+				label="Damage View";
+				edge [arrowhead=none,arrowtail=dot];
+				rankdir="TB";
+
+				window [label="Window with located contours"] [shape=oval];
+			}
+
+			Model -> AR;
+			POV_Params -> AR;
+			Detector_Params -> detect;
+			reg -> ply;
+
+			detect -> sheet;
+			detect -> window;
+		}
+	\enddot
+	
+	\subsection flow High Level Execution Flow
+*/
+	
+
+/*
+	Other libaries define some namespaces we reference. Since we aren't including the documentation that may or may not be in these files, explicitly define doxygen namespaces.
+*/
+/*!
+	\namespace cv \brief OpenCV Open Source Computer Vision Library.
+	\namespace PCL \brief Point Cloud Library.
+	\namespace RS \brief Intel RealSense Library.
+	\namespace std \brief Standard Library.
+	\namespace boost \brief Boost portable C++ source libraries.
+	\namespace posix_time \brief Boost time point manipulation.
+	\namespace open3d \brief Open3D
+*/
