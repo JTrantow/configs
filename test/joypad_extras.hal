@@ -1,0 +1,52 @@
+#
+# Joypad_extras.hal 
+#
+# This file:
+#
+# Add this file to postgui_call_list.hal using a line with "source joypad_extras.hal".
+#
+loadrt and2 names=and2_extras0,and2_extras1 # Add two and2 gate components so pause/resume can use same button.
+addf and2_extras0 servo-thread
+addf and2_extras1 servo-thread
+
+#
+# Extra HAL to connect joypad buttons for jog xz plus/minus at the chosen jog speed.
+#
+#net jog-x-pos <= input.0.abs-hat0x-is-pos => halui.axis.x.plus  halui.joint.0.plus
+#net jog-x-neg <= input.0.abs-hat0x-is-neg => halui.axis.x.minus halui.joint.0.minus
+#net jog-y-pos <= input.0.abs-hat0y-is-pos => halui.axis.y.plus  halui.joint.1.plus
+#net jog-y-neg <= input.0.abs-hat0y-is-neg => halui.axis.y.minus halui.joint.1.minus
+# Following four lines uses the lathe keyboard convention or right/left being Z and up/down being X.
+net jog-x-pos <= input.0.abs-hat0y-is-pos => halui.axis.x.plus  halui.joint.0.plus
+net jog-x-neg <= input.0.abs-hat0y-is-neg => halui.axis.x.minus halui.joint.0.minus
+net jog-z-pos <= input.0.abs-hat0x-is-pos => halui.axis.z.plus  halui.joint.1.plus
+net jog-z-neg <= input.0.abs-hat0x-is-neg => halui.axis.z.minus halui.joint.1.minus
+
+#
+# Instead of jogging with Dpad, Could use Dpad/hat0y for feed speed override???
+#
+#setp halui.feed-override.scale 0.05 # 5% change per press.
+#net feedoverNeg  <= input.0.abs-hat0y-is-pos => halui.feed-override.decrease
+#net feedoverPos  <= input.0.abs-hat0y-is-neg => halui.feed-override.increase
+
+#
+# Start/Pause the current program.
+#
+net start <= input.0.btn-base4 => halui.program.run 
+#
+# Nice to have btn-base2 button do either pause/resume. 
+#
+net a0in0 <= halui.program.is-running => and2_extras0.in0
+net ain   <= input.0.btn-base2        => and2_extras0.in1 and2_extras1.in0
+net a1in1 <= halui.program.is-paused  => and2_extras1.in1
+net a0out <= and2_extras0.out         => halui.program.pause
+net a1out <= and2_extras1.out         => halui.program.resume
+
+#
+# Set mode to manual or auto.
+#
+net manual <= input.0.btn-base => halui.mode.manual
+net auto   <= input.0.btn-top2 => halui.mode.auto
+
+
+

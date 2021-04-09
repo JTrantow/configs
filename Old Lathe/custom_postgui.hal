@@ -1,0 +1,21 @@
+# Include your customized HAL commands here
+# The commands in this file are run after the AXIS GUI (including PyVCP panel) starts
+
+# **** Setup of spindle speed display using pyvcp -START ****
+# **** Use ACTUAL spindle velocity from spindle encoder
+# **** spindle-velocity-feedback-rps bounces around so we filter it with lowpass
+# **** spindle-velocity-feedback-rps is signed so we use absolute component to remove sign
+# **** ACTUAL velocity is in RPS not RPM so we scale it.
+
+setp scale.0.gain 60
+setp lowpass.0.gain 0.010000
+net spindle-velocity-feedback-rps               => lowpass.0.in
+net spindle-fb-filtered-rps      lowpass.0.out  => abs.0.in
+net spindle-fb-filtered-abs-rps  abs.0.out      => scale.0.in
+net spindle-fb-filtered-abs-rpm  scale.0.out    => pyvcp.spindle-speed
+
+# **** set up spindle at speed indicator ****
+# **** force spindle at speed indicator true because we chose no feedback ****
+
+sets spindle-at-speed true
+net spindle-at-speed       => pyvcp.spindle-at-speed-led

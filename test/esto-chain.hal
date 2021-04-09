@@ -1,0 +1,40 @@
+#
+# This file contains the Hardware Abstraction Level for connecting driver alarms and encoder alarms to the e-stop.
+# Based on https://forum.linuxcnc.org/10-advanced-configuration/32789-educate-me-about-estop-chains-and-latches?start=10#93394
+#
+
+loadrt estop_latch count=2
+loadrt or2 count=2
+
+addf estop-latch.0            servo-thread
+addf estop-latch.1            servo-thread
+
+net latch-reset iocontrol.0.user-request-enable 
+net latch0-ok-in iocontrol.0.user-enable-out 
+
+net latch0-ok-in => estop-latch.0.ok-in
+net latch0-out <= estop-latch.0.ok-out 
+net latch0-out => estop-latch.1.ok-in
+net latch1-out <= estop-latch.1.ok-out 
+
+net latch-reset => estop-latch.0.reset
+net latch-reset => estop-latch.1.reset
+net latch-out iocontrol.0.emc-enable-in <= estop-latch.1.ok-out
+net estop-out estop-latch.1.fault-out
+
+# --- Closed loop stepper driver alarm ---
+net driver-estop <= hm2_7i76e.0.7i76.0.0.input-00
+net driver-estop => estop-latch.0.fault-in
+
+# --- Encoder quad-error pins ---
+net quad-estop <=  hm2_7i76e.0.7i76.0.0.input-26-not
+net quad-estop => estop-latch.1.fault-in 
+
+
+# --- E-STOP STEPPER DRIVE DISABLE ---
+#net estop-out hm2_7i76e.0.7i76.0.0.output-05
+
+# --- E-STOP RED WARNING LIGHT ---
+#net estop-out hm2_7i76e.0.7i76.0.0.output-00
+
+

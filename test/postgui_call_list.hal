@@ -1,0 +1,7 @@
+# These files are loaded post GUI, in the order they appear
+source pyvcp_options.hal
+source custom_postgui.hal
+source joypad_jog_speed.hal
+source joypad_xyz.hal
+source joypad_extras.hal
+source quad_encoder.hal
