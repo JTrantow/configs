@@ -1,2 +1,25 @@
 # Include your customized HAL commands here
 # This file will not be overwritten when you run stepconf again
+
+
+
+
+#
+# GS2 VFD Spindle Control.
+#
+
+# load the user space component for the Automation Direct GS2 VFD's
+loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 -n spindle-vfd
+
+# connect the spindle direction pin to the GS2
+net gs2-fwd spindle-vfd.spindle-fwd <= spindle.N.forward
+
+# connect the spindle on pin to the GS2
+net gs2-run spindle-vfd.spindle-on <= spindle.N.on
+
+# connect the GS2 at speed to the motion at speed
+net gs2-at-speed spindle.N.at-speed <= spindle-vfd.at-speed
+
+# connect the spindle RPM to the GS2
+net gs2-RPM spindle-vfd.speed-command <= spindle.N.speed-out
+

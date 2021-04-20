@@ -10,12 +10,17 @@ loadrt encoder num_chan=1
 loadrt abs count=1
 loadrt scale count=1
 loadrt lowpass count=1
-
+#
+# Add functions to the base thread.
+#
 addf parport.0.read base-thread
 addf stepgen.make-pulses base-thread
 addf encoder.update-counters base-thread
 addf parport.0.write base-thread
 addf parport.0.reset base-thread
+#
+# Add functions to the servo thread.
+#
 
 addf stepgen.capture-position servo-thread
 addf encoder.capture-position servo-thread
@@ -25,35 +30,44 @@ addf stepgen.update-freq servo-thread
 addf abs.0 servo-thread
 addf scale.0 servo-thread
 addf lowpass.0 servo-thread
+#
+# Set up the spindle.
+#
 net spindle-cmd-rpm     <= spindle.0.speed-out
 net spindle-cmd-rpm-abs <= spindle.0.speed-out-abs
 net spindle-cmd-rps     <= spindle.0.speed-out-rps
 net spindle-cmd-rps-abs <= spindle.0.speed-out-rps-abs
 net spindle-at-speed    => spindle.0.at-speed
 
-setp encoder.0.position-scale 400.000000
 net spindle-position encoder.0.position => spindle.0.revs
 net spindle-velocity-feedback-rps encoder.0.velocity => spindle.0.speed-in
 net spindle-index-enable encoder.0.index-enable <=> spindle.0.index-enable
-net spindle-phase-a encoder.0.phase-A
-net spindle-phase-b encoder.0.phase-B
-net spindle-index encoder.0.phase-Z
+#
+# Set up the quadrature Encoder.
+#
+setp encoder.0.counter-mode false
+setp encoder.0.min-speed-estimate 1.0
+setp encoder.0.position-scale 260.0
 
-net xstep           => parport.0.pin-02-out
-setp parport.0.pin-02-out-reset 1
-net xdir            => parport.0.pin-03-out
-net ystep           => parport.0.pin-04-out
+net spindle-phase-a <= parport.0.pin-10-in => encoder.0.phase-A 
+net spindle-phase-b <= parport.0.pin-11-in => encoder.0.phase-B
+net spindle-index   <= parport.0.pin-12-in => encoder.0.phase-Z
+
+#net xstep           => parport.0.pin-02-out
+net xstep           => parport.0.pin-04-out
+#setp parport.0.pin-02-out-reset 1
 setp parport.0.pin-04-out-reset 1
-net ydir            => parport.0.pin-05-out
+#net xdir            => parport.0.pin-03-out
+net xdir            => parport.0.pin-05-out
+#net ystep           => parport.0.pin-04-out
+#setp parport.0.pin-04-out-reset 1
+#net ydir            => parport.0.pin-05-out
 net zstep           => parport.0.pin-06-out
 setp parport.0.pin-06-out-reset 1
 net zdir            => parport.0.pin-07-out
 net astep           => parport.0.pin-08-out
 setp parport.0.pin-08-out-reset 1
 net adir            => parport.0.pin-09-out
-net spindle-phase-a <= parport.0.pin-10-in
-net spindle-phase-b <= parport.0.pin-11-in
-net spindle-index   <= parport.0.pin-12-in
 
 setp stepgen.0.position-scale [JOINT_0]SCALE
 setp stepgen.0.steplen 1
