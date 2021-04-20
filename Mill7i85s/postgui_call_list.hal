@@ -5,3 +5,4 @@ source joypad_jog_speed.hal
 source joypad_xyz.hal
 source joypad_extras.hal
 source quad_encoder.hal
+#source ztouch.hal

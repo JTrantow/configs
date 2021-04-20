@@ -28,4 +28,16 @@
                     </led>
                 </hbox>
         </vbox>
+
+    
+        <button>
+            <relief>RAISED</relief>
+            <bd>3</bd>
+            <halpin>"ztouch"</halpin>
+            <text>"Touch Off Z"</text>
+            <font>("Helvetica",16)</font>
+        </button> 
 </pyvcp>
+
+
+
