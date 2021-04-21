@@ -1,10 +1,10 @@
 #
-# Additional feature o enabling the quadrature error detection.
+# Additional feature enabling the quadrature error detection.
 #
 
 
 #
-# Enable and connect the XYZ encoder quadrature error detection.
+# Enable the XYZ and spindle encoder quadrature error detection.
 #
-net machine-is-on <= halui.machine.is-on => hm2_7i92.0.encoder.01.quad-error-enable hm2_7i92.0.encoder.02.quad-error-enable hm2_7i92.0.encoder.03.quad-error-enable # Enable when the machine is on to avoid startup problems.
-
+net machine-is-on <= halui.machine.is-on             => hm2_7i92.0.encoder.00.quad-error-enable hm2_7i92.0.encoder.01.quad-error-enable hm2_7i92.0.encoder.02.quad-error-enable hm2_7i92.0.encoder.03.quad-error-enable # Enable when the machine is on to avoid startup problems.
+net latch-reset   <= iocontrol.0.user-request-enable => hm2_7i92.0.encoder.00.reset  hm2_7i92.0.encoder.01.reset hm2_7i92.0.encoder.02.reset hm2_7i92.0.encoder.03.reset

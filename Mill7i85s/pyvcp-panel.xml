@@ -5,7 +5,7 @@
          <bd>6</bd>
                 <label>
                         <text>"Spindle Speed:"</text>
-                        <font>("Helvetica",20)</font>
+                        <font>("Helvetica",16)</font>
                 </label>
                 <bar>
                         <halpin>"spindle-speed"</halpin>
@@ -13,12 +13,12 @@
                 </bar>
                 <label>
                         <text>"Spindle-At-Speed:"</text>
-                        <font>("Helvetica",20)</font>
+                        <font>("Helvetica",16)</font>
                 </label>
                 <hbox>
                     <label>
                             <text>"             "</text>
-                            <font>("Helvetica",20)</font>
+                            <font>("Helvetica",16)</font>
                     </label>
                     <led>
                         <halpin>"spindle-at-speed-led"</halpin> 
@@ -28,16 +28,13 @@
                     </led>
                 </hbox>
         </vbox>
-
     
         <button>
             <relief>RAISED</relief>
             <bd>3</bd>
-            <halpin>"ztouch"</halpin>
+            <halpin>"z-touch"</halpin>
             <text>"Touch Off Z"</text>
             <font>("Helvetica",16)</font>
         </button> 
 </pyvcp>
-
-
 
