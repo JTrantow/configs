@@ -197,9 +197,10 @@ setp    hm2_7i92.0.encoder.02.index-mask 0
 setp    hm2_7i92.0.encoder.02.index-mask-invert 0
 setp    hm2_7i92.0.encoder.02.scale  [JOINT_2]ENCODER_SCALE
 net z-pos-fb          <=  hm2_7i92.0.encoder.02.position  => joint.2.motor-pos-fb
-net z-vel-fb          <=  hm2_7i92.0.encoder.02.velocity 
 net z-index-enable    <= joint.2.index-enable             =>  hm2_7i92.0.encoder.02.index-enable
-net z-pos-rawcounts   <=  hm2_7i92.0.encoder.02.rawcounts
+# z-vel-fb, rawcount not used.
+# net z-vel-fb          <=  hm2_7i92.0.encoder.02.velocity 
+# net z-pos-rawcounts   <=  hm2_7i92.0.encoder.02.rawcounts
 
 # ---setup home / limit switch signals---
 net z-home-sw       <= hm2_7i92.0.gpio.017.in =>  joint.2.home-sw-in joint.2.pos-lim-sw-in
