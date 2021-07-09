@@ -40,6 +40,8 @@ net estop-out <= estop-latch.5.ok-out => iocontrol.0.emc-enable-in
 #   Connect various inputs to the estop latch fault_in pins 
 #
 # --- Closed loop stepper driver alarm ---
+# Could use joint.N.amp-fault-in instead of estop-latch.
+#
 net driver-estop <= hm2_7i92.0.gpio.029.in_not => estop-latch.0.fault-in
 
 # --- Probe overtravel ---
