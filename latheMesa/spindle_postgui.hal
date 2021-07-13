@@ -7,12 +7,21 @@
 # **** spindle-velocity-feedback-rps is signed so we use absolute component to remove sign
 # **** ACTUAL velocity is in RPS not RPM so we scale it.
 
+loadrt abs count=1
+loadrt scale count=1
+loadrt lowpass count=1
+
+addf abs.0 servo-thread
+addf scale.0 servo-thread
+addf lowpass.0 servo-thread
+
 setp scale.0.gain 60
 setp lowpass.0.gain 0.010000
-net spindle-velocity-feedback-rps               => lowpass.0.in
-net spindle-fb-filtered-rps      lowpass.0.out  => abs.0.in
-net spindle-fb-filtered-abs-rps  abs.0.out      => scale.0.in
-net spindle-fb-filtered-abs-rpm  scale.0.out    => pyvcp.spindle-speed
+
+net spindle-velocity-feedback-rps => lowpass.0.in
+net spindle-fb-filtered-rps       <= lowpass.0.out                  => abs.0.in
+net spindle-fb-filtered-abs-rps   <= abs.0.out                      => scale.0.in
+net spindle-fb-filtered-abs-rpm   <= scale.0.out                    => pyvcp.spindle-speed
 
 # **** set up spindle at speed indicator ****
 # **** force spindle at speed indicator true because we chose no feedback ****

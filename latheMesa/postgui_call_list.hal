@@ -1,7 +1,10 @@
 # These files are loaded post GUI, in the order they appear
 
-source pyvcp_options.hal
 source custom_postgui.hal
-source joypad_jog_speed.hal # Adds just the jog_speed functionality. Needs joypad_xz.hal or joypad_xyz.hal to go with this.
-source joypad_xz.hal        # XZ axis control for lathe.
-source joypad_extras.hal    # extras like dpad, start, manual/auto.
+
+source spindle_postgui.hal
+
+source joypad_jog_speed.hal
+source joypad_xz.hal
+source joypad_extras.hal
+
