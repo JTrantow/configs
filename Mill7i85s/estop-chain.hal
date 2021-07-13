@@ -3,46 +3,57 @@
 # Based on https://forum.linuxcnc.org/10-advanced-configuration/32789-educate-me-about-estop-chains-and-latches?start=10#93394
 #
 
-loadrt estop_latch count=2
-loadrt or2 count=2
+#
+# The default setup has estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in. 
+# This file inserts a chain of estop latches between user-enable-out and emc-enable-in.
+# Set up six estop latches for motor driver alarm, probe overtravel, x, y, z, spindle encoder quadrature fault.
+loadrt estop_latch count=6
 
 addf estop-latch.0            servo-thread
 addf estop-latch.1            servo-thread
-addf or2.0                    servo-thread
-addf or2.1                    servo-thread
+addf estop-latch.2            servo-thread
+addf estop-latch.3            servo-thread
+addf estop-latch.4            servo-thread
+addf estop-latch.5            servo-thread
 
-net latch-reset iocontrol.0.user-request-enable 
-net latch0-ok-in iocontrol.0.user-enable-out 
-
-net latch0-ok-in => estop-latch.0.ok-in
-net latch0-out <= estop-latch.0.ok-out 
-net latch0-out => estop-latch.1.ok-in
-net latch1-out <= estop-latch.1.ok-out 
-
-net latch-reset => estop-latch.0.reset
-net latch-reset => estop-latch.1.reset
-net latch-out iocontrol.0.emc-enable-in <= estop-latch.1.ok-out
-net estop-out estop-latch.1.fault-out
-
-# --- Closed loop stepper driver alarm ---
-net driver-estop <= hm2_7i76e.0.7i76.0.0.input-00
-net driver-estop => estop-latch.0.fault-in
-
-# --- Encoder quad-error pins ---
-or2.n.in0
-or2.n.in1
-or2.n.out
 #
-# 
-net or0-signal hm
-net quad-estop <=  hm2_7i76e.0.7i76.0.0.input-26-not
-net quad-estop => estop-latch.1.fault-in 
+#   Reset signal for each latch.
+#
+net latch-reset <= iocontrol.0.user-request-enable => estop-latch.0.reset estop-latch.1.reset estop-latch.2.reset estop-latch.3.reset estop-latch.4.reset estop-latch.5.reset
+#
+#  Hook the first latch to Linuxcnc iocontrol stuff.
+#
+net latch0-ok-in <= iocontrol.0.user-enable-out => estop-latch.0.ok-in
+#
+#  Connect each ok_out to the next ok_in to create a chain of latches.
+#
+net latch0-out <= estop-latch.0.ok-out => estop-latch.1.ok-in
+net latch1-out <= estop-latch.1.ok-out => estop-latch.2.ok-in
+net latch2-out <= estop-latch.2.ok-out => estop-latch.3.ok-in
+net latch3-out <= estop-latch.3.ok-out => estop-latch.4.ok-in
+net latch4-out <= estop-latch.4.ok-out => estop-latch.5.ok-in
+#
+#   Last estop in the chain tells LinuxCNC we have an estop.
+#
+net estop-out <= estop-latch.5.ok-out => iocontrol.0.emc-enable-in 
+#
+#   Connect various inputs to the estop latch fault_in pins 
+#
+# --- Closed loop stepper driver alarm ---
+# Could use joint.N.amp-fault-in instead of estop-latch.
+#
+net driver-estop <= hm2_7i92.0.gpio.029.in_not => estop-latch.0.fault-in
+
+# --- Probe overtravel ---
+net probe-overtravel-estop <= hm2_7i92.0.gpio.025.in => estop-latch.1.fault-in
+
+# --- Encoder faults ---
+net x-encoder-estop <= hm2_7i92.0.encoder.00.quad-error => estop-latch.2.fault-in
+net y-encoder-estop <= hm2_7i92.0.encoder.01.quad-error => estop-latch.3.fault-in
+net z-encoder-estop <= hm2_7i92.0.encoder.02.quad-error => estop-latch.4.fault-in
+net s-encoder-estop <= hm2_7i92.0.encoder.03.quad-error => estop-latch.5.fault-in
 
 
-# --- E-STOP STEPPER DRIVE DISABLE ---
-#net estop-out hm2_7i76e.0.7i76.0.0.output-05
 
-# --- E-STOP RED WARNING LIGHT ---
-#net estop-out hm2_7i76e.0.7i76.0.0.output-00
 
 

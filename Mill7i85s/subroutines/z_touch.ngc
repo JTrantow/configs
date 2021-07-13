@@ -1,0 +1,18 @@
+o<z_touch> sub
+        ( Set Coordinate System, P0 means active coordinates. )
+        ( Set current Z position to 0 so that we will always be moving down. Could use relative rather than absolute z. )
+        G10 L20 P0 Z0
+        ( Probe down as much as Z-10. Uses machine units, this is meant to be slow! )
+        G38.2 Z-10 f25
+        ( Set Z0 at point where probe triggers with appropriate offset. Adjust offset for your setup. )
+        G10 L20 P0 Z0.0
+        ( Rapid up to Z10 above the material )
+        G0 Z10
+o<z_touch> endsub
+
+
+(T1 M6 G43) (load tool 1 and tool length offsets)
+(G38.2 Z-10 f25)
+(G10 L10 P1 Z0.0) (Set Tool Table)
+(G43) (reload the tool length offsets from the changed tool table)
+(M2) (end program)

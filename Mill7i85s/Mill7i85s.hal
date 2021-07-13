@@ -77,12 +77,10 @@ setp    hm2_7i92.0.encoder.00.index-mask 0
 setp    hm2_7i92.0.encoder.00.index-mask-invert 0
 setp    hm2_7i92.0.encoder.00.scale  [JOINT_0]ENCODER_SCALE
 net x-pos-fb         <=  hm2_7i92.0.encoder.00.position  =>  joint.0.motor-pos-fb
-net x-vel-fb         <=  hm2_7i92.0.encoder.00.velocity
 net x-index-enable   <= joint.0.index-enable             =>  hm2_7i92.0.encoder.00.index-enable
-net x-pos-rawcounts  <=  hm2_7i92.0.encoder.00.rawcounts
 
 # ---setup home / limit switch signals---
-net x-home-sw        <= hm2_7i92.0.gpio.032.in =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
+net x-home-sw        <= hm2_7i92.0.gpio.019.in =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
 
 #*******************
 #  AXIS Y JOINT 1
@@ -137,13 +135,11 @@ setp    hm2_7i92.0.encoder.01.index-mask-invert 0
 setp    hm2_7i92.0.encoder.01.scale  [JOINT_1]ENCODER_SCALE
 
 net y-pos-fb          <=  hm2_7i92.0.encoder.01.position  =>  joint.1.motor-pos-fb
-net y-vel-fb          <=  hm2_7i92.0.encoder.01.velocity
 net y-index-enable    <= joint.1.index-enable             =>  hm2_7i92.0.encoder.01.index-enable
-net y-pos-rawcounts   <=  hm2_7i92.0.encoder.01.rawcounts
 
 
 # ---setup home / limit switch signals---
-net y-home-sw   <= hm2_7i92.0.gpio.031.in    =>  joint.1.home-sw-in joint.1.pos-lim-sw-in
+net y-home-sw   <= hm2_7i92.0.gpio.021.in    =>  joint.1.home-sw-in joint.1.pos-lim-sw-in
 
 #*******************
 #  AXIS Z JOINT 2
@@ -197,12 +193,10 @@ setp    hm2_7i92.0.encoder.02.index-mask 0
 setp    hm2_7i92.0.encoder.02.index-mask-invert 0
 setp    hm2_7i92.0.encoder.02.scale  [JOINT_2]ENCODER_SCALE
 net z-pos-fb          <=  hm2_7i92.0.encoder.02.position  => joint.2.motor-pos-fb
-net z-vel-fb          <=  hm2_7i92.0.encoder.02.velocity 
 net z-index-enable    <= joint.2.index-enable             =>  hm2_7i92.0.encoder.02.index-enable
-net z-pos-rawcounts   <=  hm2_7i92.0.encoder.02.rawcounts
 
 # ---setup home / limit switch signals---
-net z-home-sw       <= hm2_7i92.0.gpio.033.in =>  joint.2.home-sw-in joint.2.pos-lim-sw-in
+net z-home-sw       <= hm2_7i92.0.gpio.017.in =>  joint.2.home-sw-in joint.2.pos-lim-sw-in
 
 #*******************
 #  SPINDLE
@@ -284,10 +278,8 @@ net coolant-flood     <=  iocontrol.0.coolant-flood
 #  ---probe signal---
 
 setp debounce.2.delay 20  # 20 * servo-thread period (1000us) = 20ms
-net probe-in-raw <= hm2_7i92.0.gpio.030.in => debounce.2.0.in
+net probe-in-raw <= hm2_7i92.0.gpio.027.in => debounce.2.0.in
 net probe-in     <= debounce.2.0.out     =>  motion.probe-input
-
-#net probe-overtravel <= hm2_7i92.0.gpio.016.in
 
 
 #  ---motion control signals---
@@ -297,10 +289,6 @@ net machine-is-enabled        <=  motion.motion-enabled
 
 #  ---digital in / out signals---
 
-#  ---estop signals---
-
-net estop-out     <=  iocontrol.0.user-enable-out
-net estop-out     =>  iocontrol.0.emc-enable-in
 
 #  ---manual tool change signals---
 
@@ -318,6 +306,4 @@ net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-p
 #setp hm2_7i92.0.encoder.01.reset 1
 #setp hm2_7i92.0.encoder.02.reset 1
 
-# --- E-STOP SPINDLE DRIVE DISABLE ---
-#net estop-out <= hm2_7i92.0.encoder.00.quad-error hm2_7i92.0.encoder.01.quad-error hm2_7i92.0.encoder.02.quad-error
 

@@ -9,8 +9,17 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JO
 loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=3 num_pwmgens=0 num_stepgens=4 sserial_port_0=00xxxx" 
 setp    hm2_7i96.0.watchdog.timeout_ns 5000000
+<<<<<<< HEAD
 loadrt pid names=pid.x,pid.z,pid.s
 
+=======
+setp    hm2_7i96.0.pwmgen.pwm_frequency 20000
+setp    hm2_7i96.0.pwmgen.pdm_frequency 6000000
+setp    hm2_7i96.0.watchdog.timeout_ns 5000000
+loadrt pid names=pid.x,pid.z,pid.s
+
+
+>>>>>>> adc797562055f2e99b9b74589cb0f9494eb89970
 addf hm2_7i96.0.read          servo-thread
 addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread
@@ -50,8 +59,11 @@ net x-output        <=  pid.x.output
 
 # Step Gen signals/setup
 
+<<<<<<< HEAD
 # [HMOT][CARD0]
 
+=======
+>>>>>>> adc797562055f2e99b9b74589cb0f9494eb89970
 setp   hm2_7i96.0.stepgen.01.dirsetup        [JOINT_0]DIRSETUP
 setp   hm2_7i96.0.stepgen.01.dirhold         [JOINT_0]DIRHOLD
 setp   hm2_7i96.0.stepgen.01.steplen         [JOINT_0]STEPLEN
@@ -182,6 +194,7 @@ setp    hm2_7i96.0.encoder.02.index-invert 0
 setp    hm2_7i96.0.encoder.02.index-mask 0
 setp    hm2_7i96.0.encoder.02.index-mask-invert 0
 setp    hm2_7i96.0.encoder.02.scale  260
+<<<<<<< HEAD
 
 net spindle-revs             <=   hm2_7i96.0.encoder.02.position
 net spindle-vel-fb-rps       <=   hm2_7i96.0.encoder.02.velocity
@@ -192,6 +205,12 @@ net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
 #net spindle-velocity encoder.3.velocity => spindle.0.speed-in
 #net spindle-index-enable encoder.3.index-enable <=> spindle.0.index-enable
 
+=======
+
+net spindle-revs             <=   hm2_7i96.0.encoder.02.position
+net spindle-vel-fb-rps       <=   hm2_7i96.0.encoder.02.velocity
+net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
+>>>>>>> adc797562055f2e99b9b74589cb0f9494eb89970
 
 # ---setup spindle control signals---
 
