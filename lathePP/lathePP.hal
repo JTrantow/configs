@@ -48,10 +48,11 @@ net spindle-index-enable encoder.0.index-enable <=> spindle.0.index-enable
 setp encoder.0.counter-mode false
 setp encoder.0.min-speed-estimate 1.0
 setp encoder.0.position-scale 260.0
+setp encoder.0.x4-mode true
 
-net spindle-phase-a <= parport.0.pin-10-in => encoder.0.phase-A 
-net spindle-phase-b <= parport.0.pin-11-in => encoder.0.phase-B
-net spindle-index   <= parport.0.pin-12-in => encoder.0.phase-Z
+net spindle-phase-a <= parport.0.pin-11-in => encoder.0.phase-A 
+net spindle-phase-b <= parport.0.pin-12-in => encoder.0.phase-B
+net spindle-index   <= parport.0.pin-10-in => encoder.0.phase-Z
 
 #net xstep           => parport.0.pin-02-out
 net xstep           => parport.0.pin-04-out
