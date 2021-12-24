@@ -24,9 +24,9 @@ addf mux4.0 servo-thread
 # Set the jog speed for the joypad speed selection. Use numbers that make sense for your machine.
 #
 setp mux4.0.in0 0.0   # Setting this input to 0 prevents motion unless one of the other buttons is pressed.
-setp mux4.0.in1 25.0  # Max jog speed when first speed select button is pressed.
-setp mux4.0.in2 200.0 # Max jog speed when second speed select button is pressed.
-setp mux4.0.in3 600.0 # Max jog speed when third speed select button is pressed.
+setp mux4.0.in1 30.0  # Max jog speed when first speed select button is pressed.
+setp mux4.0.in2 300.0 # Max jog speed when second speed select button is pressed.
+setp mux4.0.in3 900.0 # Max jog speed when third speed select button is pressed.
 #
 # The following lines do the magic of setting the jog speed selection. You must hold at least one of the buttons while jogging.
 # Notice this does not fully decode the button possibilities. If you simultaneously press multiple buttons you will get the higher speed.

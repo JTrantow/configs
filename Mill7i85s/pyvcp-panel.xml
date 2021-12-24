@@ -12,6 +12,14 @@
                         <max_>3000</max_>
                 </bar>
                 <label>
+                        <text>"Encoder Speed:"</text>
+                        <font>("Helvetica",16)</font>
+                </label>
+                <bar>
+                        <halpin>"encoder-speed"</halpin>
+                        <max_>3000</max_>
+                </bar>
+                <label>
                         <text>"Spindle-At-Speed:"</text>
                         <font>("Helvetica",16)</font>
                 </label>
