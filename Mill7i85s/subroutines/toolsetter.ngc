@@ -2,16 +2,15 @@
 ( Use G10 L2 P9 Zxxx where xxx is machine coordinates where toolsetter triggers.)
 o<toolsetter> sub      
 
-(O100 if [#5400 EQ 0])
-(O100 else)
+(O100 if [#5400 NE 0])
         M6  (Show tool change dialog.)
         G49 (Clear any existing tool offset.)
 
-        G53 G0 X1 Y140 (Position over toolsetter.)
+        G53 G0 X175 Y55 (Position over toolsetter.)
 
         G91 (incremental distance mode)
         G38.2 Z-25.4 f200 (Probe down relatively fast.)
-        G1 Z1 F200
+        G1 Z1 F400
         G38.2 Z-25.4 f25 (Probe down relatively slowly.)
         G90 (absolute distance mode)        
         
@@ -19,7 +18,7 @@ o<toolsetter> sub
         G43 (reload the tool length offsets from the changed tool table)
         
         G91 (incremental distance mode)
-        G0 Z+10 (move up off the toolsetter)
+        G1 Z+10 F800 (move up off the toolsetter)
         G90 (absolute distance mode)        
 (O100 endif)
 
