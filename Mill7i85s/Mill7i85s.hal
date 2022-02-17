@@ -200,7 +200,6 @@ setp   hm2_7i92.0.stepgen.02.maxvel           [JOINT_2]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net z-pos-cmd    <= joint.2.motor-pos-cmd
-#net z-vel-cmd    <= joint.2.vel-cmd (NOT USED)
 net z-output     <= hm2_7i92.0.stepgen.02.velocity-cmd
 net z-enable     <= joint.2.amp-enable-out
 net z-enable     => hm2_7i92.0.stepgen.02.enable
@@ -365,12 +364,20 @@ net coolant-mist      <=  iocontrol.0.coolant-mist
 net coolant-flood     <=  iocontrol.0.coolant-flood
 
 
+#
 #  ---probe signal---
+# Using a tool set input pin OR a probe pin to drive motion.probe-input.
+#
+loadrt or2 names=or2_probe 
+addf or2_probe servo-thread
 
 setp debounce.2.delay 20  # 20 * servo-thread period (1000us) = 20ms
-net probe-in-raw <= hm2_7i92.0.gpio.027.in => debounce.2.0.in
-net probe-in     <= debounce.2.0.out     =>  motion.probe-input
 
+net length-in-raw   <= hm2_7i92.0.gpio.027.in  => debounce.2.0.in
+#net length-in       <=  debounce.2.0.out       => motion.probe-input
+net length-in       <= debounce.2.0.out       => or2_probe.in0
+net probe-in        <= hm2_7i92.0.gpio.033.in => or2_probe.in1
+net probe-or-length <= or2_probe.out          => motion.probe-input
 
 #  ---motion control signals---
 
