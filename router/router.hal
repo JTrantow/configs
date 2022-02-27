@@ -50,9 +50,9 @@ net adir            => parport.0.pin-09-out
 net spindle-cw      => parport.0.pin-14-out
 net spindle-pwm     => parport.0.pin-16-out
 net xenable         => parport.0.pin-17-out
-net min-home-y      <= parport.0.pin-10-in
+net min-home-y      <= parport.0.pin-12-in
 net max-home-z      <= parport.0.pin-11-in
-net min-home-a      <= parport.0.pin-12-in
+net min-home-a      <= parport.0.pin-10-in
 net min-home-x      <= parport.0.pin-13-in
 
 setp stepgen.0.position-scale [JOINT_0]SCALE
@@ -103,6 +103,7 @@ setp stepgen.3.stepspace 0
 setp stepgen.3.dirhold 25000
 setp stepgen.3.dirsetup 25000
 setp stepgen.3.maxaccel [JOINT_3]STEPGEN_MAXACCEL
+
 net apos-cmd joint.3.motor-pos-cmd => stepgen.3.position-cmd
 net apos-fb stepgen.3.position-fb => joint.3.motor-pos-fb
 net astep <= stepgen.3.step
