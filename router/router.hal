@@ -10,7 +10,7 @@ loadrt stepgen step_type=0,0,0,0
 #
 # load the user space component for the Automation Direct GS2 VFD's
 #
-loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 --name spindle-vfd -R --device /dev/ttyUSB0
+loadusr -Wn spindle-vfd gs2_vfd -r 38400 -p none -s 2 --name spindle-vfd -R --device /dev/ttyS0
 
 addf parport.0.read base-thread
 addf stepgen.make-pulses base-thread
