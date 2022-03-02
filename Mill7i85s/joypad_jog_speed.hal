@@ -36,7 +36,8 @@ setp mux4.0.in3 900.0 # Max jog speed when third speed select button is pressed.
 # The following lines do the magic of setting the jog speed selection. You must hold at least one of the buttons while jogging.
 # Notice this does not fully decode the button possibilities. If you simultaneously press multiple buttons you will get the higher speed.
 #
-net slow   <= or2_joy0.in0 => input.0.btn-trigger
+#net slow   <= or2_joy0.in0 => input.0.btn-trigger
+net slow   <= or2_joy0.in0 => input.0.btn-joystick
 net medium <= or2_joy1.in0 => input.0.btn-thumb
 net fast   <= or2_joy0.in1 or2_joy1.in1 => input.0.btn-thumb2
 
