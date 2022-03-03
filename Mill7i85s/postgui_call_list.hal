@@ -3,7 +3,7 @@
 #
 # pyvcp spindle and z touch.
 #
-source pyvcp_options.hal
+#source pyvcp_options.hal
 #
 # Logitech joypad.
 #
