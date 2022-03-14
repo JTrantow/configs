@@ -1,0 +1,4 @@
+#
+# postgui.hal
+#
+#net tool-prep-loop         iocontrol.0.tool-prepare      <=   iocontrol.0.tool-prepared
