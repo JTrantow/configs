@@ -3,26 +3,29 @@
 # overwritten when you run stepconf again
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt hal_parport cfg="0 out"
+loadrt hal_parport cfg="0 out 1 out"
 setp parport.0.reset-time 5000
 loadrt stepgen step_type=0,0,0,0
 
 #
 # load the user space component for the Automation Direct GS2 VFD's
-#
-loadusr -Wn spindle-vfd gs2_vfd -r 38400 -p none -s 2 --name spindle-vfd -R --device /dev/ttyS0
+# 
+loadusr -Wn spindle-vfd gs2_vfd -r 38400 -p none -s 2 --name spindle-vfd --accel-seconds 20 --decel-seconds 30 --braking-resistor --device /dev/ttyS0
 
 addf parport.0.read base-thread
+addf parport.1.read base-thread
 addf stepgen.make-pulses base-thread
 addf parport.0.write base-thread
 addf parport.0.reset base-thread
+addf parport.1.write base-thread
+addf parport.1.reset base-thread
 
 addf stepgen.capture-position servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf stepgen.update-freq servo-thread
 
-net estop-out       => parport.0.pin-01-out
+#net estop-out       => parport.0.pin-01-out
 net xstep           => parport.0.pin-02-out
 setp parport.0.pin-02-out-reset 1
 net xdir            => parport.0.pin-03-out
@@ -35,9 +38,9 @@ net zdir            => parport.0.pin-07-out
 net astep           => parport.0.pin-08-out
 setp parport.0.pin-08-out-reset 1
 net adir            => parport.0.pin-09-out
-net spindle-cw      => parport.0.pin-14-out
-net spindle-pwm     => parport.0.pin-16-out
-net xenable         => parport.0.pin-17-out
+net spindle-pwm     => parport.0.pin-14-out
+net spindle-cw      => parport.0.pin-01-out
+
 net min-home-y      <= parport.0.pin-12-in
 net max-home-z      <= parport.0.pin-11-in
 net min-home-a      <= parport.0.pin-10-in
@@ -196,19 +199,30 @@ net spindle-rpm         <= spindle-vfd.motor-RPM
 #
 #  ---probe signal---
 # Using a tool length input pin OR a probe pin to drive motion.probe-input.
-# Using the same pin??????
+# Using second parport inputs.
 #
 loadrt or2 names=or2_probe 
 addf or2_probe servo-thread
 
-#setp debounce.2.delay 20  # 20 * servo-thread period (1000us) = 20ms
+#
+# Add debounce filters.
+#
+loadrt debounce cfg=2
+addf debounce.0 base-thread
+#addf debounce.1 base-thread
 
-#net length-in-raw   <= parport.0.pin-15-in  => debounce.2.0.in
-#net length-in       <= debounce.2.0.out     => or2_probe.in0
-#net length-in       <= parport.0.pin-15-in   => or2_probe.in0
-#net probe-in        <= parport.0.pin-15-in   => or2_probe.in1
-#net probe-or-length <= or2_probe.out         => motion.probe-input
-net probe-in        <= parport.0.pin-15-in   => motion.probe-input
+setp debounce.0.delay 20
+#setp debounce.1.delay 20
+
+#net probe-in debounce.0.0.in
+#net probe-filt debounce.0.0.out => motion.probe-input
+
+
+net length-in-raw   <= parport.1.pin-13-in-not => debounce.0.0.in
+net length-in       <= debounce.0.0.out        => or2_probe.in0
+net probe-in-raw    <= parport.1.pin-12-in-not => debounce.0.1.in
+net probe-in        <= debounce.0.1.out        => or2_probe.in1
+net probe-or-length <= or2_probe.out           => motion.probe-input
 
 #loadusr -W hal_manualtoolchange
 #net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
