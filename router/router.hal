@@ -164,8 +164,9 @@ setp   pid.s.error-previous-target true
 net spindle-vel-cmd-rpm   =>  pid.s.command
 net spindle-output        <=  pid.s.output
 net spindle-rpm           =>  pid.s.feedback
-net spindle-index-enable  <=> pid.s.index-enable
 net spindle-enable        =>  pid.s.enable
+#net spindle-index-enable  <=> pid.s.index-enable
+net spindle-enable        =>  pid.s.index-enable
 
 #
 # GS2 VFD 

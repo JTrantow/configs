@@ -1,0 +1,16 @@
+/**<br>
+ *@addtogroup EstopLatchControl
+
+Why does this work?
+ *     @dot
+ *          digraph G { 
+ *                      Main    [label = "EstopLatch()"];
+ *                      START   [label = "Start99"];
+ *                      FINISH  [label = "Finish99"];
+ *
+ *                      START -> Main;
+ *                      Main  -> FINISH;
+ *                    }
+ *        
+ *     @enddot
+ */
