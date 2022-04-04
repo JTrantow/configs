@@ -1,17 +1,8 @@
 /**<br>
  *@addtogroup StepperControl
 
-Why does this work?
- *     @dot
- *          digraph G { 
- *                      Main    [label = "Stepper()"];
- *                      START   [label = "Start99"];
- *                      FINISH  [label = "Finish99"];
- *
- *                      START -> Main;
- *                      Main  -> FINISH;
- *                    }
- *        
- *     @enddot
+
+    ToDo
+ 
  */
 

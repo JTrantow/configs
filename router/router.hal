@@ -212,28 +212,6 @@ net spindle-rpm         <= spindle-vfd.motor-RPM
 loadrt or2 names=or2_probe 
 addf or2_probe servo-thread
 
-#
-# Add debounce filters.
-#
-loadrt debounce cfg=2
-addf debounce.0 base-thread
-#addf debounce.1 base-thread
-
-setp debounce.0.delay 20
-#setp debounce.1.delay 20
-
-#net probe-in debounce.0.0.in
-#net probe-filt debounce.0.0.out => motion.probe-input
-
-
-net length-in-raw   <= parport.1.pin-13-in-not => debounce.0.0.in
-net length-in       <= debounce.0.0.out        => or2_probe.in0
-net probe-in-raw    <= parport.1.pin-12-in-not => debounce.0.1.in
-net probe-in        <= debounce.0.1.out        => or2_probe.in1
+net length-in       => or2_probe.in0
+net probe-in        => or2_probe.in1
 net probe-or-length <= or2_probe.out           => motion.probe-input
-
-#loadusr -W hal_manualtoolchange
-#net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
-#net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
-#net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
-#net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
