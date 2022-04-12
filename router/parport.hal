@@ -1,0 +1,61 @@
+#
+# This file defines signals for all use parallel pins.
+#
+loadrt hal_parport cfg="0 out 1 out"
+
+addf parport.0.read base-thread
+addf parport.1.read base-thread
+addf stepgen.make-pulses base-thread
+addf parport.0.write base-thread
+addf parport.0.reset base-thread
+addf parport.1.write base-thread
+addf parport.1.reset base-thread
+
+setp parport.0.reset-time 5000
+
+#
+# parport.0 is connected directly to the G540.
+#
+
+#
+# Stepper signals (step, dir) for each joint.
+#
+net xstep           => parport.0.pin-02-out
+setp parport.0.pin-02-out-reset 1
+net xdir            => parport.0.pin-03-out
+net ystep           => parport.0.pin-04-out
+setp parport.0.pin-04-out-reset 1
+net ydir            => parport.0.pin-05-out
+net zstep           => parport.0.pin-06-out
+setp parport.0.pin-06-out-reset 1
+net zdir            => parport.0.pin-07-out
+net astep           => parport.0.pin-08-out
+setp parport.0.pin-08-out-reset 1
+net adir            => parport.0.pin-09-out
+#
+# Limit switch for each joint.
+#
+net min-home-y      <= parport.0.pin-12-in
+net max-home-z      <= parport.0.pin-11-in
+net min-home-a      <= parport.0.pin-10-in
+net min-home-x      <= parport.0.pin-13-in
+
+net G540-fault      <= parport.0.pin-15-in
+
+#
+# parport.1 is just a breakout cable.
+# Add debounce filtering for parallel port 1 inputs which were giving erroneous signals.
+#
+loadrt debounce cfg=3
+addf debounce.0 base-thread
+setp debounce.0.delay 20
+
+net probe-in-raw    <= parport.1.pin-10-in-not  => debounce.0.0.in    # Spiral corded.
+net GS2-fault-raw   <= parport.1.pin-11-in      => debounce.0.1.in    # Short phone wire. True for open connection which is a fault.
+#net available      <= parport.1.pin-12-in                            # 2 pin connector.
+#net available      <= parport.1.pin-13-in                            # 2 pin connector.
+net length-in-raw   <= parport.1.pin-15-in-not  => debounce.0.2.in    # Long phone wire.
+
+net probe-in        <= debounce.0.0.out
+net GS2-fault       <= debounce.0.1.out
+net length-in       <= debounce.0.2.out

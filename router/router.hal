@@ -4,54 +4,13 @@
 #
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt hal_parport cfg="0 out 1 out"
-setp parport.0.reset-time 5000
 loadrt stepgen step_type=0,0,0,0
-
-#
-# load the user space component for the Automation Direct GS2 VFD's
-# 
-loadusr -Wn spindle-vfd gs2_vfd -r 38400 -p none -s 2 --name spindle-vfd --accel-seconds 20 --decel-seconds 30 --braking-resistor --device /dev/ttyS0
-
-addf parport.0.read base-thread
-addf parport.1.read base-thread
-addf stepgen.make-pulses base-thread
-addf parport.0.write base-thread
-addf parport.0.reset base-thread
-addf parport.1.write base-thread
-addf parport.1.reset base-thread
 
 addf stepgen.capture-position servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf stepgen.update-freq servo-thread
 
-#
-# Stepper signals (step, dir) for each joint.
-#
-net xstep           => parport.0.pin-02-out
-setp parport.0.pin-02-out-reset 1
-net xdir            => parport.0.pin-03-out
-net ystep           => parport.0.pin-04-out
-setp parport.0.pin-04-out-reset 1
-net ydir            => parport.0.pin-05-out
-net zstep           => parport.0.pin-06-out
-setp parport.0.pin-06-out-reset 1
-net zdir            => parport.0.pin-07-out
-net astep           => parport.0.pin-08-out
-setp parport.0.pin-08-out-reset 1
-net adir            => parport.0.pin-09-out
-#
-# Limit switch for each joint.
-#
-net min-home-y      <= parport.0.pin-12-in
-net max-home-z      <= parport.0.pin-11-in
-net min-home-a      <= parport.0.pin-10-in
-net min-home-x      <= parport.0.pin-13-in
-#
-# G540 fault signal.
-#
-net G540-fault      <= parport.0.pin-15-in
 
 setp stepgen.0.position-scale [JOINT_0]SCALE
 setp stepgen.0.steplen 1
@@ -109,109 +68,9 @@ net aenable joint.3.amp-enable-out => stepgen.3.enable
 net min-home-a => joint.3.home-sw-in
 net min-home-a => joint.3.neg-lim-sw-in
 
-net estop-out <= iocontrol.0.user-enable-out
-net estop-out => iocontrol.0.emc-enable-in
-
-# ---setup spindle control signals---
 #
-#<name>.amp-fault-in IN BIT Should be driven TRUE if an external fault is detected with the amplifier for this spindle
-#<name>.at-speed IN BIT Motion will pause until this pin is TRUE, under the following conditions: before the first feed move after each spindle start or speed change; before the start of every chain of spindle-synchronized moves; and if in CSS mode, at every rapid->feed transition.
-#<name>.brake OUT BIT TRUE when the spindle brake should be applied
-#<name>.forward OUT BIT TRUE when the spindle should rotate forward
-#<name>.index-enable I/O BIT For correct operation of spindle synchronized moves, this signal must be hooked to the index-enable pin of the spindle encoder.
-#<name>.inhibit IN BIT When TRUE, the spindle speed is set and held to 0.
-#<name>.is-oriented IN BIT Acknowledge pin for spindle-orient. Completes orient cycle. If spindle-orient was true when spindle-is-oriented was asserted, the spindle-orient pin is cleared and the spindle-locked pin is asserted. Also, the spindle-brake pin is asserted.
-#<name>.locked OUT BIT Spindle orient complete pin. Cleared by any of M3,M4,M5.
-#<name>.on OUT BIT TRUE when spindle should rotate
-#<name>.orient OUT BIT Indicates start of spindle orient cycle. Set by M19. Cleared by any of M3,M4,M5. If spindle-orient-fault is not zero during spindle-orient true, the M19 command fails with an error message.
-#<name>.orient-angle OUT FLOAT Desired spindle orientation for M19. Value of the M19 R word parameter plus the value of the [RS274NGC]ORIENT_OFFSET ini parameter.
-#<name>.orient-fault IN S32 Fault code input for orient cycle. Any value other than zero will cause the orient cycle to abort.
-#<name>.orient-mode OUT BIT Desired spindle rotation mode. Reflects M19 P parameter word.
-#<name>.reverse OUT BIT TRUE when the spindle should rotate backward
-#<name>.revs IN FLOAT For correct operation of spindle synchronized moves, this signal must be hooked to the position pin of the spindle encoder.
-#<name>.speed-cmd-rps FLOAT OUT Commanded spindle speed in units of revolutions per second
-#<name>.speed-in IN FLOAT Actual spindle speed feedback in revolutions per second; used for G96 (constant surface speed) and G95 (feed per revolution) modes.
-#<name>.speed-out OUT FLOAT Desired spindle speed in rotations per minute
-#<name>.speed-out-abs OUT FLOAT Desired spindle speed in rotations per minute, always positive regardless of spindle direction.
-#<name>.speed-out-rps OUT FLOAT Desired spindle speed in rotations per second
-#<name>.speed-out-rps-abs OUT FLOAT Desired spindle speed in rotations per second, always positive regardless of spindle direction.
-
-net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
-net spindle-enable             <=  spindle.0.on
-net spindle-cw                 <=  spindle.0.forward
-net spindle-ccw                <=  spindle.0.reverse
-net spindle-at-speed           =>  spindle.0.at-speed
-net spindle-frequency          =>  spindle.0.speed-in
-
+# Use estop latch logic.
 #
-# GS2 VFD seems to be in open loop control. motor_RPM does not match speed-command.
-# Use pid to close loop.
-#
-loadrt pid names=pid.s
-addf pid.s.do-pid-calcs       servo-thread
+#net estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
 
-setp   pid.s.Pgain     [SPINDLE_0]P
-setp   pid.s.Igain     [SPINDLE_0]I
-setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
-setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
-setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
 
-net spindle-vel-cmd-rpm   =>  pid.s.command
-net spindle-output        <=  pid.s.output
-net spindle-rpm           =>  pid.s.feedback
-net spindle-enable        =>  pid.s.enable
-#net spindle-index-enable  <=> pid.s.index-enable
-net spindle-enable        =>  pid.s.index-enable
-
-#
-# GS2 VFD 
-#
-# Complete list from documentation for gs2-vfd spindle. 
-# Does it support braking????
-# Connect the status and error to the estop chain???
-#
-#<name>.DC-bus-volts (float, out)from the VFD
-#<name>.at-speed (bit, out)when drive is at commanded speed
-#<name>.err-reset (bit, in)reset errors sent to VFD
-#<name>.firmware-revision (s32, out)from the VFD
-#<name>.frequency-command (float, out)from the VFD
-#<name>.frequency-out (float, out)from the VFD
-#<name>.is-stopped (bit, out)when the VFD reports 0 Hz output
-#<name>.load-percentage (float, out)from the VFD
-#<name>.motor-RPM (float, out)from the VFD
-#<name>.output-current (float, out)from the VFD
-#<name>.output-voltage (float, out)from the VFD
-#<name>.power-factor (float, out)from the VFD
-#<name>.scale-frequency (float, out)from the VFD
-#<name>.speed-command (float, in) speed sent to VFD in RPM It is an error to send a speed faster than the Motor Max RPM as set in the VFD
-#<name>.spindle-fwd (bit, in) 1 for FWD and 0 for REV sent to VFD
-#<name>.spindle-on (bit, in)1 for ON and 0 for OFF sent to VFD, only on when running
-#<name>.spindle-rev (bit, in)1 for ON and 0 for OFF, only on when running
-#<name>.status-1 (s32, out)Drive Status of the VFD (see the GS2 manual)
-#<name>.status-2 (s32, out) Drive Status of the VFD (see the GS2 manual) Note that the value is a sum of all the bits that are on. So a 163 which means the drive is in the run mode is the sum of 3 (run) + 32 (freq set by serial) + 128 (operation set by serial).
-
-net spindle-cw          => spindle-vfd.spindle-fwd
-net spindle-ccw         => spindle-vfd.spindle-rev
-net spindle-enable      => spindle-vfd.spindle-on 
-net spindle-output      => spindle-vfd.speed-command
-
-net spindle-at-speed    <= spindle-vfd.at-speed
-net spindle-frequency   <= spindle-vfd.frequency-out
-net spindle-rpm         <= spindle-vfd.motor-RPM
-
-#
-#  ---probe signal---
-# Using a tool length input pin OR a probe pin to drive motion.probe-input.
-# Using second parport inputs.
-#
-loadrt or2 names=or2_probe 
-addf or2_probe servo-thread
-
-net length-in       => or2_probe.in0
-net probe-in        => or2_probe.in1
-net probe-or-length <= or2_probe.out           => motion.probe-input

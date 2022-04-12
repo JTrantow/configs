@@ -1,0 +1,14 @@
+#
+# probes.hal defines the logic for a tool length and/or a probe input.
+#
+
+#
+#  ---probe signal---
+# Using a tool length input pin OR a probe pin to drive motion.probe-input.
+#
+loadrt or2 names=or2_probe 
+addf or2_probe servo-thread
+
+net length-in                           => or2_probe.in0
+net probe-in                            => or2_probe.in1
+net probe-or-length <= or2_probe.out    => motion.probe-input
