@@ -1,0 +1,92 @@
+O<tool-change> SUB
+( see: http://www.linuxcnc.org/index.php/english/forum/10-advanced-configuration/5596-manual-tool-change--tool-lengh-touch-off?start=30#48235 )
+( Filename: tool-change.ngc )
+( Usage: M6 in the g-code will invoke a manual tool change with automatic tool height adjustment. )
+( This script is setup for use with manual tool changes and automatic tool length measurement suitable for use with a collet system. )
+( This script is only concerned with setting the tool length and has nothing to do with measuring the work piece. )
+( Set the tool length sensor height using "G10 L2 P9 Z150.0" Where the Z value is the spindle nose/collet triggering the sensor. )
+( With this method the tool length is reference relative to the spindle nose/collet. )
+( Uses G10 L11 to set height relative to absolute coordinates so this script is independent of G54 coordinate systems other than P9. )
+
+( Side effects: sets motion mode to G1. )
+
+(------------------------------- CONFIGURATION PARAMETERS ----------------------------------------------)
+( Note: Use [TOOLSENSOR] and [CHANGE_POSITION] ini variables from probe_screen_v2.) I added a new [TOOLSENSOR]RETRACT_HEIGHT. )
+( Note: Uses gmoccapy toolmeasurement, searchvel, probevel. )
+
+;
+; Execute this subroutine only in the milltask interpreter or preview will break.
+;
+O100 if [#<_task> EQ 0]
+        (debug, Task ist Null)
+O100     return [999]
+O100 endif
+
+O200 if [#<_hal[gmoccapy.toolmeasurement]> EQ 0]
+O200 return [3] ; indicate no tool measurement 
+O200 endif
+
+M70                                            ( save current modal state before changing G90 )
+
+G90                                            ( Notice G53 requires absolute mode. Aborts can end up in G91.)
+G53 G0 Z[#<_ini[CHANGE_POSITION]Z>]
+G53 G0 X[#<_ini[CHANGE_POSITION]X>] Y[#<_ini[CHANGE_POSITION]Y>] 
+
+M6                                             ( do the normal M6 stuff )
+(  Check the search and probe velocity after M6 in case they get changed. )
+O300 if [#<_hal[gmoccapy.searchvel]> LE 0]
+O300 return [-1] ; indicate searchvel <= 0 
+O300 endif
+
+O400 if [#<_hal[gmoccapy.probevel]> LE 0]
+O400 return [-2] ; indicate probevel <= 0 
+O400 endif
+
+M9                                             ( turn off coolant, will be restored on return if it was on )
+M5                                             ( turn off spindle, cannot be on during the probe )
+
+G49                                            ( clear tool length compensation )
+G94                                            ( use feedrate in units/min )
+G40                                            ( turn cutter radius compensation off here )
+
+G53 G0 Z[#<_ini[TOOLSENSOR]Z>]                 ( go to safe probe travel level on Z )
+G53 G0 X[#<_ini[TOOLSENSOR]X>] Y[#<_ini[TOOLSENSOR]Y>]   ( move over the tool length sensor)
+
+G91                                          ( use relative positioning during probing, coordinate system doesn't matter. )
+
+G38.2 Z[#<_ini[TOOLSENSOR]MAXPROBE>] F[#<_ProbeFeed1>]    ( trip switch slowly )
+G0 Z[#<_ini[TOOLSENSOR]RETRACT_HEIGHT>]
+G38.2 Z[_ini[TOOLSENSOR]RETRACT_HEIGHT*-1.1] F[#<_hal[gmoccapy.probevel] (Search 10% further than ProbeRetract, then probe very slowly to the trip point.)
+
+O500 if [#5070 EQ 0]
+     G90
+O500 return [-3] ; indicate probe contact failure to epilog
+O500 endif
+
+( Move to safe TOOLSENSOR Z position. )
+G90                                          ( G53 requires absolute positioning. )
+G53 G0 Z[#<_ini[TOOLSENSOR]Z>]               ( return to safe level )
+
+;
+; Check the current tool number.
+;
+O900 IF [#5400 NE 0 ]
+  ;
+  ; Non-zero tool numbers will modify the tool length.
+  ; Uses G10 L11 to set height relative to absolute coordinates so this script is independent of coordinate systems other than P9. 
+  ;
+  G10 L11 P#5400 Z0.0                          ( G59.3 Coordinate system 9 Z should be set to tool sensor height using an empty spindle.)
+  G43 H#5400                                   ( Reload the tool length offsets from the changed tool table.)
+O900 ELSE
+  ;
+  ; Zero tool will set the tool length sensor offset for subsequent tools. Recommend using an empty spindle for tool 0.
+  ;
+  G10 L2 P9 Z#5063 
+O900 ENDIF
+
+M72                                          ( restore modal state )
+G43 H#5400                                   ( Reload the tool length offsets from the changed tool table.)
+  
+; signal success be returning a value > 0:
+O<tool-change> ENDSUB [1] 
+M2
