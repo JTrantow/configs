@@ -7,4 +7,22 @@
 net spindle-at-speed => gmoccapy.spindle_at_speed_led
 net spindle-rpm      => gmoccapy.spindle_feedback_bar
 
+#
+# Connect the fault signals to the gmoccapy messages defined in the .ini.
+# (shows up after estop, not sure how to get the message before the estop is acknowledged)
+#
+net G540-fault  => gmoccapy.messages.G540-fault
+net VFD-fault   => gmoccapy.messages.VFD-fault
 
+#
+#  gmoccapy's internal tool change dialog. (must be in a postgui hal file)
+#
+net tool-change         gmoccapy.toolchange-change      <= iocontrol.0.tool-change
+net tool-changed        gmoccapy.toolchange-changed     <= iocontrol.0.tool-changed
+net tool-prep-number    gmoccapy.toolchange-number      <= iocontrol.0.tool-prep-number
+net tool-prep-loop      iocontrol.0.tool-prepare        <= iocontrol.0.tool-prepared
+
+#
+# gmoccapy tool offset pins. This should update the Tool Information after tooltable change and G43 issued.
+# 
+net tooloffset-z gmoccapy.tooloffset-z <= motion.tooloffset.z

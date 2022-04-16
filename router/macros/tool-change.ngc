@@ -11,12 +11,11 @@ O<tool-change> SUB
 ( Side effects: sets motion mode to G1. )
 
 (------------------------------- CONFIGURATION PARAMETERS ----------------------------------------------)
-( Note: Use [TOOLSENSOR] and [CHANGE_POSITION] ini variables from probe_screen_v2.) I added a new [TOOLSENSOR]RETRACT_HEIGHT. )
+( Note: Use [TOOLSENSOR] and [CHANGE_POSITION] ini variables from probe_screen_v2.) 
+( NOTE: I added a new [TOOLSENSOR]RETRACT_HEIGHT. )
 ( Note: Uses gmoccapy toolmeasurement, searchvel, probevel. )
 
-;
-; Execute this subroutine only in the milltask interpreter or preview will break.
-;
+( Execute this subroutine only in the milltask interpreter or preview will break. )
 O100 if [#<_task> EQ 0]
         (debug, Task ist Null)
 O100     return [999]
@@ -54,18 +53,14 @@ G53 G0 X[#<_ini[TOOLSENSOR]X>] Y[#<_ini[TOOLSENSOR]Y>]   ( move over the tool le
 
 G91                                          ( use relative positioning during probing, coordinate system doesn't matter. )
 
-G38.2 Z[#<_ini[TOOLSENSOR]MAXPROBE>] F[#<_ProbeFeed1>]    ( trip switch slowly )
-G0 Z[#<_ini[TOOLSENSOR]RETRACT_HEIGHT>]
-G38.2 Z[_ini[TOOLSENSOR]RETRACT_HEIGHT*-1.1] F[#<_hal[gmoccapy.probevel] (Search 10% further than ProbeRetract, then probe very slowly to the trip point.)
+G38.2 Z[#<_ini[TOOLSENSOR]MAXPROBE>] F[#<_hal[gmoccapy.searchvel]>]
+G0    Z[#<_ini[TOOLSENSOR]RETRACT_HEIGHT>]
+G38.2 Z[#<_ini[TOOLSENSOR]RETRACT_HEIGHT> * -1.1] F[#<_hal[gmoccapy.probevel]>] (Search 10% further than retraction, then probe very slowly to the trip point.)
 
 O500 if [#5070 EQ 0]
      G90
 O500 return [-3] ; indicate probe contact failure to epilog
 O500 endif
-
-( Move to safe TOOLSENSOR Z position. )
-G90                                          ( G53 requires absolute positioning. )
-G53 G0 Z[#<_ini[TOOLSENSOR]Z>]               ( return to safe level )
 
 ;
 ; Check the current tool number.
@@ -79,10 +74,14 @@ O900 IF [#5400 NE 0 ]
   G43 H#5400                                   ( Reload the tool length offsets from the changed tool table.)
 O900 ELSE
   ;
-  ; Zero tool will set the tool length sensor offset for subsequent tools. Recommend using an empty spindle for tool 0.
+  ; Zero tool will set the tool length sensor offset in P9 for subsequent tools. Recommend using an empty spindle for tool 0.
   ;
   G10 L2 P9 Z#5063 
 O900 ENDIF
+
+( Move to safe TOOLSENSOR Z position. )
+G90                                          ( G53 requires absolute positioning. )
+G53 G0 Z[#<_ini[TOOLSENSOR]Z>]               ( return to safe level )
 
 M72                                          ( restore modal state )
 G43 H#5400                                   ( Reload the tool length offsets from the changed tool table.)

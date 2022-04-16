@@ -50,11 +50,11 @@ loadrt debounce cfg=3
 addf debounce.0 base-thread
 setp debounce.0.delay 20
 
-net probe-in-raw    <= parport.1.pin-10-in-not  => debounce.0.0.in    # Spiral corded.
+net probe-in-raw    <= parport.1.pin-10-in      => debounce.0.0.in    # Spiral corded.
 net GS2-fault-raw   <= parport.1.pin-11-in      => debounce.0.1.in    # Short phone wire. True for open connection which is a fault.
 #net available      <= parport.1.pin-12-in                            # 2 pin connector.
 #net available      <= parport.1.pin-13-in                            # 2 pin connector.
-net length-in-raw   <= parport.1.pin-15-in-not  => debounce.0.2.in    # Long phone wire.
+net length-in-raw   <= parport.1.pin-15-in      => debounce.0.2.in    # Long phone wire.
 
 net probe-in        <= debounce.0.0.out
 net GS2-fault       <= debounce.0.1.out
