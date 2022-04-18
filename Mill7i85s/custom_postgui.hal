@@ -1,5 +1,0 @@
-# Include your custom_postgui HAL commands here
-# This file will not be overwritten when you run PNCconf again
-
-net remote-o100 halui.mdi-command-00 <= pyvcp.o100
-
