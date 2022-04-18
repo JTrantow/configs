@@ -1,12 +1,10 @@
 #
-# PrintNC method of toolchange.
-# By adding these pins in your postgui, the tool change notification will reference your tool table and provide the tool description in the pop-up. 
-# This requires that you keep your tool table updated with an accurate description for the associated tool number, but i find it extremely helpful since F360 free version does not allow for setup sheets.
+#  gmoccapy's internal tool change dialog. (must be in a postgui hal file)
 #
-net tool-change gmoccapy.toolchange-change <= iocontrol.0.tool-change
-net tool-changed gmoccapy.toolchange-changed <= iocontrol.0.tool-changed
-net tool-number gmoccapy.toolchange-number <= iocontrol.0.tool-prep-number
-net tool-prepare-loopback iocontrol.0.tool-prepare <= iocontrol.0.tool-prepared
+net tool-change         gmoccapy.toolchange-change      <= iocontrol.0.tool-change
+net tool-changed        gmoccapy.toolchange-changed     <= iocontrol.0.tool-changed
+net tool-prep-number    gmoccapy.toolchange-number      <= iocontrol.0.tool-prep-number
+net tool-prep-loop      iocontrol.0.tool-prepare        <= iocontrol.0.tool-prepared
 
 #
 # Axis GUI needs this.
@@ -15,3 +13,14 @@ net tool-prepare-loopback iocontrol.0.tool-prepare <= iocontrol.0.tool-prepared
 #net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
 #net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
 #net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+
+#
+# Connect the spindle feedback to gmoccapy.
+#
+net spindle-at-speed => gmoccapy.spindle_at_speed_led
+net spindle-rpm      => gmoccapy.spindle_feedback_bar
+
+#
+# gmoccapy tool offset pins. This should update the Tool Information after tooltable change and G43 issued.
+# 
+net tooloffset-z gmoccapy.tooloffset-z <= motion.tooloffset.z

@@ -16,7 +16,6 @@ O100     return [999]
 O100 endif
 
 ;first go up
-G90
 G53 G0 Z[#<_ini[CHANGE_POSITION]Z>]
 ; then move to change position
 G53 G0 X[#<_ini[CHANGE_POSITION]X>] Y[#<_ini[CHANGE_POSITION]Y>]

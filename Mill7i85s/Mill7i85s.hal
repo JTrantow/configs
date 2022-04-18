@@ -12,7 +12,7 @@ loadrt scale names=scale.spindle
 #
 # load the user space component for the Automation Direct GS2 VFD's
 #
-loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 --name spindle-vfd -R --device /dev/ttyUSB0
+loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 --name spindle-vfd --accel-seconds 5 --decel-seconds 10 --braking-resistor --device /dev/ttyUSB0
 
 addf hm2_7i92.0.read          servo-thread
 addf motion-command-handler   servo-thread
@@ -410,8 +410,7 @@ net machine-is-enabled        <=  motion.motion-enabled
 
 
 #  ---manual tool change signals---
-
-#loadusr -W hal_manualtoolchange
+loadusr -W hal_manualtoolchange
 #net tool-change-request     iocontrol.0.tool-change       =>  hal_manualtoolchange.change
 #net tool-change-confirmed   iocontrol.0.tool-changed      <=  hal_manualtoolchange.changed
 #net tool-number             iocontrol.0.tool-prep-number  =>  hal_manualtoolchange.number

@@ -15,3 +15,5 @@ source joypad_extras.hal
 #
 #source quad_encoder.hal
 
+source toolchange.hal
+
