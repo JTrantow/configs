@@ -1,7 +1,7 @@
 #
 # load the user space component for the Automation Direct GS2 VFD's
 # Need 200 ohm resistor (not 80 ohm) before using --braking-resistor --decel-seconds 30 options.
-loadusr -Wn spindle-vfd gs2_vfd -r 38400 -p none -s 2 --name spindle-vfd --accel-seconds 10 --device /dev/ttyS0
+loadusr -Wn spindle-vfd gs2_vfd -r 38400 -p none -s 2 --name spindle-vfd --accel-seconds 5 --device /dev/ttyS0
 
 #
 # spindle.hal - Define HAL for the spindle connected to the GS2.
@@ -42,26 +42,24 @@ net spindle-frequency          =>  spindle.0.speed-in
 # GS2 VFD seems to be in open loop control. motor_RPM does not match speed-command.
 # Use pid to close loop.
 #
-loadrt pid names=pid.s
-addf pid.s.do-pid-calcs       servo-thread
+#loadrt pid names=pid.s
+#addf pid.s.do-pid-calcs       servo-thread
 
-setp   pid.s.Pgain     [SPINDLE_0]P
-setp   pid.s.Igain     [SPINDLE_0]I
-setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
-setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
-setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
+#setp   pid.s.Pgain     [SPINDLE_0]P
+#setp   pid.s.Igain     [SPINDLE_0]I
+#setp   pid.s.Dgain     [SPINDLE_0]D
+#setp   pid.s.bias      [SPINDLE_0]BIAS
+#setp   pid.s.FF0       [SPINDLE_0]FF0
+#setp   pid.s.FF1       [SPINDLE_0]FF1
+#setp   pid.s.FF2       [SPINDLE_0]FF2
+#setp   pid.s.deadband  [SPINDLE_0]DEADBAND
+#setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
+#setp   pid.s.error-previous-target true
 
-net spindle-vel-cmd-rpm   =>  pid.s.command
-net spindle-output        <=  pid.s.output
-net spindle-rpm           =>  pid.s.feedback
-net spindle-enable        =>  pid.s.enable
-#net spindle-index-enable  <=> pid.s.index-enable
-net spindle-enable        =>  pid.s.index-enable
+#net spindle-output        <=  pid.s.output
+#net spindle-rpm           =>  pid.s.feedback
+#net spindle-enable        =>  pid.s.enable
+#net spindle-enable        =>  pid.s.index-enable
 
 #
 # GS2 VFD 
@@ -87,7 +85,7 @@ net spindle-enable        =>  pid.s.index-enable
 #<name>.spindle-fwd (bit, in) 1 for FWD and 0 for REV sent to VFD
 #<name>.spindle-on (bit, in)1 for ON and 0 for OFF sent to VFD, only on when running
 #<name>.spindle-rev (bit, in)1 for ON and 0 for OFF, only on when running
-#<name>.status-1 (s32, out)Drive Status of the VFD (see the GS2 manual)
+#<name>.status-1 (s32, out) Drive Status of the VFD (see the GS2 manual)
 #<name>.status-2 (s32, out) Drive Status of the VFD (see the GS2 manual) Note that the value is a sum of all the bits that are on. So a 163 which means the drive is in the run mode is the sum of 3 (run) + 32 (freq set by serial) + 128 (operation set by serial).
 
 net spindle-cw          => spindle-vfd.spindle-fwd
@@ -96,6 +94,38 @@ net spindle-enable      => spindle-vfd.spindle-on
 net spindle-output      => spindle-vfd.speed-command
 
 net spindle-at-speed    <= spindle-vfd.at-speed
-net spindle-frequency   <= spindle-vfd.frequency-out
-net spindle-rpm         <= spindle-vfd.motor-RPM
+net spindle-frequency-pre   <= spindle-vfd.frequency-out
+net spindle-rpm-pre         <= spindle-vfd.motor-RPM
 
+#
+# This may be a better solution than the scaling garbage.
+#
+#setp spindle-vfd.nameplate-HZ 400
+#setp spindle-vfd.nameplate-RPM 24000
+
+# 
+# Scale the vfd. There is a factor of 2.29 between commanded and observed frequency.
+#
+loadrt scale count=3
+
+addf scale.0     servo-thread
+addf scale.1     servo-thread
+addf scale.2     servo-thread
+
+#
+# Scaling by 0.48 gives me 400hz output at 24000 RPM commanded.
+#
+setp scale.0.gain 0.48
+setp scale.1.gain 2.083
+setp scale.2.gain 2.083
+
+net spindle-vel-cmd-rpm    => scale.0.in
+net spindle-output         <= scale.0.out 
+#
+# Signals for feedback and display.
+#
+net spindle-frequency-pre  => scale.1.in
+net spindle-frequency      <= scale.1.out 
+
+net spindle-rpm-pre        => scale.2.in
+net spindle-rpm            <= scale.2.out 

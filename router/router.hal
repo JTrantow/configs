@@ -66,4 +66,3 @@ net aenable joint.3.amp-enable-out => stepgen.3.enable
 net min-home-a => joint.3.home-sw-in
 net min-home-a => joint.3.neg-lim-sw-in
 
-
