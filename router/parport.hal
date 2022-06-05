@@ -48,7 +48,7 @@ net G540-fault      <= parport.0.pin-15-in
 #
 loadrt debounce cfg=3
 addf debounce.0 base-thread
-setp debounce.0.delay 20
+setp debounce.0.delay 30
 
 net probe-in-raw    <= parport.1.pin-10-in      => debounce.0.0.in    # Spiral corded.
 net GS2-fault-raw   <= parport.1.pin-11-in      => debounce.0.1.in    # Short phone wire. True for open connection which is a fault.

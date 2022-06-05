@@ -28,7 +28,7 @@ height = 750
 use_toolmeasurement = True
 gtk_theme = Follow System Theme
 grid_size = 1.0
-view = x
+view = z
 mouse_btn_mode = 4
 hide_cursor = False
 hide_tooltips = False
@@ -85,5 +85,6 @@ ps_offs_y = 0.0
 ps_offs_z = 0.0
 ps_offs_angle = 0.0
 offset_axis_z = 0.0
-offset_axis_x = -2.813
-offset_axis_y = -2.813
+offset_axis_x = 0.0
+offset_axis_y = 0.0
+
