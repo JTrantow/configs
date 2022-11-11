@@ -1,13 +1,66 @@
 /*!
     \addtogroup EStopLatch
 
-    This diagram illustrates the .hal components for the estop latch logic of my router.
+    This approach is based on https://forum.linuxcnc.org/47-hal-examples/25861-external-e-stop?start=10
+
+    I like diagrams when I'm troubleshooting or modifying a HAL configuration. I've used the Doxygen tool and Vizgraph to illustrate how to use the LinuxCNC EStopLatch to implement EStop with multiple hardware signals.
+    
+    \section generic_section Generic Estop HAL
+
+    The default configuration (from stepconf or ) simply connects iocontrol pin user-enable-out to pin emc-enable-in with signal estop-out. This allows software control of estop.
+    If you look in your machine's .hal file you will find lines similar to:
+    \code 
+        #  ---estop signals---
+        net estop-out <= iocontrol.0.user-enable-out
+        net estop-out => iocontrol.0.emc-enable-in
+    \endcode
 
     \dot
         digraph structs {
-            concentrate=true
-            label="Router EStopLatch control."
+            label="Generic EStop HAL."
 
+            graph [splines=polyline]; // Try line, polyline, curved, ortho, spline
+            /* 
+                Represent iocontrol with a HTML table.
+            */
+            subgraph cluster_iocontrol{
+                label="iocontrol.0"
+                iocontrol [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                              <TABLE CELLBORDER="0" BORDER="0">
+                                <TR><TD ALIGN="LEFT" port="i0"> emc-enable-in </TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR><TD ALIGN="RIGHT" port="o0"> user-enable-out </TD></TR> 
+ <!-- Not used.                                <TR><TD ALIGN="RIGHT" port="o1"> user-request-enable </TD></TR> -->
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            iocontrol:o0:e -> iocontrol:i0:w   [label="estop-out" fontcolor="blue" color="blue"];
+        }
+    \enddot  
+
+    \section router_section Router EStopLatch HAL
+
+    If you have hardware signals that you wish to estop your machine, you can insert one or more estop latch components into your .hal configuration.
+
+    This diagram illustrates how I add two estop latches to my router configuration.
+    The hardware signals that can estop are:
+        - G540-fault - Fault signal from Gecko G540. This signal indicates either the hardware estop switch is pressed or a driver fault.
+        - GS2-fault - GS2 VFD fault signal (overload).        
+    
+    \dot
+        digraph structs {
+            label="Router EStopLatch control."
+            /* 
+                Represent each EStopLatch with a HTML table.
+            */
             subgraph cluster_estop0{
                 label="estop-latch.0"
                 estop0 [shape="box" label=<
@@ -23,7 +76,7 @@
                                 <TABLE CELLBORDER="0" BORDER="0">
                                     <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
                                     <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
-                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+    <!-- Not using this pin.        <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR>   -->        
                                 </TABLE>
                             </TD>
                         </TR> 
@@ -36,8 +89,7 @@
                                 </TR>
                             </TABLE>
                             </TD>
-                        </TR>
-                    
+                        </TR>               
                     </TABLE>
                 >
                 ]
@@ -58,7 +110,7 @@
                                 <TABLE CELLBORDER="0" BORDER="0">
                                     <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
                                     <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
-                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+     <!-- Not using this pin.       <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR>  -->
                                 </TABLE>
                             </TD>
                         </TR> 
@@ -71,8 +123,7 @@
                                 </TR>
                             </TABLE>
                             </TD>
-                        </TR>
-                    
+                        </TR>                    
                     </TABLE>
                 >
                 ]
@@ -97,23 +148,116 @@
                 >]
             }
 
-            n0 [shape="none" label=""];
-            n1 [shape="none" label=""];
+            nodesep=1.0;
+            ranksep=1.5;
+            
+            /*
+                Show the faults as signals coming from hardware.
+            */
+            hw [rank="source" label="hardware"];
+            reset [rank="sink" shape="point"];
 
-            n0 -> estop0:i0:w [label="G540-fault"];
-            n1 -> estop1:i0:w [label="GS2-fault "];
+            hw -> estop0:i0:w [label="G540-fault" color="red" fontcolor="red" ];
+            hw -> estop1:i0:w [label="GS2-fault" color="red" fontcolor="red" ];
 
-            iocontrol:o0:e  -> estop0:i1:e [label="latch0-ok-in" fontsize = "12" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop0:f0:s [color="blue"];
-            iocontrol:o1:se -> estop1:f0:s [label="latch-reset"  fontsize = "12" fontcolor="blue" color="blue"];
-            estop0:o1 -> estop1:i1;
-            estop1:o1 -> iocontrol:i0   [label="estop-out"  fontsize = "12" fontcolor="blue" color="blue"];
+            estop0:o1:e -> estop1:i1:w      [style="ortho" label="latch0-out"];
+            estop1:o1:e -> iocontrol:i0:w   [label="estop-out"  fontcolor="blue" color="blue"];
 
-            {rank=source; n0 n1}
-            {rank=same; iocontrol estop0 estop1}
-        }
-    \enddot
+            iocontrol:o0:e -> estop0:i1:w   [label="latch0-ok-in" fontcolor="blue" color="blue"];
+            iocontrol:01:e -> reset:e [label="latch-reset" ];
+            reset:w -> estop0:f0;
+            reset:nw -> estop1:f0;
+            //reset -> iocontrol [style="invisible"];
 
-    
+            /*
+                Move nodes around using invisible edges added to achieve correct layout.
+            */
+            hw -> iocontrol [style="invis"];
+            hw -> estop0 [style="invis"];
+            hw -> estop1 [style="invis"];
+
+            iocontrol -> reset [style="invis"];
+            estop0 -> reset [style="invis"];
+            estop1 -> reset [style="invis"];        }
+    \enddot  
+
+
+    \section estop_implementation_section Router EStopLatch Implementation
+
+   I like to keep functionality in separate files. For EStopLatch, I keep the EStop latch config in estop-chain.hal. I add the following lines to my *.ini. "HALFILE = estop-chain.hal" is the relevant line. The other lines are just to illustrate how I organize HAL functionality.
+ 
+    \code 
+        #
+        # I break up the .hal into multiple files to make it easier to document and share features between configurations.
+        #
+        [HAL]
+        TWOPASS = on
+        HALUI = halui
+        HALFILE = router.hal
+        HALFILE = parport.hal
+        HALFILE = spindle.hal
+        HALFILE = estop-chain.hal
+        HALFILE = probes.hal
+        HALFILE = postgui_load.hal # file_with_all_loads_for_postgui.hal
+        POSTGUI_HALFILE = postgui_call_list.hal
+    \endcode
+
+    Here are the contents of my estop-chain.hal file.
+    \code
+        #
+        # This file contains the Hardware Abstraction Level for e-stop hardware signals.
+        # Based on https://forum.linuxcnc.org/10-advanced-configuration/32789-educate-me-about-estop-chains-and-latches?start=10#93394
+        #
+
+        #
+        # The default setup has estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in. 
+        # This file inserts a chain of estop latches between user-enable-out and emc-enable-in.
+        # Set up estop latches for G540 fault, VFD fault.
+
+        loadrt estop_latch count=2
+
+        addf estop-latch.0            servo-thread
+        addf estop-latch.1            servo-thread
+
+        #
+        #   Reset signal for each latch comes from user-request-enable pin.
+        #
+        net latch-reset <= iocontrol.0.user-request-enable => estop-latch.0.reset estop-latch.1.reset 
+        #
+        #  Hook the first latch ok-in to iocontrol user-enable-out.
+        #
+        net latch0-ok-in <= iocontrol.0.user-enable-out => estop-latch.0.ok-in
+        #
+        #  Connect each ok_out to the next ok_in to create a chain of latches.
+        #
+        net latch0-out <= estop-latch.0.ok-out => estop-latch.1.ok-in
+        #
+        #   Last estop in the chain tells LinuxCNC we have an estop.
+        #
+        net estop-out <= estop-latch.1.ok-out => iocontrol.0.emc-enable-in 
+        #
+        #   Connect various input signals to the estop latch fault_in pins.
+        #   These signals are defined for my router as connected to parallel port pins.
+        #
+        net G540-fault => estop-latch.0.fault-in
+        net GS2-fault  => estop-latch.1.fault-in
+
+    \endcode
+
+    Don't forget to comment out or remove the orginal estop lines from your *.hal.
+    \code 
+        #  ---estop signals---
+        # net estop-out <= iocontrol.0.user-enable-out
+        # net estop-out => iocontrol.0.emc-enable-in
+    \endcode
+
+
+    My router uses two different parallel ports for IO and the HAL is defined in parport.hal. Depending on your hardware estop connections, it will look something like this:
+
+    \code
+        net G540-fault      <= parport.0.pin-15-in
+        net GS2-fault       <= parport.0.pin-11-in
+    \endcode    
+
+    If you have any problems, use halmeter to examine your hardware signals and the iocontrol.emc-enable-in status.
 */
-
