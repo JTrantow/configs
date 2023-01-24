@@ -4,7 +4,7 @@
         
         Having this in a separate file allows the documentation to be updated without changing a code file.
         
-        \mainpage Router Control
+        \mainpage Spindle Control
                 
         \section info_section  Information
                 - 

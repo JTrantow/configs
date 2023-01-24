@@ -1,22 +1,29 @@
 o<npt_pipe> sub
    (standard NPT subroutine)
-   (nptpipe.ngc)
-   (June 4, 2016 - M Kennedy)
-
+   (npt_pipe.ngc)
+   (Based on formulas in Machinery's Handbook)
+   (June 4, 2016     - written by M Kennedy)
+   (r1 July 12, 2017 - added linear cut depth regression, removed factored regression)
+   (r2 Jan 2, 2020 	 - fixed small bug around thread depth calcs)
+   (r3 Jul 16, 2021  - fixed bug around thread depth calc and X0 calc)
+   (https://forum.linuxcnc.org/lathe-subroutines-library/32895-pipe-threading)
+   ( Convert to metric.)
+   
    (Change these values. Get from Machinery's Handbook, or use Nominal size to look up in table below)
    (Program assumes that Z=0 located at end of pipe to be threaded)
-   #<_OutsideDiameter>		= #1 (Nominal or Actual Diameter, D)
+   #<_OutsideDiameter>	= #1 (Nom or Act Dia, D)
 
    (Don't usually have to change these values)
-   #<_TPI>			= #2 (= 0 TPI, input 0 for auto)
-   #<_First_Cut_Depth>		= #3 (= 0.015 First Cut Depth)
-   #<_Minimum_Cut_Depth>        = #4 (= 0.005 Smallest cut in regression)
-   #<_Depth_Regression>		= #5 (= 0.93 Depth Regression 0.8 to 1.0)
-   #<_X_Clearance>		= #6 (= 0.050 X clearance)
-   #<_Z_LeadIn>			= #7 (= 0.250 Z Leadin)
-   #<_TipRadius>		= #8 (= 0.004 Tip Radius)
-   #<_Spring_Passes>		= #9 (= 1 Spring Passes)
-   #<_CompoundSlideAngle>	= #10(= 29.5 Angle, 0 to 30)
+   #<_TPI>		= #2 (= 0 TPI, 0 for auto)
+   #<_First_Cut_Depth>	= #3 (= 0.015 First Cut)
+   #<_Minimum_Cut_Depth>      = #4 (= 0.003)
+   #<_X_Clearance>		= #5 (= 0.075 X clearance)
+   #<_Z_LeadIn>		= #6 (= 0.250 Z Leadin)
+   #<_TipRadius>		= #7 (= 0.003 Tip Radius)
+   #<_Spring_Passes>	= #8 (= 1 Spring Passes)
+   #<_CompoundSlideAngle>	= #9(= 29.5 Angle, 0-30)
+   
+   #<_UnitsScaling> = 25.4
 
    (check to see if tool set)
    o100 if [#5400 EQ 0]
@@ -34,7 +41,7 @@ o<npt_pipe> sub
       #<_TPI> = 18
    o305 endif
    o310 if [#<_OutsideDiameter> EQ 0.375]
-      #<_OutsideDiameter> = 0.675
+      #<_OutsideDiameter> = 0.675 * _UnitsScaling
       #<_TPI> = 18
    o310 endif 
    o315 if [#<_OutsideDiameter> EQ 0.500]
@@ -67,23 +74,30 @@ o<npt_pipe> sub
    o345 endif 
 
    (Calculations)
-   #<Pitch> = [1.000488 / #<_TPI>] (correct for tapered drive line)
+   #<Pitch> = [1.000488 * _UnitsScaling / #<_TPI>] (correct for tapered drive line)
+   
    #<E0> = [#<_OutsideDiameter> - [0.05 * #<_OutsideDiameter> + 1.1] * #<Pitch>] (Pitch Dia at beginning of external thread)
-   #<L2> = [[0.80 * #<_OutsideDiameter> + 6.8] * #<Pitch>] (Effective thread length)
+   #<L2> = [[0.80 * #<_OutsideDiameter> + 6.8*_UnitsScaling] * #<Pitch>] (Effective thread length)
    #<V> = [#<Pitch> * 3.47] (Vanish thread length)
-   #<ThreadDepth> = [#<Pitch> * 1.732 - 2 * #<_TipRadius>] (diameter thread depth)
-
+   #<ThreadDepth> = [#<Pitch> * 1.515 - 2 * #<_TipRadius>] (diameter thread depth from pitch dia)
    (increase Z Leadin slightly so that _Z_Leadin + L2 is a whole number of threads)
    #<_Z_LeadIn> = ABS[[[FUP[[#<L2> + #<_Z_LeadIn>] / #<Pitch>]] * #<Pitch>] - #<L2>]
 
    (calculate coordinates for G33 cuts - X0,Z0 small end, X1,Z1 at effective thread length, X2,Z2 at end of threading)
-   (X0, Z0 are absolute, X1, Z1, X2, Z2 are relative)
-   #<Z0> = #<_Z_LeadIn>
-   #<X0> = [#<E0> - [0.0625 * #<Z0>] - #<ThreadDepth> / 2] (-1/2 of diameter threaddepth to convert from pitch dia)
+   (start of pipe at Z=0)
+   (Z0, X0 are absolute. other X, Y are relative)
+   #<Z0> = #<_Z_LeadIn> (taper starts at leadin)
+   (X max to E pitch dia is 1/2 * H. Since Hdiameter = 1.732 * Pitch, this is 0.866 * Pitch)
+   #<X0> = [#<E0> - [#<Z0> / 16] - [0.866 * #<Pitch>] + [2 * #<_TipRadius>]] 
+   (Z1, X1 are relative to Z0, X0.  Z2, X2 are relative to  Z1, X1)
    #<Z1> = [#<L2> + #<_Z_LeadIn>]
-   #<X1> = [0.0625 * #<Z1>]
-   #<Z2> = #<V>
+   #<X1> = [#<Z1> / 16] (taper is 1/16 on dia)
+   #<Z2> = [#<V>]
    #<X2> = [#<_OutsideDiameter> - #<X0> - #<X1>]
+
+;(debug, L2=#<L2> V=#<V> pitch=#<Pitch>)   
+;(debug, E0=#<E0> Z0=#<Z0> X0=#<X0> Z1=#<Z1> X1=#<X1> Z2=#<Z2> X2=#<X2> ThreadDepth=#<ThreadDepth>)
+;M2
 
    G7 G18 G20 G54 G90 G94
    G95 (feed per revolution mode)
@@ -93,7 +107,7 @@ o<npt_pipe> sub
    (initialize loop parameters)   
    #<CutDepth> = #<_First_Cut_Depth> (current cut depth)
    #<XX> = [#<_OutsideDiameter> - #<CutDepth>]                       (XX is current cut depth at location of X0, Y0)
-   #<ZZ> = #<Z0>                                                     (ZZ is current cut depth at location of X0, Y0)
+   #<ZZ> = #<Z0>                                                     (ZZ is current lead in)
    #<ZStepover> = 0 (offset between passes)
    
    (main cutting loop)
@@ -104,16 +118,16 @@ o<npt_pipe> sub
       (make tapered cuts)
       G1 X[#<XX>] Z[#<ZZ>]                                               (start point)
       G33 X[#<XX> + #<X1>] Z[#<ZZ> - #<Z1>] K#<Pitch>                    (cut effective thread)
+;(debug, CutDepth=#<CutDepth> XX=#<XX> OD=#<_OutsideDiameter> TD=#<ThreadDepth>)
       o210 if [[#<XX> + #<X1>] LT #<_OutsideDiameter>]
          (only run if cut to be made)
          G33 X[#<XX> + #<X1> + #<X2>] Z[#<ZZ> - #<Z1> - #<Z2>] K#<Pitch>    (cut vanish thread)
       o210 endif
       o220 if [#<XX> GT #<_OutsideDiameter> - #<ThreadDepth>]
-         (use depth regression)
-         #<CutDepth> = [#<CutDepth> * #<_Depth_Regression>]
-         o230 if [#<CutDepth> LT #<_Minimum_Cut_Depth>]
-            #<CutDepth> = #<_Minimum_Cut_Depth>
-         o230 endif
+         (take deeper depth cuts initially until cut depth is more than thread depth)
+         #<CutDepth> = [#<_Minimum_Cut_Depth> + [#<_First_Cut_Depth> - #<_Minimum_Cut_Depth>] * [#<ThreadDepth> + #<XX> - #<_OutsideDiameter>] / #<ThreadDepth>]
+      o220 else
+         #<CutDepth> = #<_Minimum_Cut_Depth>
       o220 endif
       #<ZStepover> = [SIN[#<_CompoundSlideAngle>] * #<CutDepth>]
 
