@@ -155,8 +155,8 @@ setp    hm2_7i92.0.encoder.01.scale  [JOINT_1]ENCODER_SCALE
 # In open loop, -pos-fb goes directly from stepgen to joint.
 # In closed loop, -pos-fb is provided by the encoder position.
 #
-net y-pos-fb     <= hm2_7i92.0.stepgen.01.position-fb  => joint.1.motor-pos-fb
-#net y-pos-fb     <=  hm2_7i92.0.encoder.01.position  =>  joint.1.motor-pos-fb
+#net y-pos-fb     <= hm2_7i92.0.stepgen.01.position-fb  => joint.1.motor-pos-fb
+net y-pos-fb     <=  hm2_7i92.0.encoder.01.position  =>  joint.1.motor-pos-fb
 
 net y-index-enable    <= joint.1.index-enable             =>  hm2_7i92.0.encoder.01.index-enable
 
