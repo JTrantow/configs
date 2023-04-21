@@ -24,5 +24,12 @@ net y-encoder-estop => gmoccapy.messages.y-encoder-estop
 net z-encoder-estop => gmoccapy.messages.z-encoder-estop
 net s-encoder-estop => gmoccapy.messages.s-encoder-estop
 
+#
+# Test the message boxes. These show up at startup.
+#
+#net latch0-out         => gmoccapy.messages.lube-fault
+#net latch0-out-waiting => gmoccapy.messages.lube-fault-waiting
+#net estop-out          => gmoccapy.messages.pin
+
 source toolchange.hal
 
