@@ -49,13 +49,7 @@ net length-overtravel-estop <= hm2_7i92.0.gpio.025.in => estop-latch.1.fault-in
 
 # --- Encoder faults ---
 net x-encoder-estop <= hm2_7i92.0.encoder.00.quad-error => estop-latch.2.fault-in
-
-
-
-#
-# Disabled y encoder.
-#
-#net y-encoder-estop <= hm2_7i92.0.encoder.01.quad-error => estop-latch.3.fault-in
+net y-encoder-estop <= hm2_7i92.0.encoder.01.quad-error => estop-latch.3.fault-in
 net z-encoder-estop <= hm2_7i92.0.encoder.02.quad-error => estop-latch.4.fault-in
 net s-encoder-estop <= hm2_7i92.0.encoder.03.quad-error => estop-latch.5.fault-in
 
