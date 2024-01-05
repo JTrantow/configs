@@ -5,8 +5,6 @@ loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=4 num_stepgens=4" 
 setp    hm2_7i92.0.watchdog.timeout_ns 5000000
 loadrt pid names=pid.x,pid.y,pid.z
-loadrt abs names=abs.spindle
-loadrt lowpass names=lowpass.spindle
 loadrt debounce cfg=1,1,1 
 loadrt scale names=scale.spindle
 #
@@ -20,8 +18,6 @@ addf motion-controller        servo-thread
 addf pid.x.do-pid-calcs       servo-thread
 addf pid.y.do-pid-calcs       servo-thread
 addf pid.z.do-pid-calcs       servo-thread
-addf abs.spindle              servo-thread
-addf lowpass.spindle          servo-thread
 addf hm2_7i92.0.write         servo-thread
 addf debounce.0               servo-thread
 addf debounce.1               servo-thread
@@ -294,15 +290,15 @@ net spindle-vel-cmd-rpm <= spindle-vfd.speed-command
 #<name>.speed-out-rps OUT FLOAT Desired spindle speed in rotations per second
 #<name>.speed-out-rps-abs OUT FLOAT Desired spindle speed in rotations per second, always positive regardless of spindle direction.
 
-net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
-net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
+#net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
+#net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
 net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
-net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
+#net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
 
 net spindle-enable             <=  spindle.0.on
 net spindle-cw                 <=  spindle.0.forward
-net spindle-ccw                <=  spindle.0.reverse
-net spindle-brake              <=  spindle.0.brake
+#net spindle-ccw                <=  spindle.0.reverse
+#net spindle-brake              <=  spindle.0.brake
 net spindle-revs               =>  spindle.0.revs
 net spindle-at-speed           =>  spindle.0.at-speed
 net spindle-vel-fb-rps         =>  spindle.0.speed-in
