@@ -50,23 +50,23 @@ net x-output        <=  pid.x.output
 
 # Step Gen signals/setup
 
-setp   hm2_7i96.0.stepgen.01.dirsetup        [JOINT_0]DIRSETUP
-setp   hm2_7i96.0.stepgen.01.dirhold         [JOINT_0]DIRHOLD
-setp   hm2_7i96.0.stepgen.01.steplen         [JOINT_0]STEPLEN
-setp   hm2_7i96.0.stepgen.01.stepspace       [JOINT_0]STEPSPACE
-setp   hm2_7i96.0.stepgen.01.position-scale  [JOINT_0]STEP_SCALE
-setp   hm2_7i96.0.stepgen.01.step_type        0
-setp   hm2_7i96.0.stepgen.01.control-type     1
-setp   hm2_7i96.0.stepgen.01.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
-setp   hm2_7i96.0.stepgen.01.maxvel           [JOINT_0]STEPGEN_MAXVEL
+setp   hm2_7i96.0.stepgen.00.dirsetup        [JOINT_0]DIRSETUP
+setp   hm2_7i96.0.stepgen.00.dirhold         [JOINT_0]DIRHOLD
+setp   hm2_7i96.0.stepgen.00.steplen         [JOINT_0]STEPLEN
+setp   hm2_7i96.0.stepgen.00.stepspace       [JOINT_0]STEPSPACE
+setp   hm2_7i96.0.stepgen.00.position-scale  [JOINT_0]STEP_SCALE
+setp   hm2_7i96.0.stepgen.00.step_type        0
+setp   hm2_7i96.0.stepgen.00.control-type     1
+setp   hm2_7i96.0.stepgen.00.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
+setp   hm2_7i96.0.stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
 
 # ---closedloop stepper signals---
 
 net x-pos-cmd    <= joint.0.motor-pos-cmd
 net x-vel-cmd    <= joint.0.vel-cmd
-net x-output     <= hm2_7i96.0.stepgen.01.velocity-cmd
+net x-output     <= hm2_7i96.0.stepgen.00.velocity-cmd
 net x-enable     <= joint.0.amp-enable-out
-net x-enable     => hm2_7i96.0.stepgen.01.enable
+net x-enable     => hm2_7i96.0.stepgen.00.enable
 
 # ---setup home / limit switch signals---
 
@@ -82,8 +82,8 @@ setp    hm2_7i96.0.encoder.00.index-invert 0
 setp    hm2_7i96.0.encoder.00.index-mask 0
 setp    hm2_7i96.0.encoder.00.index-mask-invert 0
 setp    hm2_7i96.0.encoder.00.scale  -200
-#net x-pos-fb     <= hm2_7i96.0.stepgen.01.position-fb => joint.0.motor-pos-fb
-net x-pos-fb         <= hm2_7i96.0.encoder.00.position  =>  joint.0.motor-pos-fb
+net x-pos-fb     <= hm2_7i96.0.stepgen.00.position-fb => joint.0.motor-pos-fb
+#net x-pos-fb         <= hm2_7i96.0.encoder.00.position  =>  joint.0.motor-pos-fb
 net x-index-enable   <= joint.0.index-enable             =>  hm2_7i96.0.encoder.00.index-enable
 
 

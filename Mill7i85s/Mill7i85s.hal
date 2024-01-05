@@ -27,7 +27,6 @@ addf hm2_7i92.0.write         servo-thread
 addf debounce.0               servo-thread
 addf debounce.1               servo-thread
 addf debounce.2               servo-thread
-addf scale.spindle            servo-thread
 
 setp hm2_7i92.0.dpll.01.timer-us -50
 setp hm2_7i92.0.stepgen.timer-number 1
@@ -246,13 +245,6 @@ net spindle-vel-fb-rps   <= hm2_7i92.0.encoder.03.velocity
 net spindle-index-enable <= hm2_7i92.0.encoder.03.index-enable 
 
 #
-# Scale encoder to RPM for pyvcp display.
-#
-setp     scale.spindle.gain 60
-net spindle-vel-fb-rps        =>     scale.spindle.in
-net encoder-vel-cmd-rpm       <=     scale.spindle.out       
-
-#
 # GS2 VFD 
 #
 #net gs2-fwd spindle-vfd.spindle-fwd <= spindle.0.forward
@@ -376,7 +368,6 @@ net MDI-mode              halui.mode.is-mdi
 
 net coolant-mist      <=  iocontrol.0.coolant-mist
 net coolant-flood     <=  iocontrol.0.coolant-flood
-
 
 #
 #  ---probe signal---
