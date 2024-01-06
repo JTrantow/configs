@@ -32,12 +32,14 @@ setp joy_mux4.in3 600.0 # Max jog speed when third speed select button is presse
 # The following lines do the magic of setting the jog speed selection. You must hold at least one of the buttons while jogging.
 # Notice this does not fully decode the button possibilities. If you simultaneously press multiple buttons you will get the higher speed.
 #
-net slow   <= joy_or2_sel0.in0 => input.0.btn-joystick
+#net slow   <= joy_or2_sel0.in0 => input.0.btn-joystick USE THIS LINE WITH LINUXCNC 2.8
+# Some bonehead changed btn-joystick back to btn-trigger. Useless change that just causes problems.
+net slow   <= joy_or2_sel0.in0 => input.0.btn-trigger
 net medium <= joy_or2_sel1.in0 => input.0.btn-thumb
 net fast   <= joy_or2_sel0.in1 joy_or2_sel1.in1 => input.0.btn-thumb2
 
 net joy-speed-sel0 <= joy_or2_sel0.out  => joy_mux4.sel0 
 net joy-speed-sel1 <= joy_or2_sel1.out  => joy_mux4.sel1 
-net jog-speed      <= joy_mux4.out => halui.axis.jog-speed halui.joint.jog-speed
+net jog-speed      <= joy_mux4.out      => halui.axis.jog-speed halui.joint.jog-speed
 
 
