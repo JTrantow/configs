@@ -1,5 +1,10 @@
 Lathe output from: mesaflash --addr 10.10.10.10 --device=ETHER --readhmid
 
+
+
+
+BoardName : MESA7I96
+
 IO Connections for TB3 -> 7I96_0
 Pin#         I/O   Pri. func    Sec. func        Chan     Sec. Pin func   Dir
 
@@ -42,7 +47,7 @@ TB2-18,19    31   IOPort       SSerial          0        TXData0         (Out)
 Internal-TXEn32   IOPort       SSerial          0        TXEn0           (Out)
 Internal     33   IOPort       SSR              0        AC Ref          (Out)
 
-IO Connections for P1 -> 7I96_2
+IO Connections for P1 -> 7I96_2 connected to 7i85 to three encoders.
 Pin#          I/O   Pri. func    Sec. func        Chan     Sec. Pin func   Dir
 
 P1-01/DB25-01  34   IOPort       SSerial          0        RXData1         (In)
