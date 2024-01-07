@@ -1,0 +1,191 @@
+/*!
+    \addtogroup ParallelPort
+
+    This diagram illustrates the .hal components for the parallel ports of my router.
+
+    Two parallel ports in "out" direction mode.
+    - parport.0 is connected to a Gecko G540.
+    - parport.1 is just a breakout cable.
+
+    Notice, from the perspective of HAL, the "input" pins drive other HAL signal (act as ouputs).
+
+    \dot
+        digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="Router parallel ports."
+
+            subgraph cluster_parport0{
+                label="parport.0"
+                parport0 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="LEFT" port="o1"> pin-1 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o2"> pin-2 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o3"> pin-3 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o4"> pin-4 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o5"> pin-5 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o6"> pin-6 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o7"> pin-7 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o8"> pin-8 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o9"> pin-9 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o14"> pin-14 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o16"> pin-16 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o17"> pin-17 </TD></TR> 
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="RIGHT" port="i10"> pin-10 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i11"> pin-11 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i12"> pin-12 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i13"> pin-13 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i15"> pin-15 </TD></TR>
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_parport0{
+                label="parport.1"
+                parport1 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="LEFT" port="o1"> pin-1 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o2"> pin-2 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o3"> pin-3 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o4"> pin-4 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o5"> pin-5 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o6"> pin-6 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o7"> pin-7 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o8"> pin-8 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o9"> pin-9 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o14"> pin-14 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o16"> pin-16 </TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o17"> pin-17 </TD></TR> 
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="RIGHT" port="i10"> pin-10 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i11"> pin-11 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i12"> pin-12 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i13"> pin-13 </TD></TR>
+                                   <TR><TD ALIGN="RIGHT" port="i15"> pin-15 </TD></TR>
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_terminal0{
+                label="terminal0"
+                style = invis
+                terminal0 [shape="box" style = invis label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o1"> pin-1 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2"> pin-2 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o3"> pin-3 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o4"> pin-4 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o5"> pin-5 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o6"> pin-6 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o7"> pin-7 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o8"> pin-8 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o9"> pin-9 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o14"> pin-14 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o16"> pin-16 </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o17"> pin-17 </TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_debounce{
+                label="debounce.0"
+                debounce [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD><TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="LEFT" port="in0"> in </TD></TR> 
+                            </TABLE></TD>
+                            <TD><TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="RIGHT" port="out0"> out </TD></TR>
+                            </TABLE></TD>
+                        </TR> 
+                        <TR> 
+                            <TD><TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="LEFT" port="in1"> in </TD></TR> 
+                            </TABLE></TD>
+                            <TD><TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="RIGHT" port="out1"> out </TD></TR>
+                            </TABLE></TD>
+                        </TR> 
+                        <TR> 
+                            <TD><TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="LEFT" port="in2"> in </TD></TR> 
+                            </TABLE></TD>
+                            <TD><TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="RIGHT" port="out2"> out </TD></TR>
+                            </TABLE></TD>
+                        </TR> 
+                    </TABLE>
+                >]
+            }
+
+            terminal0:o1 -> parport0:o1 [label="output2 (not used)"];
+            terminal0:o2 -> parport0:o2 [label="xstep"];
+            terminal0:o3 -> parport0:o3 [label="xdir"];
+            terminal0:o4 -> parport0:o4 [label="ystep"];
+            terminal0:o5 -> parport0:o5 [label="ydir"];
+            terminal0:o6 -> parport0:o6 [label="zstep"];
+            terminal0:o7 -> parport0:o7 [label="zdir"];
+            terminal0:o8 -> parport0:o8 [label="astep"];
+            terminal0:o9 -> parport0:o9 [label="adir"];
+            terminal0:o14 -> parport0:o14 [label="VFD PWM (not used)"];
+            terminal0:o16 -> parport0:o16 [label="charge pump (not used)"];
+            terminal0:o17 -> parport0:o17 [label="output1 (not used)"];
+
+            n00 [shape="none" label=""];
+            n01 [shape="none" label=""];
+            n02 [shape="none" label=""];
+            n03 [shape="none" label=""];
+            n04 [shape="none" label=""];
+            n10 [shape="none" label=""];
+            n11 [shape="none" label=""];
+            n12 [shape="none" label=""];
+            n13 [shape="none" label=""];
+            n14 [shape="none" label=""];
+
+            parport0:i10 -> n00 [label="min-home-a"];
+            parport0:i11 -> n01 [label="min-home-z"];
+            parport0:i12 -> n02 [label="min-home-y"];
+            parport0:i13 -> n03 [label="min-home-x"];
+            parport0:i15 -> n04 [label="G540-fault"];
+
+            parport1:i10 -> debounce:in0 [label="probe-in-raw"];
+            parport1:i11 -> debounce:in1 [label="GS2-fault-raw"];
+            parport1:i12 -> n12 [label="available"];
+            parport1:i13 -> n13 [label="available"];
+            parport1:i15 -> debounce:in2 [label="length-in-raw"];
+
+            debounce:out0 -> n10 [label="probe"];
+            debounce:out1 -> n11 [label="GS2-fault"];
+            debounce:out2 -> n14 [label="length-in"];
+       }
+    \enddot
+*/
+
+/*
+*/

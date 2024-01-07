@@ -1,0 +1,31 @@
+/*!
+        \file mainPage.dox	
+        \brief This file contains the doxygen mainpage.
+        
+        Having this in a separate file allows the documentation to be updated without changing a code file.
+*/
+/*
+        remove for posting to LinuxCNC forum.
+                
+        \mainpage Lathe documentation
+                
+        \section info_section  Information
+                - 
+                - 
+        
+        \section features_section Features
+                - Faults
+                - Feedback
+                
+        \section toDo_section ToDo 
+                \subsection toDo1 General Improvements
+                - Document steppers
+                - Document spindle
+                - Document estop latch
+                - Document probe
+        
+                \subsection toDo2 General Nice to Have's
+                - Minarek VFD docs
+*/
+
+
