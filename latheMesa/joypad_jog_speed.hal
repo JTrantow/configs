@@ -8,7 +8,7 @@
 # Add this file to postgui_call_list.hal using a line with "source Joypad_jog_speed.hal".
 # Add another file (joypad_xyz.hal or joypad_xy.hal) to link the joysticks values to achieve motion.
 #
-loadusr -W hal_input -KRAL Dual 
+loadusr -W hal_input -KRAL Dual
 
 #
 # Using Joypad buttons to set the speeds
@@ -40,6 +40,6 @@ net fast   <= joy_or2_sel0.in1 joy_or2_sel1.in1 => input.0.btn-thumb2
 
 net joy-speed-sel0 <= joy_or2_sel0.out  => joy_mux4.sel0 
 net joy-speed-sel1 <= joy_or2_sel1.out  => joy_mux4.sel1 
-net jog-speed      <= joy_mux4.out      => halui.axis.jog-speed halui.joint.jog-speed
+net jog-speed      <= joy_mux4.out => halui.axis.jog-speed halui.joint.jog-speed
 
 

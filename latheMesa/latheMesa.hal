@@ -46,6 +46,7 @@ net x-index-enable  <=> pid.x.index-enable
 net x-enable        =>  pid.x.enable
 net x-pos-cmd       =>  pid.x.command
 net x-pos-fb        =>  pid.x.feedback
+net x-vel-fb        =>  pid.x.feedback-deriv
 net x-output        <=  pid.x.output
 
 # Step Gen signals/setup
@@ -81,10 +82,10 @@ setp    hm2_7i96.0.encoder.00.filter 1
 setp    hm2_7i96.0.encoder.00.index-invert 0
 setp    hm2_7i96.0.encoder.00.index-mask 0
 setp    hm2_7i96.0.encoder.00.index-mask-invert 0
-setp    hm2_7i96.0.encoder.00.scale  -1000
-#net x-pos-fb     <= hm2_7i96.0.stepgen.00.position-fb => joint.0.motor-pos-fb
+setp    hm2_7i96.0.encoder.00.scale  1000
+net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity
 net x-pos-fb         <= hm2_7i96.0.encoder.00.position  =>  joint.0.motor-pos-fb
-net x-index-enable   <= joint.0.index-enable             =>  hm2_7i96.0.encoder.00.index-enable
+net x-index-enable   <= joint.0.index-enable            =>  hm2_7i96.0.encoder.00.index-enable
 
 
 #*******************
@@ -109,6 +110,7 @@ setp   pid.z.maxerror 0.012700
 net z-index-enable  <=> pid.z.index-enable
 net z-enable        =>  pid.z.enable
 net z-pos-cmd       =>  pid.z.command
+net z-vel-cmd       =>  pid.z.command-deriv
 net z-pos-fb        =>  pid.z.feedback
 net z-output        <=  pid.z.output
 
