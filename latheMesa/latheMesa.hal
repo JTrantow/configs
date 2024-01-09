@@ -69,6 +69,22 @@ net x-output     <= hm2_7i96.0.stepgen.00.velocity-cmd
 net x-enable     <= joint.0.amp-enable-out
 net x-enable     => hm2_7i96.0.stepgen.00.enable
 
+#
+# Rename x-pos-fb signal from encoder so it can be used independent of pid fb signal. Allows encoder to be used as DRO without closing the control loop.
+# 
+net x-pos-encoder    <= hm2_7i96.0.encoder.00.position  => joint.0.motor-pos-fb
+#
+#   Enable the following two line to close the position control loop with the encoder. Use both encoder position and velocity as feedback.
+
+#
+net x-pos-fb         <= hm2_7i96.0.encoder.00.position  => pid.x.feedback
+net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
+#
+#   Enable the following two lines to open the position control loop and but still use the encoder as the joint position. (DRO)
+#
+net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb          
+
+
 # ---setup home / limit switch signals---
 
 net x-home-sw     =>  joint.0.home-sw-in
@@ -151,60 +167,6 @@ setp    hm2_7i96.0.encoder.01.scale 200
 #net z-pos-fb     <= hm2_7i96.0.stepgen.02.position-fb => joint.1.motor-pos-fb
 net z-pos-fb         <= hm2_7i96.0.encoder.01.position  =>  joint.1.motor-pos-fb
 net z-index-enable   <= joint.1.index-enable             =>  hm2_7i96.0.encoder.01.index-enable
-
-#*******************
-#  SPINDLE
-#*******************
-
-setp   pid.s.Pgain     [SPINDLE_0]P
-setp   pid.s.Igain     [SPINDLE_0]I
-setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
-setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
-setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
-
-
-net spindle-index-enable  <=> pid.s.index-enable
-net spindle-enable        =>  pid.s.enable
-net spindle-vel-cmd-rpm     => pid.s.command
-net spindle-vel-fb-rpm      => pid.s.feedback
-net spindle-output        <=  pid.s.output
-
-# ---Encoder feedback signals/setup---
-
-setp    hm2_7i96.0.encoder.02.counter-mode 0
-setp    hm2_7i96.0.encoder.02.filter 1
-setp    hm2_7i96.0.encoder.02.index-invert 0
-setp    hm2_7i96.0.encoder.02.index-mask 0
-setp    hm2_7i96.0.encoder.02.index-mask-invert 0
-setp    hm2_7i96.0.encoder.02.scale  260
-
-net spindle-revs             <=   hm2_7i96.0.encoder.02.position
-net spindle-vel-fb-rps       <=   hm2_7i96.0.encoder.02.velocity
-net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
-
-# ---setup spindle control signals---
-
-net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
-net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
-net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
-net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
-net spindle-enable             <=  spindle.0.on
-net spindle-cw                 <=  spindle.0.forward
-net spindle-ccw                <=  spindle.0.reverse
-net spindle-brake              <=  spindle.0.brake
-net spindle-revs               =>  spindle.0.revs
-net spindle-at-speed           =>  spindle.0.at-speed
-net spindle-vel-fb-rps         =>  spindle.0.speed-in
-net spindle-index-enable      <=>  spindle.0.index-enable
-
-# ---Setup spindle at speed signals---
-
-sets spindle-at-speed true
 
 
 #******************************
