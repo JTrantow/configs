@@ -4,7 +4,7 @@
 
 source spindle_postgui.hal
 
-source joypad_jog_speed.hal
-source joypad_xz.hal
-source joypad_extras.hal
+#source joypad_jog_speed.hal
+#source joypad_xz.hal
+#source joypad_extras.hal
 

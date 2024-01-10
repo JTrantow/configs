@@ -1,2 +1,56 @@
+#*******************
+#  SPINDLE
+#*******************
+
+
+net spindle-index-enable  <=> pid.s.index-enable
+net spindle-enable        =>  pid.s.enable
+net spindle-vel-cmd-rpm     => pid.s.command
+net spindle-vel-fb-rpm      => pid.s.feedback
+net spindle-output        <=  pid.s.output
+
+# ---Encoder feedback signals/setup---
+
+setp    hm2_7i96.0.encoder.02.counter-mode 0
+setp    hm2_7i96.0.encoder.02.filter 1
+setp    hm2_7i96.0.encoder.02.index-invert 0
+setp    hm2_7i96.0.encoder.02.index-mask 0
+setp    hm2_7i96.0.encoder.02.index-mask-invert 0
+setp    hm2_7i96.0.encoder.02.scale  260
+
+net spindle-revs             <=   hm2_7i96.0.encoder.02.position
+net spindle-vel-fb-rps       <=   hm2_7i96.0.encoder.02.velocity
+net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
+
+# ---setup spindle control signals---
+
+
+net spindle-enable             <=  spindle.0.on                  => hm2_7i96.0.gpio.00.out
+net spindle-cw                 <=  spindle.0.forward             => hm2_7i96.0.gpio.01.out
+#
+# Use mesa pwm to convert speed-out to pwm for the G540 pwm input.
+#
+net spindle-vel-cmd-rpm        <=  spindle.0.speed-out           
+#net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps       => hm2_7i96.0.gpio.00.in
+
+#net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
+#net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
+#net spindle-ccw                <=  spindle.0.reverse
+#net spindle-brake              <=  spindle.0.brake
+net spindle-revs               =>  spindle.0.revs
+net spindle-vel-fb-rps         =>  spindle.0.speed-in
+net spindle-index-enable      <=>  spindle.0.index-enable
+#net spindle-at-speed           =>  spindle.0.at-speed
+
+# ---Setup spindle at speed signals---
+sets spindle-at-speed true
+
+#
+# Read in some inputs so old motor switch can be used to control spindle forward/reverse???
+#
+net manual-switch-spindle-on <= hm2_7i96.0.gpio.00.in
+net manual-switch-spindle-cw <= hm2_7i96.0.gpio.01.out
+
+
 
 
