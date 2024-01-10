@@ -1,0 +1,142 @@
+/*!
+    \addtogroup SpindleControl
+
+    This diagram illustrates the .hal components I use with the Minarek VFD 0-10V control.
+    
+    \dot
+        digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="Lathe spindle control."
+            subgraph cluster_spindle{
+                label="spindle.0"
+                node [shape=plaintext]
+                spindle_0 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="LEFT">
+                                    <TR><TD port="i0">revs</TD></TR>
+                                    <TR><TD port="i1">speed-in</TD></TR>
+                                    <TR><TD port="i2">at-speed</TD></TR>                                    
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="RIGHT">
+                                    <TR><TD ALIGN="RIGHT" port="o0"> speed-out </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1"> on </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2"> forward </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o3"> index-enable </TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR>                                             
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_pid_s{
+                label="pid.s"
+                pid_s [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">enable</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i2">index-enable</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">feedback</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_pwmgen{
+                label="pwmgen.0"
+                pwmgen [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">value</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">enable</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">pwm</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_gmoccapy {
+                label="gmoccapy"
+                gmoccapy [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_encoder {
+                label="hm.0.encoder.02"
+                encoder [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
+                        <TR><TD ALIGN="LEFT" port="o1">velocity</TD></TR>                  
+                        <TR><TD ALIGN="LEFT" port="o2">index-enable</TD></TR>                  
+                    </TABLE>
+                >
+                ]
+            }
+
+            spindle_0 -> pid_s -> pwmgen -> gmoccapy [style=invis];
+
+            spindle_0:o0 -> pid_s:i0    [label="spindle-vel-cmd-rpm" fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o1 -> pid_s:i1    [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o2 -> gpioMM      [label="spindle-cw"  fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o3 -> pid_s:i2    [color="blue"];
+
+            spindle_0:o1 -> gpioNN      [label="spindle-enable"  fontsize = "12" fontcolor="blue" color="blue"];
+
+
+            pid_s:o0 -> pwmgen:i0       [label="spindle-output"     fontsize = "12" fontcolor="blue" color="blue"];
+            pwmgen:o0 -> gpio00         [label="spindle-pwm"         fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o1 -> pwmgen:i1   [label="spindle-enable"         fontsize = "12" fontcolor="blue" color="blue"];
+
+            encoder:o0 -> spindle_0:i0   [label="spindle-revs"         fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o1 -> spindle_0:i1   [label="spindle-vel-fb-rps"   fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o1 -> pid_s:f0       [color="blue"];
+            encoder:o2 -> pid_s:i2       [label="spindle-index-enable"  fontsize = "12" fontcolor="blue" color="blue"];
+
+            {rank=same gpio00 gpioNN gpioMM}
+        }
+    \enddot
+*/
+
+/*
+
+
+*/
+
