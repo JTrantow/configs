@@ -1,11 +1,12 @@
 /*!
+    \file SpindleWiring.dox
     \addtogroup G540
 
-    This diagram illustrates the .hal components for the Gecko G540 used with my lathe.
+    \brief This file illustrates the wiring for the Gecko G540 used with my lathe spindle.
 
     I wired a parallel port cable pig tail between Mesa boards and the G540, I am NOT loading a parallel port component. This illustrates the hardware connections.
     
-    Notice, from the perspective of HAL, the "input" pins drive other HAL signal (act as ouputs).
+    Notice, from the perspective of HAL, the "input" pins drive other HAL signal (act as outputs).
 
     \dot
         digraph structs {

@@ -1,5 +1,6 @@
 /*!
 	\file joystick.dox
+	\addtogroup Logitech JoyPad
 
 	\brief This file contains the doxygen description of HAL joystick jogging.
 

@@ -1,7 +1,7 @@
 /*!
+    \file SpindleControl.dox
     \addtogroup SpindleControl
-
-    This diagram illustrates the .hal components I use with the Minarek VFD 0-10V control.
+    \brief This file contains the doxygen description and diagram illustrating the .hal components I use with the Minarek VFD 0-10V control.
     
     \dot
         digraph structs {
@@ -89,16 +89,6 @@
                 >]
             }
 
-            subgraph cluster_gmoccapy {
-                label="gmoccapy"
-                gmoccapy [shape="box" label=<
-                    <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
-                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
-                    </TABLE>
-                >]
-            }
-
             subgraph cluster_encoder {
                 label="hm.0.encoder.02"
                 encoder [shape="box" label=<
@@ -129,41 +119,110 @@
                 ]
             }
 
-            n0 [shape="point" style="invis"];
-            n1 [shape="point" style="invis"];
-            n2 [shape="point" style="invis"];
-            n3 [shape="point" style="invis"];
-            n4 [shape="point" style="invis"];
+            subgraph cluster_mux2_0{
+                label="mux2.0"
+                mux2_0 [ shape="box" label=<
+                <TABLE>
+                <TR><TD>
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="sel">sel</TD></TR>
+                    
+                       <TR><TD ALIGN="LEFT" port="in0">in0</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                    </TABLE>
+                    </TD>
+                    <TD>
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
+                    </TABLE>
+                </TD></TR>
+                </TABLE>
+                >]
+            }
+            subgraph cluster_mux2_1{
+                label="mux2.1"
+                mux2_1 [ shape="box" label=<
+                <TABLE>
+                <TR><TD>
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="sel">sel</TD></TR>
+                    
+                       <TR><TD ALIGN="LEFT" port="in0">in0</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                    </TABLE>
+                    </TD>
+                    <TD>
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
+                    </TABLE>
+                </TD></TR>
+                </TABLE>
+                >]
+            }
+
+            subgraph cluster_mux2_2{
+                label="mux2.2"
+                mux2_2 [ shape="box" label=<
+                <TABLE>
+                <TR><TD>
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="sel">sel</TD></TR>
+                    
+                       <TR><TD ALIGN="LEFT" port="in0">in0</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                    </TABLE>
+                    </TD>
+                    <TD>
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
+                    </TABLE>
+                </TD></TR>
+                </TABLE>
+                >]
+            }
 
             spindle_0:o0 -> pid_s:i0      [label="spindle-vel-cmd-rpm" fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o1 -> pid_s:i1      [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o2 -> gpio:in9      [label="spindle-cw"  fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:out:e -> pid_s:i1      [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
             spindle_0:o3 -> pid_s:i2      [color="blue"];
 
-            spindle_0:o1 -> gpio:in8      [label="spindle-enable"  fontsize = "12" fontcolor="blue" color="blue"];
-
-
             pid_s:o0 -> pwmgen:i0        [label="spindle-output"     fontsize = "12" fontcolor="blue" color="blue"];
-            pwmgen:o0 -> gpio:in10       [label="spindle-pwm"         fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o1 -> pwmgen:i1    [label="spindle-enable"         fontsize = "12" fontcolor="blue" color="blue"];
+            pwmgen:o0 -> mux2_2:in0      [label="spindle-pwm-cnc"    fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:out:e -> pwmgen:i1    [label="spindle-enable"     fontsize = "12" fontcolor="blue" color="blue"];
 
             encoder:o0 -> spindle_0:i0   [label="spindle-revs"         fontsize = "12" fontcolor="blue" color="blue"];
             encoder:o1 -> spindle_0:i1   [label="spindle-vel-fb-rps"   fontsize = "12" fontcolor="blue" color="blue"];
             encoder:o1 -> pid_s:f0       [color="blue"];
             encoder:o2 -> pid_s:i2       [label="spindle-index-enable"  fontsize = "12" fontcolor="blue" color="blue"];
 
-            n0 -> gpio:in0 [label="estop-G540-fault" dir=back];
-            n1 -> gpio:in1 [label="x-max-limit" dir=back];
-            n2 -> gpio:in2 [label="z-min-limit" dir=back];
-            n3 -> gpio:in3 [label="manual-spindle-on" dir=back];
-            n4 -> gpio:in4 [label="manual-spindle-cw" dir=back];
+            spindle_0:o1  -> mux2_0:in0  [label="spindle-enable-cnc"  fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:sel:n  -> gpio:in3    [label="spindle-enable-manual" dir=back];
+            mux2_0:sel:w  -> mux2_0:in1:w;
+            mux2_0:out:e    -> gpio:in8      [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
+
+            mux2_0:sel    -> mux2_1:sel;
+            spindle_0:o2  -> mux2_1:in0  [label="spindle-cw-cnc"      fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_1:in1:w  -> gpio:in4    [label="spindle-cw-manual" dir="back"];
+            mux2_1:out:e  -> gpio:in9    [label="spindle-cw"          fontsize = "12" fontcolor="blue" color="blue"];
+
+            mux2_1:sel    -> mux2_2:sel;
+            fixed_rpm     -> mux2_2:in1   ;
+            mux2_2:out:e  -> gpio:in10    [label="spindle-pwm"          fontsize = "12" fontcolor="blue" color="blue"];
         }
     \enddot
 */
 
 /*
+            encoder -> spindle_0 -> mux2_0 -> pid_s -> pwmgen -> gpio [style=invis];
 
-            spindle_0 -> pid_s -> pwmgen -> gmoccapy [style=invis];
+            subgraph cluster_gmoccapy {
+                label="gmoccapy"
+                gmoccapy [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
+                    </TABLE>
+                >]
+            }
 
 */
 
