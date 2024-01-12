@@ -2,7 +2,14 @@
     \file SpindleControl.dox
     \addtogroup SpindleControl
     \brief This file contains the doxygen description and diagram illustrating the .hal components I use with the Minarek VFD 0-10V control.
-    
+
+    The basic operation of the spindle control is to convert the spindle speed-out into the spindle-pwm signal.
+    While the basic operation can be implemented with just the spindle and pwmgen components, several refinements are made.
+    This implementation include a quadrature encoder with index to measure the shaft position and velocity.     
+    To improve the accuracy of the spindle speed, a PID loop uses the velocity command and the measured velocity from the encoder to adjust the pwm.
+    To detect when the spindle is ready, a near component compares the velocity command and measured encoder velocity.
+    To allow the old enable/forward/reverse switch on the lathe to still function these signals are multiplexed to allow either the cnc control or switches to control the spindle.
+
     \dot
         digraph structs {
             concentrate=true
@@ -120,40 +127,40 @@
             }
 
             subgraph cluster_mux2_0{
-                label="mux2.0"
+                label="mux_gen.0"
                 mux2_0 [ shape="box" label=<
                 <TABLE>
                 <TR><TD>
                     <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="sel">sel</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="sel">sel-bit-00</TD></TR>
                     
-                       <TR><TD ALIGN="LEFT" port="in0">in0</TD></TR>
-                       <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in0">in-bit-00</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in1">in-bit-01</TD></TR>
                     </TABLE>
                     </TD>
                     <TD>
                     <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="out">out-bit</TD></TR>
                     </TABLE>
                 </TD></TR>
                 </TABLE>
                 >]
             }
             subgraph cluster_mux2_1{
-                label="mux2.1"
+                label="mux_gen.1"
                 mux2_1 [ shape="box" label=<
                 <TABLE>
                 <TR><TD>
                     <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="sel">sel</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="sel">sel-bit-00</TD></TR>
                     
-                       <TR><TD ALIGN="LEFT" port="in0">in0</TD></TR>
-                       <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in0">in-bit-00</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in1">in-bit-01</TD></TR>
                     </TABLE>
                     </TD>
                     <TD>
                     <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="out">out-bit</TD></TR>
                     </TABLE>
                 </TD></TR>
                 </TABLE>
@@ -161,59 +168,82 @@
             }
 
             subgraph cluster_mux2_2{
-                label="mux2.2"
+                label="mux_gen.2"
                 mux2_2 [ shape="box" label=<
                 <TABLE>
                 <TR><TD>
                     <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="sel">sel</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="sel">sel-bit-00</TD></TR>
                     
-                       <TR><TD ALIGN="LEFT" port="in0">in0</TD></TR>
-                       <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in0">in-float-00</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="in1">in-float-01</TD></TR>
                     </TABLE>
                     </TD>
                     <TD>
                     <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="out">out-float</TD></TR>
                     </TABLE>
                 </TD></TR>
                 </TABLE>
                 >]
             }
+            subgraph cluster_near{
+                label="near-spindle"
+                near [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="in1">in1</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="in2">in2</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="out">out</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]
+            }
 
-            spindle_0:o0 -> pid_s:i0      [label="spindle-vel-cmd-rpm" fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:out:e -> pid_s:i1      [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o3 -> pid_s:i2      [color="blue"];
+            spindle_0:o0 -> mux2_2:in0   [label="spindle-velocity-cmd-cnc" fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:out:e -> pid_s:i1     [color="blue"];
+            spindle_0:o3 -> pid_s:i2     [color="blue"];
 
             pid_s:o0 -> pwmgen:i0        [label="spindle-output"     fontsize = "12" fontcolor="blue" color="blue"];
-            pwmgen:o0 -> mux2_2:in0      [label="spindle-pwm-cnc"    fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:out:e -> pwmgen:i1    [label="spindle-enable"     fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:out:e -> pwmgen:i1    [color="blue"];
+            pwmgen:o0 -> gpio:in10       [label="spindle-pwm"        fontsize = "12" fontcolor="blue" color="blue"];
 
-            encoder:o0 -> spindle_0:i0   [label="spindle-revs"         fontsize = "12" fontcolor="blue" color="blue"];
-            encoder:o1 -> spindle_0:i1   [label="spindle-vel-fb-rps"   fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o0 -> spindle_0:i0   [label="encoder-position"     fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o1 -> spindle_0:i1   [label="encoder-velocity"     fontsize = "12" fontcolor="blue" color="blue"];
             encoder:o1 -> pid_s:f0       [color="blue"];
-            encoder:o2 -> pid_s:i2       [label="spindle-index-enable"  fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o2 -> pid_s:i2       [label="spindle-index-enable" fontsize = "12" fontcolor="blue" color="blue"];
 
             spindle_0:o1  -> mux2_0:in0  [label="spindle-enable-cnc"  fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:sel:n  -> gpio:in3    [label="spindle-enable-manual" dir=back];
-            mux2_0:sel:w  -> mux2_0:in1:w;
-            mux2_0:out:e    -> gpio:in8      [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:sel:n  -> gpio:in3    [label="spindle-enable-override" fontsize = "12" dir=back];
+            mux2_0:sel:w  -> mux2_0:in1:w [color="blue"]; 
+            mux2_0:out:e  -> gpio:in8    [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
 
-            mux2_0:sel    -> mux2_1:sel;
             spindle_0:o2  -> mux2_1:in0  [label="spindle-cw-cnc"      fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_1:in1:w  -> gpio:in4    [label="spindle-cw-manual" dir="back"];
+            mux2_1:in1:w  -> gpio:in4    [label="spindle-cw-override"   fontsize = "12" dir="back"];
             mux2_1:out:e  -> gpio:in9    [label="spindle-cw"          fontsize = "12" fontcolor="blue" color="blue"];
 
-            mux2_1:sel    -> mux2_2:sel;
-            fixed_rpm     -> mux2_2:in1   ;
-            mux2_2:out:e  -> gpio:in10    [label="spindle-pwm"          fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_2:out:e  -> pid_s:i0    [label="spindle-velocity-cmd"          fontsize = "12" fontcolor="blue" color="blue"];
+            fixed_rpm     -> mux2_2:in1;
+
+            mux2_2:out:e   -> near:in2;
+            encoder:o1   -> near:in1:w;
+            near:out     -> spindle_0:i2 [label="spindle-at-speed"           fontsize = "12"];
+
+            {rank=same mux2_0 mux2_1 mux2_2};
+
         }
     \enddot
 */
 
 /*
-            encoder -> spindle_0 -> mux2_0 -> pid_s -> pwmgen -> gpio [style=invis];
-
             subgraph cluster_gmoccapy {
                 label="gmoccapy"
                 gmoccapy [shape="box" label=<
