@@ -1,7 +1,6 @@
 /**<br>
-    \file StepperControl.dox
-    *@addtogroup StepperControlOpenLoop
-    \brief This file contains diagrams for controlling the stepper motors with HAL components.
+ *@addtogroup StepperControlOpenLoop
+
 
    This diagram illustrates the .hal components and connections for stepper motor control.
 

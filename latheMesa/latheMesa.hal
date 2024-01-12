@@ -102,7 +102,6 @@ setp    hm2_7i96.0.encoder.00.index-mask 0
 setp    hm2_7i96.0.encoder.00.index-mask-invert 0
 setp    hm2_7i96.0.encoder.00.scale  1000
 net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity
-net x-pos-fb         <= hm2_7i96.0.encoder.00.position  =>  joint.0.motor-pos-fb
 net x-index-enable   <= joint.0.index-enable            =>  hm2_7i96.0.encoder.00.index-enable
 
 
