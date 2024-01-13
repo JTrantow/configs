@@ -142,6 +142,7 @@
 */
 
 /*
+    Don't bother showing these connections.
             terminal0:o2 -> pigtail:o2 [label="xstep"];
             terminal0:o3 -> pigtail:o3 [label="xdir"];
             terminal0:o4 -> pigtail:o4 [label="ystep"];
