@@ -14,7 +14,7 @@
         digraph structs {
             concentrate=true
             rankdir="LR"
-            label="Lathe Spindle Connections."
+            label="Lathe Spindle Wiring Connections."
 
             subgraph cluster_pigtail{
                 label="DB25 pigtail cable"
@@ -54,7 +54,7 @@
                                     <TR><TD ALIGN="LEFT" port="p6"> 6 OUTPUT 2 (DB25 PIN 1)</TD></TR> 
                                     <TR><TD ALIGN="LEFT" port="p7"> 7 VFD GROUND</TD></TR> 
                                     <TR><TD ALIGN="LEFT" port="p8"> 8 VFD OUTPUT</TD></TR> 
-                                    <TR><TD ALIGN="LEFT" port="p9"> 9 VFG +10VDC</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p9"> 9 VFD +5VDC</TD></TR> 
                                     <TR><TD ALIGN="LEFT" port="p10"> 10 DISABLE INPUT (E-STOP)</TD></TR> 
                                     <TR><TD ALIGN="LEFT" port="p11"> 11 SUPPLY +18-50VDC</TD></TR> 
                                     <TR><TD ALIGN="LEFT" port="p12"> 12 POWER SUPPLY GND</TD></TR> 
@@ -82,9 +82,9 @@
                     MinarekVFD[shape="box" label=<
                                     <TABLE CELLBORDER="0" BORDER="0">
                                         <TR><TD ALIGN="LEFT" port="D"> D Direction</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="S3"> S3 GND</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="S2"> S2 Wiper (0-10V)</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="S1"> S1 10VDC</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S3"> S3 5VDC</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S2"> S2 Wiper (0-5V)</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S1"> S1 GND</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="E1"> E1 Common</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="E2"> E2 Enable</TD></TR> 
                                     </TABLE>
@@ -113,8 +113,8 @@
             terminals:p3 -> dio:i12 [label="brown" dir=back];
             terminals:p4 -> dio:i13 [label="brown/white" dir=back];
 
-            terminals:p5    -> MinarekVFD:D  [label="blue"];
-            terminals:p6    -> MinarekVFD:E2 [label="blue/white"];
+            terminals:p5    -> MinarekVFD:E2 [label="blue"];
+            terminals:p6    -> MinarekVFD:D  [label="blue/white"];
             terminals:p7    -> MinarekVFD:S3 [label="green"];
             terminals:p8    -> MinarekVFD:S2 [label="green/white"];
             terminals:p9    -> MinarekVFD:S1 [label="orange" dir=back];
