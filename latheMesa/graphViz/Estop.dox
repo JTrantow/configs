@@ -1,0 +1,120 @@
+/*!
+    \file Estop.dox
+    \addtogroup EStopLatch
+
+    This diagram illustrates the .hal components for the estop latch logic of my lathe.
+
+    \dot
+        digraph structs {
+            concentrate=true
+            label="EStopLatch control."
+
+            subgraph cluster_estop0{
+                label="estop-latch.0"
+                estop0 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_estop1{
+                label="estop-latch.1"
+                estop1 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_iocontrol{
+                label="iocontrol.0"
+                iocontrol [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                              <TABLE CELLBORDER="0" BORDER="0">
+                                <TR><TD ALIGN="LEFT" port="i0"> emc-enable-in </TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR><TD ALIGN="RIGHT" port="o0"> user-enable-out </TD></TR> 
+                                <TR><TD ALIGN="RIGHT" port="o1"> user-request-enable </TD></TR>
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            n0 [shape="none" label=""];
+            n1 [shape="none" label=""];
+
+            n0 -> estop0:i0:w [label="G540-fault"];
+            n1 -> estop1:i0:w [label="GS2-fault "];
+
+            iocontrol:o0:e  -> estop0:i1:e [label="latch0-ok-in" fontsize = "12" fontcolor="blue" color="blue"];
+            iocontrol:o1:se -> estop0:f0:s [color="blue"];
+            iocontrol:o1:se -> estop1:f0:s [label="latch-reset"  fontsize = "12" fontcolor="blue" color="blue"];
+            estop0:o1 -> estop1:i1;
+            estop1:o1 -> iocontrol:i0   [label="estop-out"  fontsize = "12" fontcolor="blue" color="blue"];
+
+            {rank=source; n0 n1}
+            {rank=same; iocontrol estop0 estop1}
+        }
+    \enddot
+
+    
+*/
+
