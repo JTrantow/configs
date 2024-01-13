@@ -1,0 +1,107 @@
+#*******************
+#  SPINDLE
+#*******************
+loadrt near names=near_spindle
+loadrt mux_generic config="bb2,bb2,ff2" 
+
+addf near_spindle servo-thread
+addf mux-gen.00 servo-thread
+addf mux-gen.01 servo-thread
+addf mux-gen.02 servo-thread
+
+# ---Encoder feedback signals/setup---
+
+setp    hm2_7i96.0.encoder.02.counter-mode 0
+setp    hm2_7i96.0.encoder.02.filter 1
+setp    hm2_7i96.0.encoder.02.index-invert 0
+setp    hm2_7i96.0.encoder.02.index-mask 0
+setp    hm2_7i96.0.encoder.02.index-mask-invert 0
+setp    hm2_7i96.0.encoder.02.scale  260
+
+net encoder-position         <=   hm2_7i96.0.encoder.02.position
+net enoder-velocity          <=   hm2_7i96.0.encoder.02.velocity
+net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
+
+# ---setup spindle control signals---
+#
+# Use linuxCNC pwmgem to convert speed-out to pwm for the G540 pwm input.
+#
+net encoder-position           =>  spindle.0.revs
+net encoder-velocity           =>  spindle.0.speed-in
+net spindle-at-speed           =>  spindle.0.at-speed
+
+net spindle-velocity-cmd  <=  spindle.0.speed-out           
+net spindle-enable        <=  spindle.0.on         
+net spindle-cw            <=  spindle.0.forward   
+net spindle-index-enable      <=> spindle.0.index-enable
+
+#
+# Spindle pid.s settings.
+#
+setp   pid.s.Pgain     [SPINDLE_0]P
+setp   pid.s.Igain     [SPINDLE_0]I
+setp   pid.s.Dgain     [SPINDLE_0]D
+setp   pid.s.bias      [SPINDLE_0]BIAS
+setp   pid.s.FF0       [SPINDLE_0]FF0
+setp   pid.s.FF1       [SPINDLE_0]FF1
+setp   pid.s.FF2       [SPINDLE_0]FF2
+setp   pid.s.deadband  [SPINDLE_0]DEADBAND
+setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
+setp   pid.s.error-previous-target true
+
+net spindle-velocity-cmd  =>  pid.s.command
+net spindle-enable        =>  pid.s.enable        
+net spindle-index-enable  <=> pid.s.index-enable
+net spindle-output        <=  pid.s.output        
+net encoder-velocity      =>  pid.s.feedback
+
+#
+# pwm generator
+#
+setp pwmgen.0.pwm-freq 100.0
+setp pwmgen.0.scale 2833.333333333333
+setp pwmgen.0.offset 0.16470588235294117
+setp pwmgen.0.dither-pwm true
+
+net spindle-output  => pwmgen.0.value
+net spindle-enable  => pwmgen.0.enable
+net spindle-pwm     <= pwmgen.0.pwm
+#
+# Multiplex spindle-enable, spindle-cw, spindle_pwm from the cnc and override versions.
+#
+#net spindle-enable-override  => mux-gen.00.sel-bit-00 mux-gen.01.sel-bit-00 mux-gen.02.sel-bit-00
+#net spindle-enable-cnc       => mux-gen.00.in-bit-00
+#net spindle-enable-override  => mux-gen.00.in-bit-01
+#net spindle-enable           <= mux-gen.00.out-bit
+#net spindle-cw-cnc           => mux-gen.01.in-bit-00
+#net spindle-cw-override      => mux-gen.01.in-bit-01
+#net spindle-cw               <= mux-gen.01.out-bit
+#net spindle-velocity-cmd-cnc => mux-gen.02.in-float-00
+#setp                            mux-gen.02.in-float-01 200.0
+#net spindle-velocity-cmd     <= mux-gen.02.out-float
+#
+#  IOPorts on TB3 have an offset of 17 IOPorts. So IN0 is referenced as gpio.000.in
+#  
+net spindle-on-override        <= hm2_7i96.0.gpio.004.in
+net spindle-cw-override        <= hm2_7i96.0.gpio.005.in
+
+#
+# Use Solid State Relay for outputs. 
+#
+setp hm2_7i96.0.ssr.00.invert-01 true
+net spindle-enable             => hm2_7i96.0.ssr.00.out-00
+net spindle-cw                 => hm2_7i96.0.ssr.00.out-01  
+net spindle-pwm                => hm2_7i96.0.ssr.00.out-02               
+#
+# Compare encode to command to determine if spindle is up to speed.
+#
+setp near_spindle.scale 1.10
+
+net encoder-velocity     => near_spindle.in1
+net spindle-velocity-cmd => near_spindle.in2
+net spindle-at-speed     => near_spindle.out
+
+
+
+
+
