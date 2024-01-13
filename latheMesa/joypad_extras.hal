@@ -1,7 +1,7 @@
 #
 # Joypad_extras.hal 
 #
-# This file:
+# This file connnects jogging to the digital joypad, program run, pause, resume and manual/auto modoe of operation.
 #
 # Add this file to postgui_call_list.hal using a line with "source joypad_extras.hal".
 #

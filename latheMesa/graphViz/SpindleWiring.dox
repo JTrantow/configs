@@ -9,7 +9,6 @@
     An 8 wire conductor cables (four colored pairs) runs from control box to VFD.
     Two wires run to the max x limit switch (red/black).
     
-    The VFD wiring originally used
     \dot
         digraph structs {
             concentrate=true
@@ -68,12 +67,12 @@
                                     <TABLE CELLBORDER="0" BORDER="0">
                                         <TR><TD ALIGN="LEFT" port="i10"> max x limit</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="i11"> min z limit</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="i12"> manual spindle on</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="i13"> manual spindle cw</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="i12"> spindle on override</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="i13"> spindle cw override</TD></TR> 
                                     </TABLE>
                     >]
                 }
-                label="digital inputs"
+                label="digital input switches"
             }
 
             subgraph cluster_vfd{

@@ -5,16 +5,4 @@
 
 	This file is meant to be processed with doxygen to produce formatted documentation for the application.
 */
-/*!
-	\mainpage HAL Design
 
-	\n
-
-	\section Configuration
-
-	\subsection arch 
-
-	
-	\subsection flow High Level Execution Flow
-*/
-	
