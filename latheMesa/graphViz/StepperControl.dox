@@ -1,218 +1,5 @@
-/**<br>
- *@addtogroup StepperControlOpenLoop
-
-
-   This diagram illustrates the .hal components and connections for stepper motor control.
-
-   Default open loop uses pid.x component to convert joint.L.motor_pos_cmd into a velocity command for the stepgen. The feedback signal for the pid and the joint is the stepgen position-fb.
-
-\dot
-   digraph structs {
-      concentrate=true
-      rankdir="LR"
-      label="pncconf open loop motor control"
-
-      subgraph cluster_joint{
-            label="joint.0"
-            node [shape=plaintext]
-            joint [shape="box" label=<
-               <TABLE>
-                  <TR> 
-                        <TD>
-                           <TABLE CELLBORDER="0" BORDER="0" ALIGN="LEFT">
-                              <TR><TD port="i0">motor-pos-fb</TD></TR>
-                           </TABLE>
-                        </TD>
-                        <TD>
-                           <TABLE CELLBORDER="0" BORDER="0" ALIGN="RIGHT">
-                              <TR><TD ALIGN="RIGHT" port="o0"> motor-pos-cmd </TD></TR> 
-                              <TR><TD ALIGN="RIGHT" port="o1"> vel-cmd </TD></TR> 
-                           </TABLE>
-                        </TD>
-                  </TR>                                             
-               </TABLE>
-            >
-            ]
-      }
-
-      subgraph cluster_pid{
-            label="pid.x"
-            pid [shape="box" label=<
-               <TABLE>
-                  <TR> 
-                        <TD>
-                           <TABLE CELLBORDER="0" BORDER="0">
-                              <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
-                           </TABLE>
-                        </TD>
-                        <TD>
-                           <TABLE CELLBORDER="0" BORDER="0">
-                              <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
-                           </TABLE>
-                        </TD>
-                  </TR> 
-                  
-                  <TR>
-                        <TD COLSPAN="2">
-                        <TABLE CELLBORDER="0" BORDER="0">
-                           <TR >
-                              <TD port="f0">feedback</TD>
-                           </TR>
-                        </TABLE>
-                        </TD>
-                  </TR>
-               
-               </TABLE>
-            >
-            ]
-      }
-
-      subgraph cluster_stepgen{
-            label="stepgen"
-            stepgen [shape="box" label=<
-               <TABLE>
-                  <TR><TD>
-                        <TABLE CELLBORDER="0" BORDER="0">
-                              <TR><TD ALIGN="LEFT" port="i0">velocity-cmd</TD></TR>
-                        </TABLE>
-                  </TD>
-                  <TD>
-                        <TABLE CELLBORDER="0" BORDER="0">
-                              <TR><TD ALIGN="RIGHT" port="o0">position-fb</TD></TR> 
-                        </TABLE>
-                  </TD></TR>                    
-               </TABLE>
-            >]
-      }
-
-      joint -> pid -> stepgen [style="invisible" ];
-      joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="blue" color="blue"];
-      pid:o0:e      -> stepgen:i0:w   [label="x-output" fontsize = "12" fontcolor="blue" color="blue"];
-      stepgen:o0:e  -> joint:i0:w [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
-      stepgen:o0:e  -> pid:f0:s   [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
-   }
-\enddot
-
-*/
-/**<br>
- *@addtogroup StepperControlClosed
-
-   This diagram illustrates the .hal components and connections for closed loop stepper motor control.
-
-   Default closed loop uses pid.x component to convert joint.L.motor_pos_cmd into a velocity command for the stepgen. The feedback signal for the pid and the joint is the encoder position.
-
-      \dot
-        digraph structs {
-            concentrate=true
-            rankdir="LR"
-            label="pncconf closed loop motor control"
-
-            subgraph cluster_joint{
-                label="joint.0"
-                node [shape=plaintext]
-                joint [shape="box" label=<
-                    <TABLE>
-                        <TR> 
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="LEFT">
-                                    <TR><TD port="i0">motor-pos-fb</TD></TR>
-                                </TABLE>
-                            </TD>
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="RIGHT">
-                                    <TR><TD ALIGN="RIGHT" port="o0"> motor-pos-cmd </TD></TR> 
-                                    <TR><TD ALIGN="RIGHT" port="o1"> vel-cmd </TD></TR> 
-                                </TABLE>
-                            </TD>
-                        </TR>                                             
-                    </TABLE>
-                >
-                ]
-            }
-
-            subgraph cluster_pid{
-                label="pid.x"
-                pid [shape="box" label=<
-                    <TABLE>
-                        <TR> 
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i0">command-deriv</TD></TR>
-                                </TABLE>
-                            </TD>
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
-                                </TABLE>
-                            </TD>
-                        </TR> 
-                        
-                        <TR>
-                            <TD COLSPAN="2">
-                            <TABLE CELLBORDER="0" BORDER="0">
-                                <TR >
-                                    <TD port="f0">feedback</TD>
-                                    <TD port="f1">feedback-deriv</TD>
-                                </TR>
-                            </TABLE>
-                            </TD>
-                        </TR>
-                    
-                    </TABLE>
-                >
-                ]
-            }
-
-            subgraph cluster_stepgen{
-                label="hm.0.stepgen.00"
-                stepgen [shape="box" label=<
-                    <TABLE>
-                        <TR><TD>
-                            <TABLE CELLBORDER="0" BORDER="0">
-                                   <TR><TD ALIGN="LEFT" port="i0">velocity-cmd</TD></TR>
-                            </TABLE>
-                        </TD>
-                        <TD>
-                            <TABLE CELLBORDER="0" BORDER="0">
-                                    <TR><TD ALIGN="RIGHT" port="o0">position-fb</TD></TR> 
-                            </TABLE>
-                        </TD></TR>                    
-                    </TABLE>
-                >]
-            }
-
-
-            subgraph cluster_encoder {
-                label="hm.0.encoder.00"
-                encoder [shape="box" label=<
-                    <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
-                    </TABLE>
-                >
-                ]
-            }
-
-            joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="blue" color="blue"];
-            pid:o0      -> stepgen:i0   [label="x-output" fontsize = "12" fontcolor="blue" color="blue"];
-
-            encoder:o0  -> joint:i0:w [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
-            encoder:o0  -> pid:f0:s   [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
-        }
-    \enddot
-*/
-
-
-
-
-
-
-
-
-
-
-
-/**<br>
+/*
+*<br>
  *@addtogroup StepperControlOpenLoopProposed
 
  Proposed open loop
@@ -225,6 +12,15 @@
       rankdir="LR"
       label="pncconf open loop motor control"
 
+      subgraph cluster_encoder {
+            label="hm.0.encoder.00"
+            encoder [shape="box" label=<
+               <TABLE CELLBORDER="0" BORDER="0">
+                  <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
+               </TABLE>
+            >
+            ]
+      }
       subgraph cluster_joint{
             label="joint.0"
             node [shape=plaintext]
@@ -282,7 +78,7 @@
       }
 
       subgraph cluster_stepgen{
-            label="stepgen"
+            label="hm.0.stepgen.00"
             stepgen [shape="box" label=<
                <TABLE>
                   <TR><TD>
@@ -298,27 +94,19 @@
                </TABLE>
             >]
       }
-      subgraph cluster_encoder {
-            label="hm.0.encoder.00"
-            encoder [shape="box" label=<
-               <TABLE CELLBORDER="0" BORDER="0">
-                  <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
-               </TABLE>
-            >
-            ]
-      }
 
+      encoder:o1    -> joint:i0:w   [label="x-pos-encoder" fontsize = "12" fontcolor="red" color="red"];
       joint:o0      -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="blue" color="blue"];
       joint:o1      -> pid:i1       [label="x-vel-cmd" fontsize = "12" fontcolor="blue" color="red"];
       pid:o0:e      -> stepgen:i0:w [label="x-output" fontsize = "12" fontcolor="blue" color="blue"];
-      stepgen:o0:e  -> pid:f0:s     [label="x-stepgen-fb" fontsize = "12" fontcolor="red" color="blue"];
-      encoder:o1    -> joint:i0:w   [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="red"];
+      stepgen:o0:e  -> pid:f0:s     [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
 
    }
 \enddot
 
 */
-/**<br>
+/*
+*<br>
  *@addtogroup StepperControlClosedProposed
 
    Proposed closed loop 
@@ -330,6 +118,17 @@
             concentrate=true
             rankdir="LR"
             label="pncconf closed loop motor control"
+
+            subgraph cluster_encoder {
+                label="hm.0.encoder.00"
+                encoder [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
+                        <TR><TD ALIGN="LEFT" port="o1">velocity</TD></TR>                  
+                    </TABLE>
+                >
+                ]
+            }
 
             subgraph cluster_joint{
                 label="joint.0"
@@ -362,7 +161,7 @@
                             <TD>
                                 <TABLE CELLBORDER="0" BORDER="0">
                                    <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i0">command-deriv</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">command-deriv</TD></TR>
                                 </TABLE>
                             </TD>
                             <TD>
@@ -406,6 +205,34 @@
                 >]
             }
 
+            joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="blue" color="blue"];
+            joint:o1    -> pid:i1       [label="x-vel-cmd" fontsize = "12" fontcolor="blue" color="red"];
+            pid:o0      -> stepgen:i0   [label="x-output" fontsize = "12" fontcolor="blue" color="blue"];
+      
+            encoder:o0  -> joint:i0:w [label="x-pos-encoder" fontsize = "12" fontcolor="red" color="blue"];
+            encoder:o0  -> pid:f0:s   [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o1  -> pid:f1:s   [label="x-vel-fb" fontsize = "12" fontcolor="blue" color="red"];
+        }
+    \enddot
+*/
+
+
+/**<br>
+    *@addtogroup Stepper_control
+    \section d0 PNCConf
+    
+    Diagram showing default pncconf configuration.
+    Notice the default configuration requires an edit of the .hal file to select whether the x-pos-fb signal is from the encoder.position or stepgen.position-fb.
+
+    This choice will simultaneously change:
+        - pid control - stepgen position or encoder measurement for pid loop.
+        - Display of joint position - Motor command or encoder measured position.
+
+      \dot
+        digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="2.9.2 config"
 
             subgraph cluster_encoder {
                 label="hm.0.encoder.00"
@@ -418,13 +245,380 @@
                 ]
             }
 
-            joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="blue" color="blue"];
-            joint:o1    -> pid:i1       [label="x-vel-cmd" fontsize = "12" fontcolor="blue" color="red"];
-            pid:o0      -> stepgen:i0   [label="x-output" fontsize = "12" fontcolor="blue" color="blue"];
+            subgraph cluster_joint{
+                label="joint.0"
+                node [shape=plaintext]
+                joint [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="LEFT">
+                                    <TR><TD port="i0">motor-pos-fb</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="RIGHT">
+                                    <TR><TD ALIGN="RIGHT" port="o0"> motor-pos-cmd </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1"> vel-cmd </TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR>                                             
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_pid{
+                label="pid.x"
+                pid [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">command-deriv</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">feedback</TD>
+                                    <TD port="f1">feedback-deriv</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_stepgen{
+                label="hm.0.stepgen.00"
+                stepgen [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">velocity-cmd</TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">position-fb</TD></TR> 
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            null00 [shape="point" style="invis"];
+            null01 [shape="point" color="black"];
+
+            encoder -> joint -> null00 -> pid -> stepgen [style="invis" weight=10.0];
+            
+            joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="black" color="black"];
+            joint:o1    -> null00       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="black"];
+            pid:o0      -> stepgen:i0   [label="x-output"  fontsize = "12" fontcolor="black" color="black"];
+            
+            stepgen:o0:e  -> null01      [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
+            null01        -> joint:i0:s   [label="x-pos-fb"  fontsize = "12" fontcolor="black" color="black"];
+            null01        -> pid:f0:s     [label="x-pos-fb"  fontsize = "12" fontcolor="black" color="black"];
       
-            encoder:o0  -> joint:i0:w [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
-            encoder:o0  -> pid:f0:s   [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
-            encoder:o1  -> pid:f1:s   [label="x-vel-fb" fontsize = "12" fontcolor="blue" color="red"];
+            encoder:o0  -> null01 [label="x-pos-fb" fontsize = "12" fontcolor="red" color="red"];
+
+            {rank="same" null00 null01}
+        }
+    \enddot
+*/
+
+/**<br>
+ *@addtogroup Stepper_control
+    \section d1 cmorley
+
+    cmorley 7 Jan 24 generated config. https://forum.linuxcnc.org/39-pncconf/51254-proposed-changes-for-the-default-pncconf-stepgen-generated-configs#290245    
+    The only difference I see is the connection of x-vel-fb to pid.x.feedback-deriv. This should only be connected when encoder.position is also used as x-pos-fb.
+
+\code 
+    # ---pid---
+    net x-pos-cmd       =>  pid.x.command
+    net x-pos-fb        =>  pid.x.feedback
+    net x-output        <=  pid.x.output
+    net x-vel-fb        =>  pid.x.feedback-deriv
+
+    # Step Gen signals/setup
+
+    # ---closedloop stepper signals---
+
+    net x-pos-cmd    <= joint.0.motor-pos-cmd
+    net x-vel-cmd    <= joint.0.vel-cmd
+    net x-output     => hm2_7i96s.0.stepgen.00.velocity-cmd
+    net x-pos-fb     <= hm2_7i96s.0.stepgen.00.position-fb
+    net x-pos-fb     => joint.0.motor-pos-fb
+
+    # ---Encoder feedback signals/setup---
+
+    net x-pos-fb               <=  hm2_7i96s.0.encoder.00.position
+    net x-vel-fb               <=  hm2_7i96s.0.encoder.00.velocity
+    net x-pos-fb               =>  joint.0.motor-pos-fb
+\endcode
+
+\dot
+        digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="cmorley"
+
+            subgraph cluster_encoder {
+                label="hm.0.encoder.00"
+                encoder [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
+                        <TR><TD ALIGN="LEFT" port="o1">velocity</TD></TR>                  
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_joint{
+                label="joint.0"
+                node [shape=plaintext]
+                joint [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="LEFT">
+                                    <TR><TD port="i0">motor-pos-fb</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="RIGHT">
+                                    <TR><TD ALIGN="RIGHT" port="o0"> motor-pos-cmd </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1"> vel-cmd </TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR>                                             
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_pid{
+                label="pid.x"
+                pid [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">command-deriv</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">feedback</TD>
+                                    <TD port="f1">feedback-deriv</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_stepgen{
+                label="hm.0.stepgen.00"
+                stepgen [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">velocity-cmd</TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">position-fb</TD></TR> 
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            null00 [shape="point" style="invis"];
+            null01 [shape="point" color="black"];
+
+            encoder -> joint -> null00 -> pid -> stepgen [style="invis" weight=10.0];
+            
+            joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="black" color="black"];
+            joint:o1    -> null00       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="black"];
+            pid:o0      -> stepgen:i0   [label="x-output"  fontsize = "12" fontcolor="black" color="black"];
+            
+            stepgen:o0:e  -> null01     [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
+            null01        -> joint:i0:s [label="x-pos-fb"  fontsize = "12" fontcolor="black" color="black"];
+            null01        -> pid:f0:s   [label="x-pos-fb"  fontsize = "12" fontcolor="black" color="black"];
+      
+            encoder:o0  -> null01       [label="x-pos-fb" fontsize = "12" fontcolor="red" color="red"];
+            encoder:o1  -> pid:f1:s     [label="x-vel-fb" fontsize = "12" fontcolor="green" color="green"];
+
+            {rank="same" null00 null01}
+        }
+    \enddot
+*/
+/**<br>
+    *@addtogroup Stepper_control
+    \section d2 StepperControlProposed
+
+   Proposed diagram showing x-pos-fb choices. (encoder in red, stepgen in blue, x-vel-cmd in green )
+   - Use the trajectory planner x-vel-cmd as an input to the pid FF1 calculation. This eliminates a velocity estimation within the pid.
+   - Always use the encoder position as the joint position feedback instead of the stepgen position. (requires new signal x-pos-encoder when stepgen position is used for pid feedback)
+   - When using the encoder position as pid feedback, also use encoder velocity as an input to the pid feedback derivative.
+
+   \code
+        #
+        # The Trajectory Planner gives us the velocity. Using this signal with the PID avoids estimating the velocity command.
+        #
+        net x-vel-cmd        <= joint.0.vel-cmd                =>  pid.x.feedback-deriv
+        #
+        # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
+        # Use both the encoder position and velocity.
+        #
+        net x-pos-fb         <= hm2_7i96.0.encoder.00.position  => pid.x.feedback => joint.0.motor-pos-fb
+        net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
+        #
+        # Enable/Disable BOTH the following TWO line to use stepgen position to close the control loop.
+        # Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
+        # Do not use the encoder x-vel-fb is you are using the stepgen position for x-pos-fb.
+        #
+        net x-pos-encoder    <= hm2_7i96.0.encoder.00.position     => joint.0.motor-pos-fb
+        net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb  => pid.x.feedback 
+    \endcode
+
+      \dot
+        digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="pncconf proposed stepgen control"
+
+            subgraph cluster_encoder {
+                label="hm.0.encoder.00"
+                encoder [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="o0">position</TD></TR>
+                        <TR><TD ALIGN="LEFT" port="o1">velocity</TD></TR>                  
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_joint{
+                label="joint.0"
+                node [shape=plaintext]
+                joint [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="LEFT">
+                                    <TR><TD port="i0">motor-pos-fb</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0" ALIGN="RIGHT">
+                                    <TR><TD ALIGN="RIGHT" port="o0"> motor-pos-cmd </TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1"> vel-cmd </TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR>                                             
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_pid{
+                label="pid.x"
+                pid [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">command-deriv</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">feedback</TD>
+                                    <TD port="f1">feedback-deriv</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_stepgen{
+                label="hm.0.stepgen.00"
+                stepgen [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">velocity-cmd</TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">position-fb</TD></TR> 
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            null00 [shape="point" style="invis"];
+            null01 [shape="point" color="black"];
+
+            joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="black" color="black"];
+            joint:o1    -> pid:i1       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="green"];
+            pid:o0      -> stepgen:i0   [label="x-output" fontsize = "12" fontcolor="black" color="black"];
+
+            stepgen:o0  -> null01       [label="x-pos-fb" fontsize = "12" fontcolor="blue" color="blue"];
+            null01      -> pid:f0:s     [label="x-pos-fb" fontsize = "12" fontcolor="black" color="black"];
+      
+            null01      -> joint:i0   [fontsize = "12" fontcolor="red" color="red"];
+            encoder:o0  -> joint:i0:w [label="x-pos-encoder" fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o0  -> null01     [label="x-pos-fb" fontsize = "12" fontcolor="red" color="red"];
+            
+            encoder:o1  -> pid:f1:s   [label="x-vel-fb" fontsize = "12" fontcolor="red2" color="red2"];
         }
     \enddot
 */
