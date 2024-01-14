@@ -22,6 +22,7 @@ net encoder-position         <=   hm2_7i96.0.encoder.02.position
 net enoder-velocity          <=   hm2_7i96.0.encoder.02.velocity
 net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
 
+
 # ---setup spindle control signals---
 #
 # Use linuxCNC pwmgem to convert speed-out to pwm for the G540 pwm input.
@@ -30,9 +31,9 @@ net encoder-position           =>  spindle.0.revs
 net encoder-velocity           =>  spindle.0.speed-in
 net spindle-at-speed           =>  spindle.0.at-speed
 
-net spindle-velocity-cmd  <=  spindle.0.speed-out           
-net spindle-enable        <=  spindle.0.on         
-net spindle-cw            <=  spindle.0.forward   
+net spindle-velocity-cmd-cnc  <=  spindle.0.speed-out-abs           
+net spindle-enable-cnc        <=  spindle.0.on         
+net spindle-cw-cnc            <=  spindle.0.forward   
 net spindle-index-enable      <=> spindle.0.index-enable
 
 #
@@ -70,20 +71,27 @@ net spindle-pwm     <= pwmgen.0.pwm
 # Multiplex spindle-enable, spindle-cw, spindle_pwm from the cnc and override versions.
 #
 #net spindle-enable-override  => mux-gen.00.sel-bit-00 mux-gen.01.sel-bit-00 mux-gen.02.sel-bit-00
-#net spindle-enable-cnc       => mux-gen.00.in-bit-00
-#net spindle-enable-override  => mux-gen.00.in-bit-01
-#net spindle-enable           <= mux-gen.00.out-bit
-#net spindle-cw-cnc           => mux-gen.01.in-bit-00
-#net spindle-cw-override      => mux-gen.01.in-bit-01
-#net spindle-cw               <= mux-gen.01.out-bit
-#net spindle-velocity-cmd-cnc => mux-gen.02.in-float-00
-#setp                            mux-gen.02.in-float-01 200.0
-#net spindle-velocity-cmd     <= mux-gen.02.out-float
+setp mux-gen.00.sel-bit-00 false 
+setp mux-gen.01.sel-bit-00 false 
+setp mux-gen.02.sel-bit-00 false 
+
+net spindle-enable-cnc       => mux-gen.00.in-bit-00
+net spindle-enable-override  => mux-gen.00.in-bit-01
+net spindle-enable           <= mux-gen.00.out-bit
+
+net spindle-cw-cnc           => mux-gen.01.in-bit-00
+net spindle-cw-override      => mux-gen.01.in-bit-01
+net spindle-cw               <= mux-gen.01.out-bit
+
+net spindle-velocity-cmd-cnc => mux-gen.02.in-float-00
+setp                            mux-gen.02.in-float-01 200.0
+net spindle-velocity-cmd     <= mux-gen.02.out-float
+
 #
-#  IOPorts on TB3 have an offset of 17 IOPorts. So IN0 is referenced as gpio.000.in
+#  IOPorts on TB3, IN0 is referenced as gpio.000.in
 #  
-net spindle-on-override        <= hm2_7i96.0.gpio.004.in
-net spindle-cw-override        <= hm2_7i96.0.gpio.005.in
+net spindle-enable-override    <= hm2_7i96.0.gpio.004.in_not
+net spindle-cw-override        <= hm2_7i96.0.gpio.003.in_not
 
 #
 # Use Solid State Relay for outputs. 
