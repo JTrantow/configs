@@ -70,10 +70,10 @@ net spindle-pwm     <= pwmgen.0.pwm
 #
 # Multiplex spindle-enable, spindle-cw, spindle_pwm from the cnc and override versions.
 #
-#net spindle-enable-override  => mux-gen.00.sel-bit-00 mux-gen.01.sel-bit-00 mux-gen.02.sel-bit-00
-setp mux-gen.00.sel-bit-00 false 
-setp mux-gen.01.sel-bit-00 false 
-setp mux-gen.02.sel-bit-00 false 
+net spindle-enable-override  => mux-gen.00.sel-bit-00 mux-gen.01.sel-bit-00 mux-gen.02.sel-bit-00
+#setp mux-gen.00.sel-bit-00 false 
+#setp mux-gen.01.sel-bit-00 false 
+#setp mux-gen.02.sel-bit-00 false 
 
 net spindle-enable-cnc       => mux-gen.00.in-bit-00
 net spindle-enable-override  => mux-gen.00.in-bit-01
@@ -84,7 +84,7 @@ net spindle-cw-override      => mux-gen.01.in-bit-01
 net spindle-cw               <= mux-gen.01.out-bit
 
 net spindle-velocity-cmd-cnc => mux-gen.02.in-float-00
-setp                            mux-gen.02.in-float-01 200.0
+setp                            mux-gen.02.in-float-01 333.3
 net spindle-velocity-cmd     <= mux-gen.02.out-float
 
 #
