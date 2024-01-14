@@ -118,9 +118,9 @@
                         <TR><TD ALIGN="LEFT" port="in3">003.in</TD></TR> 
                         <TR><TD ALIGN="LEFT" port="in4">004.in</TD></TR> 
 
-                        <TR><TD ALIGN="LEFT" port="out0">scr.00.out0+</TD></TR>                  
-                        <TR><TD ALIGN="LEFT" port="out1">scr.00.out1+</TD></TR>                  
-                        <TR><TD ALIGN="LEFT" port="out2">scr.00.out-+</TD></TR>                  
+                        <TR><TD ALIGN="LEFT" port="out0">scr.00.out0</TD></TR>                  
+                        <TR><TD ALIGN="LEFT" port="out1">scr.00.out1</TD></TR>                  
+                        <TR><TD ALIGN="LEFT" port="out2">scr.00.out2</TD></TR>                  
                     </TABLE>
                 >
                 ]
@@ -222,12 +222,12 @@
             encoder:o2 -> pid_s:i2       [label="spindle-index-enable" fontsize = "12" fontcolor="blue" color="blue"];
 
             spindle_0:o1  -> mux2_0:in0  [label="spindle-enable-cnc"  fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:sel:n  -> gpio:in3    [label="spindle-enable-override" fontsize = "12" dir=back];
+            mux2_0:sel:n  -> gpio:in4    [label="spindle-enable-override" fontsize = "12" dir=back];
             mux2_0:sel:w  -> mux2_0:in1:w; 
             mux2_0:out:e  -> gpio:out0   [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
 
             spindle_0:o2  -> mux2_1:in0  [label="spindle-cw-cnc"      fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_1:in1:w  -> gpio:in4    [label="spindle-cw-override"   fontsize = "12" dir="back"];
+            mux2_1:in1:w  -> gpio:in3    [label="spindle-cw-override"   fontsize = "12" dir="back"];
             mux2_1:out:e  -> gpio:out1   [label="spindle-cw"          fontsize = "12" fontcolor="blue" color="blue"];
 
             mux2_2:out:e  -> pid_s:i0    [label="spindle-velocity-cmd"          fontsize = "12" fontcolor="blue" color="blue"];
