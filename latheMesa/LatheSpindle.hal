@@ -59,8 +59,8 @@ net encoder-velocity      =>  pid.s.feedback
 #
 # pwm generator
 #
-setp pwmgen.0.pwm-freq 100.0
-setp pwmgen.0.scale 2833.333333333333
+setp pwmgen.0.pwm-freq 50.0
+setp pwmgen.0.scale 4000.0
 setp pwmgen.0.offset 0.16470588235294117
 setp pwmgen.0.dither-pwm true
 
@@ -71,9 +71,6 @@ net spindle-pwm     <= pwmgen.0.pwm
 # Multiplex spindle-enable, spindle-cw, spindle_pwm from the cnc and override versions.
 #
 net spindle-enable-override  => mux-gen.00.sel-bit-00 mux-gen.01.sel-bit-00 mux-gen.02.sel-bit-00
-#setp mux-gen.00.sel-bit-00 false 
-#setp mux-gen.01.sel-bit-00 false 
-#setp mux-gen.02.sel-bit-00 false 
 
 net spindle-enable-cnc       => mux-gen.00.in-bit-00
 net spindle-enable-override  => mux-gen.00.in-bit-01

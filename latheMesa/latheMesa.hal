@@ -78,11 +78,8 @@ net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
 #net x-pos-encoder    <= hm2_7i96.0.encoder.00.position     => joint.0.motor-pos-fb
 #net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb  => pid.x.feedback 
 
-# ---setup home / limit switch signals---
-
-net x-home-sw     =>  joint.0.home-sw-in
-net x-neg-limit     =>  joint.0.neg-lim-sw-in
-net x-pos-limit     =>  joint.0.pos-lim-sw-in
+# ---setup home / limit switch signals--- 
+net x-home-sw       <= hm2_7i96.0.gpio.001.in_not =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
 
 # ---Encoder feedback signals/setup---
 
@@ -110,9 +107,7 @@ setp   pid.z.FF2       [JOINT_1]FF2
 setp   pid.z.deadband  [JOINT_1]DEADBAND
 setp   pid.z.maxoutput [JOINT_1]MAX_OUTPUT
 setp   pid.z.error-previous-target true
-# This setting is to limit bogus stepgen
-# velocity corrections caused by position
-# feedback sample time jitter.
+# This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
 setp   pid.z.maxerror 0.012700
 
 net z-index-enable  <=> pid.z.index-enable
@@ -214,12 +209,6 @@ net probe-in     =>  motion.probe-input
 net in-position               <=  motion.in-position
 net machine-is-enabled        <=  motion.motion-enabled
 
-#  ---digital in / out signals---
-
-#  ---estop signals---
-
-net estop-out     <=  iocontrol.0.user-enable-out
-net estop-out     =>  iocontrol.0.emc-enable-in
 
 #  ---manual tool change signals---
 
