@@ -15,6 +15,7 @@
             concentrate=true
             rankdir="LR"
             label="Lathe spindle control."
+
             subgraph cluster_spindle{
                 label="spindle.0"
                 node [shape=plaintext]
@@ -208,30 +209,38 @@
                 >]
             }
 
+            n00 [shape="point" style="invis"];
+            n01 [shape="point" style="invis"];
+            n02 [shape="point" style="invis"];
+
+            n00 -> gpio:in0              [label="estop-G540" fontsize = "10" fontcolor="cyan" color="cyan" dir="back"];
+            n01 -> gpio:in1              [label="x-home-sw(max)"  fontsize = "10" fontcolor="cyan" color="cyan" dir="back"];
+            n02 -> gpio:in2              [label="x-home-sw(min)"  fontsize = "10" fontcolor="cyan" color="cyan" dir="back"];
+
             spindle_0:o0 -> mux2_2:in0   [label="spindle-velocity-cmd-cnc" fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:out:e -> pid_s:i1     [color="blue"];
-            spindle_0:o3 -> pid_s:i2     [color="blue"];
+            mux2_0:out:e -> pid_s:i1     [color="black"];
+            spindle_0:o3 -> pid_s:i2     [color="black"];
 
-            pid_s:o0 -> pwmgen:i0        [label="spindle-output"     fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:out:e -> pwmgen:i1    [color="blue"];
-            pwmgen:o0 -> gpio:out2       [label="spindle-pwm"        fontsize = "12" fontcolor="blue" color="blue"];
+            pid_s:o0 -> pwmgen:i0        [label="spindle-output"       fontsize = "12" fontcolor="black" color="black"];
+            mux2_0:out:e -> pwmgen:i1    [color="black"];
+            pwmgen:o0 -> gpio:out2       [label="spindle-pwm"          fontsize = "12" fontcolor="black" color="black"];
 
-            encoder:o0 -> spindle_0:i0   [label="encoder-position"     fontsize = "12" fontcolor="blue" color="blue"];
-            encoder:o1 -> spindle_0:i1   [label="encoder-velocity"     fontsize = "12" fontcolor="blue" color="blue"];
-            encoder:o1 -> pid_s:f0       [color="blue"];
-            encoder:o2 -> pid_s:i2       [label="spindle-index-enable" fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o0 -> spindle_0:i0   [label="encoder-position"     fontsize = "12" fontcolor="blue" color="black"];
+            encoder:o1 -> spindle_0:i1   [label="encoder-velocity"     fontsize = "12" fontcolor="blue" color="black"];
+            encoder:o1 -> pid_s:f0       [color="black"];
+            encoder:o2 -> pid_s:i2       [label="spindle-index-enable" fontsize = "12" fontcolor="black" color="black"];
 
-            spindle_0:o1  -> mux2_0:in0  [label="spindle-enable-cnc"  fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_0:sel:n  -> gpio:in4    [label="spindle-enable-override" fontsize = "12" dir=back];
-            mux2_0:sel:w  -> mux2_0:in1:w; 
-            mux2_0:out:e  -> gpio:out0   [label="spindle-enable"      fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o1  -> mux2_0:in0  [label="spindle-enable-cnc"   fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_0:sel:n  -> gpio:in4    [label="spindle-enable-override" fontcolor="green" color="green" fontsize = "12" dir=back];
+            mux2_0:sel:w  -> mux2_0:in1:w [color="black"]; 
+            mux2_0:out:e  -> gpio:out0   [label="spindle-enable"       fontsize = "12" fontcolor="black" color="black"];
 
-            spindle_0:o2  -> mux2_1:in0  [label="spindle-cw-cnc"      fontsize = "12" fontcolor="blue" color="blue"];
-            mux2_1:in1:w  -> gpio:in3    [label="spindle-cw-override"   fontsize = "12" dir="back"];
-            mux2_1:out:e  -> gpio:out1   [label="spindle-cw"          fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o2  -> mux2_1:in0  [label="spindle-cw-cnc"       fontsize = "12" fontcolor="blue" color="blue"];
+            mux2_1:in1:w  -> gpio:in3    [label="spindle-cw-override"  fontsize = "12" fontcolor="green" color="green" dir=back];
+            mux2_1:out:e  -> gpio:out1   [label="spindle-cw"           fontsize = "12" fontcolor="black" color="black"];
 
-            mux2_2:out:e  -> pid_s:i0    [label="spindle-velocity-cmd"          fontsize = "12" fontcolor="blue" color="blue"];
-            fixed_rpm     -> mux2_2:in1;
+            mux2_2:out:e  -> pid_s:i0    [label="spindle-velocity-cmd" fontsize = "12" fontcolor="black" color="black"];
+            fixed_rpm     -> mux2_2:in1  [fontcolor="green" color="green"];
 
             mux2_2:out:e   -> near:in2;
             encoder:o1   -> near:in1:w;
