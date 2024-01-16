@@ -1,13 +1,20 @@
 #*******************
 #  SPINDLE
 #*******************
+#
+# Implement spindle vfd control using encoder.
+# 
 loadrt near names=near_spindle
 loadrt mux_generic config="bb2,bb2,ff2" 
+loadrt lowpass count=1
+loadrt abs count=1
 
 addf near_spindle servo-thread
 addf mux-gen.00 servo-thread
 addf mux-gen.01 servo-thread
 addf mux-gen.02 servo-thread
+addf lowpass.0 servo-thread
+addf abs.0 servo-thread
 
 # ---Encoder feedback signals/setup---
 
@@ -20,8 +27,8 @@ setp    hm2_7i96.0.encoder.02.scale  [SPINDLE_0]ENCODER_SCALE
 
 net encoder-position         <=   hm2_7i96.0.encoder.02.position
 net enoder-velocity          <=   hm2_7i96.0.encoder.02.velocity
+net encoder-velocity-rpm     <=   hm2_7i96.0.encoder.02.velocity-rpm
 net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
-
 
 # ---setup spindle control signals---
 #
@@ -54,13 +61,14 @@ net spindle-velocity-cmd  =>  pid.s.command
 net spindle-enable        =>  pid.s.enable        
 net spindle-index-enable  <=> pid.s.index-enable
 net spindle-output        <=  pid.s.output        
-net encoder-velocity      =>  pid.s.feedback
+net spindle-fb-filtered   =>  pid.s.feedback
 
 #
 # pwm generator
+# Set the scale and offset to get spindle RPM in correct range without using PID, then use PID to dial it in.
 #
 setp pwmgen.0.pwm-freq 50.0
-setp pwmgen.0.scale 1000
+setp pwmgen.0.scale 1000.0
 setp pwmgen.0.offset +0.18
 setp pwmgen.0.dither-pwm true
 
@@ -98,15 +106,26 @@ net spindle-enable             => hm2_7i96.0.ssr.00.out-00
 net spindle-cw                 => hm2_7i96.0.ssr.00.out-01  
 net spindle-pwm                => hm2_7i96.0.ssr.00.out-02               
 #
-# Compare encode to command to determine if spindle is up to speed.
-#
+# Compare encoder rpm to spindle command to determine if spindle is up to speed.
+# Use the filtered encoder values.
+setp lowpass.0.gain 0.0005
 setp near_spindle.scale 1.10
 
-net encoder-velocity     => near_spindle.in1
+#net encoder-velocity-rpm        => abs.0.in
+#net encoder-velocity-rpm-abs    <= abs.0.out    => lowpass.0.in
+#net spindle-fb-filtered        <= lowpass.0.out                  
+net encoder-velocity-rpm        => lowpass.0.in
+net encoder-rpm-filtered        <= lowpass.0.out     => abs.0.in
+net spindle-fb-filtered         <= abs.0.out                  
+
+net spindle-fb-filtered  => near_spindle.in1
 net spindle-velocity-cmd => near_spindle.in2
 net spindle-at-speed     => near_spindle.out
 
-
-
+#
+# Two signals needed by pyvcp panel.
+#
+#net spindle-fb-filtered => pyvcp.spindle-speed
+#net spindle-at-speed    => pyvcp.spindle-at-speed-led
 
 
