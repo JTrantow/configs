@@ -62,10 +62,26 @@ setp   hm2_7i96.0.stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
 net x-pos-cmd    <= joint.0.motor-pos-cmd
 net x-vel-cmd    <= joint.0.vel-cmd
 net x-output     => hm2_7i96.0.stepgen.00.velocity-cmd
-#net x-pos-fb     <= hm2_7i96.0.stepgen.00.position-fb
-#net x-pos-fb     => joint.0.motor-pos-fb
 net x-enable     <= joint.0.amp-enable-out
 net x-enable     => hm2_7i96.0.stepgen.00.enable
+#
+# The Trajectory Planner gives us the velocity. Using this signal with the PID avoids estimating the velocity command.
+# Pipeline problem in linuxCNC with joint vel-cmd so don't use this????
+#
+#net x-vel-cmd        <= joint.0.vel-cmd                 =>  pid.x.command-deriv
+#
+# Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
+# Use both the encoder position and velocity.
+#
+net x-pos-fb         <= hm2_7i96.0.encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
+net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
+#
+# Enable/Disable BOTH the following TWO line to use stepgen position to close the control loop.
+# Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
+# Do not use the encoder x-vel-fb is you are using the stepgen position for x-pos-fb.
+#
+# NOTE: If you want to use the x-pos-fb into joint.0.motor-pos-fb with HOME_USE_INDEX then you will need to HOME_INDEX_NO_ENCODER_RESET = YES
+#net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb  => pid.x.feedback    => joint.0.motor-pos-fb
 
 # ---Encoder feedback signals/setup---
 
@@ -76,11 +92,7 @@ setp    hm2_7i96.0.encoder.00.index-mask 0
 setp    hm2_7i96.0.encoder.00.index-mask-invert 0
 setp    hm2_7i96.0.encoder.00.scale  [JOINT_0]ENCODER_SCALE
 
-net x-pos-fb               <=  hm2_7i96.0.encoder.00.position
-net x-vel-fb               <=  hm2_7i96.0.encoder.00.velocity
-net x-pos-fb               =>  joint.0.motor-pos-fb
 net x-index-enable    joint.0.index-enable  <=>  hm2_7i96.0.encoder.00.index-enable
-net x-pos-rawcounts        <=  hm2_7i96.0.encoder.00.rawcounts
 
 # ---setup home / limit switch signals--- 
 net x-home-sw       <= hm2_7i96.0.gpio.001.in_not =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
