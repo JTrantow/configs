@@ -2,10 +2,10 @@
 # The commands in this file are run after the GUI starts.
 
 # Pyvcp
-net spindle-fb-filtered          => pyvcp.spindle-speed
-net spindle-at-speed             => pyvcp.spindle-at-speed-led
+#net spindle-fb-filtered          => pyvcp.spindle-speed
+#net spindle-at-speed             => pyvcp.spindle-at-speed-led
 #
 # gmoccapy gui.
 #
-#net spindle-fb-filtered          => gmoccapy.spindle_feedback_bar
-#net spindle-at-speed             => gmoccapy.spindle_at_speed_led
+net spindle-fb-filtered          => gmoccapy.spindle_feedback_bar
+net spindle-at-speed             => gmoccapy.spindle_at_speed_led

@@ -26,7 +26,7 @@ setp    hm2_7i96.0.encoder.02.index-mask-invert 0
 setp    hm2_7i96.0.encoder.02.scale  [SPINDLE_0]ENCODER_SCALE
 
 net encoder-position         <=   hm2_7i96.0.encoder.02.position
-net enoder-velocity          <=   hm2_7i96.0.encoder.02.velocity
+net encoder-velocity          <=   hm2_7i96.0.encoder.02.velocity
 net encoder-velocity-rpm     <=   hm2_7i96.0.encoder.02.velocity-rpm
 net spindle-index-enable     <=>  hm2_7i96.0.encoder.02.index-enable
 
