@@ -249,6 +249,18 @@
                     </TABLE>
                 >]
             }
+          subgraph cluster_gmoccapy {
+                label="gmoccapy"
+                fontcolor="purple" color="purple"
+                gmoccapy [shape="box" fontcolor="purple" color="purple" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="i0">spindle_feedback_bar</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="i1">spindle_at_speed_led</TD></TR>
+                    </TABLE>
+                >]
+            }
+
+
             n00 [shape="point" style="invis"];
             n01 [shape="point" style="invis"];
             n02 [shape="point" style="invis"];
@@ -288,25 +300,14 @@
             mux2_2:out  -> near:in2;
             near:out    -> spindle_0:i2  [label="spindle-at-speed"  fontsize = "12" fontcolor="cyan"];
 
+            pid_s:o       -> gmoccapy:i0 [label="spindle-feedback-bar"  fontsize = "12" fontcolor="purple" color="purple"];
+            near:out      -> gmoccapy:i1 [label="spindle-at-speed-led"  fontsize = "12" fontcolor="purple" color="purple"];
+
             {rank=same mux2_0 mux2_1 mux2_2};
         }
     \enddot
 */
 
 /*
-
-
-
-
-            subgraph cluster_gmoccapy {
-                label="gmoccapy"
-                gmoccapy [shape="box" label=<
-                    <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
-                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
-                    </TABLE>
-                >]
-            }
-
 */
 
