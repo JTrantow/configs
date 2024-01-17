@@ -20,14 +20,29 @@ M6 T#8 G43
 #23 = [#5 + #6 - #20]
 #24 = [[#13 - #23] * TAN[#7]]
 
+
 G96 D2500 S#2 ; Constant Surface Speed Mode
+;G96 D400 S20 $0; Constant Surface Speed Mode, D is max rpm, S is surface speed in M/min NOT RPM,
+
 m3 ;Start Spindle
+
 g95 F#4 ; Feed-Per-Rev Mode
+;g95 F#4 $0; Feed-Per-Rev Mode Units per revolution.
+;
+; Could not get movement in Feed-Per-Rev mode?
+;
+g94
+; Need to set F for all following moves
+g1 Z #13 F50
 
 O90 IF [#9 GT 0.5]
 	M8
 O90 ENDIF
-g4p1 ; Wait to reach speed
+
+ 
+; At speed will wait for spindle to get up to speed.
+;g4p1 ; Wait to reach speed
+
 
 	O100 WHILE [#14 GT [#1 + #3 / 2]]
         g0 X #14
