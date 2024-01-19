@@ -1,0 +1,20 @@
+/*!
+        \file mainPage.dox	
+        \brief This file contains the doxygen mainpage.
+        
+        Having this in a separate file allows the documentation to be updated without changing a code file.
+                
+        \mainpage Rockwell Mill documentation
+                        
+        \section features_section Features
+                
+        \section toDo_section ToDo 
+                - Document joypad
+                
+        \section ref_section References
+                - Mesa 7i92 Manual
+                - Mesa 7i85s Manual
+                - GS-11 VFD Manual
+*/
+
+
