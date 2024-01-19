@@ -3,16 +3,16 @@
 
     \addtogroup EStopLatch
 
-    This diagram illustrates the .hal components for the estop latch logic of my lathe.
+    This diagram illustrates the .hal components for the estop latch logic of my mill.
 
     \dot
         digraph structs {
-            rankdir="LR"
+            rankdir="TB"
             concentrate=true
             label="EStopLatch control."
 
-            subgraph cluster_estop0{
-                label="estop-latch.0"
+            subgraph cluster_estop{
+                label="estop-latch"
                 estop0 [shape="box" label=<
                     <TABLE>
                         <TR> 
@@ -43,10 +43,6 @@
                     
                     </TABLE>
                 >]
-            }
-
-            subgraph cluster_estop1{
-                label="estop-latch.1"
                 estop1 [shape="box" label=<
                     <TABLE>
                         <TR> 
@@ -76,11 +72,7 @@
                         </TR>
                     
                     </TABLE>
-                >]
-            }
-
-            subgraph cluster_estop2{
-                label="estop-latch.2"
+                >]            
                 estop2 [shape="box" label=<
                     <TABLE>
                         <TR> 
@@ -111,10 +103,67 @@
                     
                     </TABLE>
                 >]
-            }
-            subgraph cluster_estop3{
-                label="estop-latch.3"
                 estop3 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >]
+                estop4 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >]
+                estop5 [shape="box" label=<
                     <TABLE>
                         <TR> 
                             <TD>
@@ -146,6 +195,36 @@
                 >]
             }
 
+            subgraph cluster_hm{
+                label="hm"
+                gpio [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">gpio.029.in_not</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">gpio.025.in</TD></TR>
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]
+                encoder [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">00.quad-error</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">01.quad-error</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">02.quad-error</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o3">03.quad-error</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >]            
+            }
+
             subgraph cluster_iocontrol{
                 label="iocontrol.0"
                 iocontrol [shape="box" label=<
@@ -165,38 +244,29 @@
                 >]
             }
 
-            iocontrol -> estop0 -> estop1 -> estop2 -> estop3  [style=invis]
 
-            n0 [shape="none" label=""];
-            n1 [shape="none" label=""];
-            n2 [shape="none" label=""];
-            n3 [shape="none" label=""];
 
-            n0 -> estop0:i0:w [label="estop-G540"      fontcolor="red" color="red"];
-            n1 -> estop1:i0:w [label="x-encoder-estop" fontcolor="red" color="red"];
-            n2 -> estop2:i0:w [label="z-encoder-estop" fontcolor="red" color="red"];
-            n3 -> estop3:i0:w [label="s-encoder-estop" fontcolor="red" color="red"];
+            gpio:i0 -> estop0:i0:w [label="driver-estop"      fontcolor="red" color="red"];
+            gpio:i1 -> estop1:i0:w [label="length-overtravel-estop" fontcolor="red" color="red"];
+            encoder:o0 -> estop2:i0:w [label="x-encoder-estop" fontcolor="red" color="red"];
+            encoder:o1 -> estop3:i0:w [label="y-encoder-estop" fontcolor="red" color="red"];
+            encoder:o2 -> estop4:i0:w [label="z-encoder-estop" fontcolor="red" color="red"];
+            encoder:o3 -> estop5:i0:w [label="s-encoder-estop" fontcolor="red" color="red"];
 
             estop0:o1 -> estop1:i1 [label="latch0-out" fontsize = "10" ];
             estop1:o1 -> estop2:i1 [label="latch1-out" fontsize = "10" ];
             estop2:o1 -> estop3:i1 [label="latch2-out" fontsize = "10" ];
-            estop3:o1:w -> iocontrol:i0 [label="estop-out"];
+            estop3:o1 -> estop4:i1 [label="latch3-out" fontsize = "10" ];
+            estop4:o1 -> estop5:i1 [label="latch4-out" fontsize = "10" ];
+            estop5:o1:w -> iocontrol:i0 [label="estop-out"];
 
-            iocontrol:o0:e  -> estop0:i1 [label="latch0-ok-in" fontsize = "10" fontcolor="black" color="black"];
-            iocontrol:o1:se -> estop0:f0:s [label="latch-reset" fontsize = "10" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop1:f0:s [label="" fontsize = "10" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop2:f0:s [label="" fontsize = "10" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop3:f0:s [label="" fontsize = "10" fontcolor="blue" color="blue"];
+            iocontrol:o0  -> estop0:i1 [label="latch0-ok-in" fontsize = "10" fontcolor="black" color="black"];
+            iocontrol:o1 -> estop0:f0:s -> estop1:f0 -> estop2:f0 -> estop3:f0 -> estop4:f0 -> estop5:f0 [label="latch-reset" fontsize = "10" fontcolor="blue" color="blue"];
         }
     \enddot    
 */
 /*
-            iocontrol:o1:se -> estop1:f0:s [color="blue"];
+            iocontrol -> estop0 -> gpio [type=invis weight=10];
 
 
-
-            estop2:o1 -> estop3:i2 [label="latch0-ok-in" fontsize = "12" fontcolor="blue" color="blue"];
-
-            iocontrol:o1:se -> estop2:f0:s [color="blue"];
-            iocontrol:o1:se -> estop3:f0:s [color="blue"];
 */
