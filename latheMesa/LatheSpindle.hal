@@ -111,12 +111,9 @@ net spindle-pwm                => hm2_7i96.0.ssr.00.out-02
 #
 # Compare encoder rpm to spindle command to determine if spindle is up to speed.
 # Use the filtered encoder values.
-setp lowpass.0.gain 0.0005
-setp near_spindle.scale 1.2
+setp lowpass.0.gain 0.0006
+setp near_spindle.scale 1.25
 
-#net encoder-velocity-rpm        => abs.0.in
-#net encoder-velocity-rpm-abs    <= abs.0.out    => lowpass.0.in
-#net spindle-fb-filtered        <= lowpass.0.out                  
 net encoder-velocity-rpm        => lowpass.0.in
 net encoder-rpm-filtered        <= lowpass.0.out     => abs.0.in
 net spindle-fb-filtered         <= abs.0.out                  

@@ -74,16 +74,16 @@ net x-index-enable  <=> joint.0.index-enable  <=>  hm2_7i96.0.encoder.00.index-e
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
-#
-#net x-pos-fb         <= hm2_7i96.0.encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
-#net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
+# This should be the optimal configuration.
+net x-pos-fb         <= hm2_7i96.0.encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
+net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
 #
 # Enable/Disable BOTH the following TWO lines to use stepgen position to close the control loop.
 # Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
 # Do not use the encoder x-vel-fb is you are using the stepgen position for x-pos-fb.
 #
-net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb  => pid.x.feedback    
-net x-pos-encoder    <= hm2_7i96.0.encoder.00.position  => joint.0.motor-pos-fb
+#net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb  => pid.x.feedback    
+#net x-pos-encoder    <= hm2_7i96.0.encoder.00.position  => joint.0.motor-pos-fb
 
 # ---Encoder feedback signals/setup---
 
@@ -150,16 +150,16 @@ net z-index-enable  <=> joint.1.index-enable  <=>  hm2_7i96.0.encoder.01.index-e
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
-#
-#net z-pos-fb         <= hm2_7i96.0.encoder.01.position  => pid.z.feedback        => joint.1.motor-pos-fb
-#net z-vel-fb         <= hm2_7i96.0.encoder.01.velocity  => pid.z.feedback-deriv
+# This should be the optimal configuration.
+net z-pos-fb         <= hm2_7i96.0.encoder.01.position  => pid.z.feedback        => joint.1.motor-pos-fb
+net z-vel-fb         <= hm2_7i96.0.encoder.01.velocity  => pid.z.feedback-deriv
 #
 # Enable/Disable BOTH the following TWO lines to use stepgen position to close the control loop.
 # Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
 # Do not use the encoder -vel-fb is you are using the stepgen position for -pos-fb.
 #
-net z-pos-fb         <= hm2_7i96.0.stepgen.02.position-fb  => pid.z.feedback 
-net z-pos-encoder    <= hm2_7i96.0.encoder.01.position     => joint.1.motor-pos-fb
+#net z-pos-fb         <= hm2_7i96.0.stepgen.02.position-fb  => pid.z.feedback 
+#net z-pos-encoder    <= hm2_7i96.0.encoder.01.position     => joint.1.motor-pos-fb
 
 # ---setup home / limit switch signals---
 
