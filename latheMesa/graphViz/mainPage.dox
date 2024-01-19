@@ -9,8 +9,7 @@
         \section features_section Features
                 
         \section toDo_section ToDo 
-                - Document estop latch
-                - Document probe
+                - Implement and Document probe/tool length
                 
         \section ref_section References
                 - Mesa 7i96 Manual
