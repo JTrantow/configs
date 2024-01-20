@@ -20,7 +20,7 @@ addf estop-latch.6            servo-thread
 #
 #   Reset signal for each latch.
 #
-net latch-reset <= iocontrol.0.user-request-enable => estop-latch.0.reset estop-latch.1.reset estop-latch.2.reset estop-latch.3.reset estop-latch.4.reset estop-latch.5.reset
+net latch-reset <= iocontrol.0.user-request-enable => estop-latch.0.reset estop-latch.1.reset estop-latch.2.reset estop-latch.3.reset estop-latch.4.reset estop-latch.5.reset estop-latch.6.reset
 #
 #  Hook the first latch to Linuxcnc iocontrol stuff.
 #
