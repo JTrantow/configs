@@ -364,11 +364,11 @@ net probe-or-length <= or2_probe.out          => motion.probe-input
 net in-position               <=  motion.in-position
 net machine-is-enabled        <=  motion.motion-enabled
 
-#  ---digital in / out signals---
-
-
 #  ---manual tool change signals---
 loadusr -W hal_manualtoolchange
+
+net tool-prep-loop      iocontrol.0.tool-prepare        <= iocontrol.0.tool-prepared
+
 #net tool-change-request     iocontrol.0.tool-change       =>  hal_manualtoolchange.change
 #net tool-change-confirmed   iocontrol.0.tool-changed      <=  hal_manualtoolchange.changed
 #net tool-number             iocontrol.0.tool-prep-number  =>  hal_manualtoolchange.number
