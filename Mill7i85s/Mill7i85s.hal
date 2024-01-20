@@ -9,8 +9,8 @@ loadrt debounce cfg=1,1,1
 loadrt scale names=scale.spindle
 #
 # load the user space component for the Automation Direct GS2 VFD's
-#
-loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 --name spindle-vfd --accel-seconds 5 --decel-seconds 3 --braking-resistor --device /dev/ttyUSB0
+# --device /dev/ttyUSB0
+loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 --name spindle-vfd --accel-seconds 5 --decel-seconds 3 --braking-resistor --device /dev/ttyS0
 
 addf hm2_7i92.0.read          servo-thread
 addf motion-command-handler   servo-thread
