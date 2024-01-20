@@ -17,15 +17,15 @@
                 label="hm.0.gpio"
                 gpio [shape="box" label=<
                     <TABLE CELLBORDER="0" BORDER="0">
-                        <TR><TD ALIGN="LEFT" port="in017">IO0.in</TD></TR>
-                        <TR><TD ALIGN="LEFT" port="in019">IO2.in</TD></TR>
-                        <TR><TD ALIGN="LEFT" port="in021">IO4.in</TD></TR>                  
-                        <TR><TD ALIGN="LEFT" port="in023">IO6.in</TD></TR> 
-                        <TR><TD ALIGN="LEFT" port="in025">IO8.in</TD></TR> 
-                        <TR><TD ALIGN="LEFT" port="in027">IO10.in</TD></TR> 
-                        <TR><TD ALIGN="LEFT" port="in029">IO12.in</TD></TR> 
-                        <TR><TD ALIGN="LEFT" port="in031">IO14.in</TD></TR> 
-                        <TR><TD ALIGN="LEFT" port="in033">IO16.in</TD></TR> 
+                        <TR><TD ALIGN="LEFT" port="in017">IO0  gpio.017.in</TD></TR>
+                        <TR><TD ALIGN="LEFT" port="in019">IO2  gpio.019.in</TD></TR>
+                        <TR><TD ALIGN="LEFT" port="in021">IO4  gpio.021.in</TD></TR>                  
+                        <TR><TD ALIGN="LEFT" port="in023">IO6  gpio.023.in</TD></TR> 
+                        <TR><TD ALIGN="LEFT" port="in025">IO8  gpio.025.in</TD></TR> 
+                        <TR><TD ALIGN="LEFT" port="in027">IO10 gpio.027.in</TD></TR> 
+                        <TR><TD ALIGN="LEFT" port="in029">IO12 gpio.029.in</TD></TR> 
+                        <TR><TD ALIGN="LEFT" port="in031">IO14 gpio.031.in</TD></TR> 
+                        <TR><TD ALIGN="LEFT" port="in033">IO16 gpio.033.in</TD></TR> 
                     </TABLE>
                 >
                 ]

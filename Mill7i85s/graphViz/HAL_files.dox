@@ -8,27 +8,28 @@
     \code
         TWOPASS = on
         HALUI = halui
-        HALFILE = latheMesa.hal
-        HALFILE = LatheSpindle.hal
+        HALFILE = Mill7i85s.hal
+        HALFILE = Spindle.hal
         HALFILE = estop-chain.hal
-        HALFILE = custom.hal
+        HALFILE = quad_encoder.hal
+        HALFILE = postgui_load.hal # file_with_all_loads_for_postgui.hal
         POSTGUI_HALFILE = postgui_call_list.hal
         SHUTDOWN = shutdown.hal
     \endcode
 
     HALFILE
-        - latheMesa.hal Traditional configuration file with basic stepper control.
-        - LatheSpindle.hal Configures the spindle components including encoder and pid/pwmgen for the VFD.
-        - estop-chain.hal Estop logic for G540 and encoder quadrature faults which will stop the machine.
-        - custom.hal (Empty)
+        - Mill7i85s.hal Traditional configuration file with basic stepper control.
+        - Spindle.hal Configures the spindle components for the GS2 VFD.
+        - estop-chain.hal Estop logic for faults which will stop the machine.
+        - quad_encoder.hal Logic for encoder quadrature.
+        - postgui_load.hal
 
     POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
         - postgui_call_list.hal - Contains the following list of files to load after the GUI.
-            - spindle_postgui.hal - Filters spindle speed for pyvcp display.
             - joypad_jog_speed.hal - Logitech joypad jogging speed functionality.
             - joypad_xz.hal - Connects joypad to joystick controls for lathe.
             - joypad_extras.hal - Connnects jogging to the digital joypad, program run, pause, resume and manual/auto modoe of operation. 
-
+            - toolchange.hal - Toolchange.
     SHUTDOWN
         - shutdown.hal (empty)
 */
