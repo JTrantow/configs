@@ -9,8 +9,9 @@
     This diagram illustrates the .hal components I use with a GS2 VFD using the serial communications.
 
     Spindle encoder is intended for rigid tapping. It is not always functional and is linked to vfd freq via pulley ratio.
-    Note, pid is not currently used to get the correct rpm from the vfd. 
-    The fault relay is documented in the estoplatch documentation.
+    
+    Note, pid is not currently used to match the VFD motor-RPM to the spindle command. 
+    The GS2 fault relay is documented in the estoplatch documentation.
 
     \dot
         digraph structs {
@@ -57,6 +58,63 @@
                 ]
             }
 
+            subgraph cluster_vfd{
+                label="vfd"
+                vfd [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">speed-command</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">spindle-on</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i2">spindle-fwd</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i3">spindle-rev</TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">motor-RPM</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">at-speed</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">spindle-frequency</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o3">load-percentage</TD></TR> 
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            subgraph cluster_gmoccapy {
+                label="gmoccapy"
+                color="green"
+                fontcolor="green"
+                gmoccapy [shape="box" color="green" fontcolor="green" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="i1"></TD></TR>
+                    </TABLE>
+                >
+                ]
+                loadbar [label="spindle_load.bar_spindle_load"shape="box" color="green" fontcolor="green" ];
+            }
+
+            spindle_0:o0 -> vfd:i0      [label="spindle-vel-cmd-rpm" fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o1 -> vfd:i1      [label="spindle-enable" fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o2 -> vfd:i2      [label="spindle-cw"  fontsize = "12" fontcolor="blue" color="blue"];
+            spindle_0:o3 -> vfd:i3      [label="spindle-ccw" fontsize = "12" fontcolor="blue" color="blue"];
+
+            encoder:o0 -> spindle_0:i0  [label="spindle-revs"         fontsize = "12"];
+            encoder:o1 -> spindle_0:i1  [label="spindle-vel-fb-rps"   fontsize = "12"];
+            encoder:o3 -> spindle_0:o4  [label="spindle-index-enable" fontsize = "12" dir=both];
+
+            vfd:o0:e -> gmoccapy:i0     [label="spindle-rpm"          fontsize = "12" fontcolor="blue" color="blue"];
+            vfd:o1 ->   gmoccapy:i1:w   [color="blue"];
+            vfd:o1:e -> spindle_0:i2:w  [color="blue"];
+            vfd:o3   -> loadbar         [label="spindle-load-percent" color="blue"];
+        }
+    \enddot
+*/
+
+/*
             subgraph cluster_pid_s{
                 label="pid.s"
                 pid_s [shape="box" label=<
@@ -91,42 +149,6 @@
                 ]
             }
 
-            subgraph cluster_vfd{
-                label="vfd"
-                vfd [shape="box" label=<
-                    <TABLE>
-                        <TR><TD>
-                            <TABLE CELLBORDER="0" BORDER="0">
-                                   <TR><TD ALIGN="LEFT" port="i0">speed-command</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i1">spindle-on</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i2">spindle-fwd</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i3">spindle-rev</TD></TR>
-                            </TABLE>
-                        </TD>
-                        <TD>
-                            <TABLE CELLBORDER="0" BORDER="0">
-                                    <TR><TD ALIGN="RIGHT" port="o0">motor-RPM</TD></TR> 
-                                    <TR><TD ALIGN="RIGHT" port="o1">at-speed</TD></TR> 
-                                    <TR><TD ALIGN="RIGHT" port="o2">spindle-frequency</TD></TR> 
-                            </TABLE>
-                        </TD></TR>                    
-                    </TABLE>
-                >]
-            }
-
-            subgraph cluster_gmoccapy {
-                label="gmoccapy"
-                color="green"
-                fontcolor="green"
-                gmoccapy [shape="box" color="green" fontcolor="green" label=<
-                    <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
-                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
-                    </TABLE>
-                >
-                ]
-            }
-
             subgraph cluster_pyvcb{
                 color="red"
                 fontcolor="red"
@@ -138,41 +160,6 @@
                 >
                 ]
             }
-
-            n10 [style=invis];
-
-            spindle_0:o0 -> vfd:i0      [label="spindle-vel-cmd-rpm" fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o1 -> vfd:i1      [label="spindle-enable" fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o2 -> vfd:i2      [label="spindle-cw"  fontsize = "12" fontcolor="blue" color="blue"];
-            spindle_0:o3 -> vfd:i3      [label="spindle-ccw" fontsize = "12" fontcolor="blue" color="blue"];
-
-            encoder:o0 -> spindle_0:i0  [label="spindle-revs"];
-            encoder:o1 -> n10           [label="spindle-vel-fb-rps"];
-            encoder:o3 -> spindle_0:o4 [label="spindle-index-enable" fontsize = "12" fontcolor="blue" color="blue"];
-
-            vfd:o0:e -> gmoccapy:i0     [label="spindle-rpm"        fontsize = "12" fontcolor="blue" color="blue"];
-            vfd:o1 -> pyvcp:i0          [label="spindle-at-speed"   fontsize = "12" fontcolor="blue" color="blue"];
-            vfd:o1 -> gmoccapy:i1:w     [color="blue"];
-            vfd:o1:e -> spindle_0:i2:w  [color="blue"];
-        }
-    \enddot
-*/
-
-/*
-vfd:o2:e -> spindle_0:i1    [label="spindle-frequency"  fontsize = "12" fontcolor="blue" color="blue"];
-
-net spindle-vel-cmd-rpm <= spindle-vfd.speed-command
-net spindle-enable      <= spindle-vfd.spindle-on 
-net spindle-cw          <= spindle-vfd.spindle-fwd
-net spindle-ccw         <= spindle-vfd.spindle-rev
-net spindle-at-speed    <= spindle-vfd.at-speed
-
-net spindle-at-speed           =>  spindle.0.at-speed
-
-net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
-net spindle-enable             <=  spindle.0.on
-net spindle-cw                 <=  spindle.0.forward
-net spindle-vel-fb-rps         =>  spindle.0.speed-in
-
+            vfd:o1 ->   pyvcp:i0        [label="spindle-at-speed"   fontsize = "12" fontcolor="blue" color="blue"];
 */
 
