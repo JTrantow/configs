@@ -50,32 +50,9 @@
                 >]
             }
 
-            subgraph cluster_debound{
-                label="debounce"
-                debounce [ shape="box" label=<
-                <TABLE>
-                <TR><TD>
-                    <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="in">in</TD></TR>
-                    </TABLE>
-                    </TD>
-                    <TD>
-                    <TABLE CELLBORDER="0" BORDER="0">
-                       <TR><TD ALIGN="LEFT" port="out">out</TD></TR>
-                    </TABLE>
-                </TD></TR>
-                </TABLE>
-                >]
-            }
-
-
             motion [label="motion.probe-input"];
 
-            p0 [shape="none" label=""];
-            p1 [shape="none" label=""];
-
-            gpio:in027 -> debounce:in [label="length-in-raw"];
-            debounce:out -> or2:i0 [label="length-in"];
+            gpio:in027 -> or2:i0 [label="length-in"];
             gpio:in033 -> or2:i1 [label="probe"];
 
             or2:o0 -> motion [label="probe-or-length"];

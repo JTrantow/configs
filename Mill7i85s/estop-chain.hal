@@ -45,13 +45,7 @@ net estop-VFD               <= hm2_7i92.0.gpio.031.in_not       => estop-latch.2
 # --- Encoder faults ---
 # Use amp-fault-in pins instead of the estop chain. This will require restart and rehome. (Spindle can be reset? May not want spindle to require restart??? )
 #
-
-
-
-# DISABLE FOR TESTING.
-#net estop-x-encoder         <= hm2_7i92.0.encoder.00.quad-error => joint.0.amp-fault-in
-
-
+net estop-x-encoder         <= hm2_7i92.0.encoder.00.quad-error => joint.0.amp-fault-in
 net estop-y-encoder         <= hm2_7i92.0.encoder.01.quad-error => joint.1.amp-fault-in
 net estop-z-encoder         <= hm2_7i92.0.encoder.02.quad-error => joint.2.amp-fault-in
 net estop-s-encoder         <= hm2_7i92.0.encoder.03.quad-error => spindle.0.amp-fault-in
