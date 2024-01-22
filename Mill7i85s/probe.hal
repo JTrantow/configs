@@ -1,0 +1,10 @@
+#
+#  ---probe signal---
+# Using a tool set input pin OR a probe pin to drive motion.probe-input.
+#
+loadrt or2 names=or2_probe 
+addf or2_probe servo-thread
+
+net length-in       <= hm2_7i92.0.gpio.027.in => or2_probe.in0
+net probe-in        <= hm2_7i92.0.gpio.033.in => or2_probe.in1
+net probe-or-length <= or2_probe.out          => motion.probe-input
