@@ -1,10 +1,6 @@
 # These files are loaded post GUI, in the order they appear.
 
 #
-# pyvcp spindle and z touch.
-#
-#source pyvcp_options.hal
-#
 # Logitech joypad.
 #
 source joypad_jog_speed.hal
@@ -17,19 +13,17 @@ source joypad_extras.hal
 # Connect the fault signals to the gmoccapy messages defined in the .ini.
 # (shows up after estop, not sure how to get the message before the estop is acknowledged)
 #
-net driver-estop    => gmoccapy.messages.driver-estop
-net length-estop    => gmoccapy.messages.length-estop
-net x-encoder-estop => gmoccapy.messages.x-encoder-estop
-net y-encoder-estop => gmoccapy.messages.y-encoder-estop
-net z-encoder-estop => gmoccapy.messages.z-encoder-estop
-net s-encoder-estop => gmoccapy.messages.s-encoder-estop
+net estop-driver        => gmoccapy.messages.estop-driver
+net estop-overtravel    => gmoccapy.messages.estop-overtravel
+net estop-VFD           => gmoccapy.messages.estop-VFD
+
+net estop-x-encoder     => gmoccapy.messages.estop-x-encoder
+net estop-y-encoder     => gmoccapy.messages.estop-y-encoder
+net estop-z-encoder     => gmoccapy.messages.estop-z-encoder
+net estop-s-encoder     => gmoccapy.messages.estop-s-encoder
 
 #
-# Test the message boxes. These show up at startup.
 #
-#net latch0-out         => gmoccapy.messages.lube-fault
-#net latch0-out-waiting => gmoccapy.messages.lube-fault-waiting
-#net estop-out          => gmoccapy.messages.pin
-
+#
 source toolchange.hal
 
