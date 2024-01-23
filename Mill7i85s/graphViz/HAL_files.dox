@@ -1,7 +1,9 @@
 /*!
     \file HAL_files.dox
-    \brief This file documents the HAL file organization.
     \addtogroup HAL
+    \brief This file documents the HAL file organization.
+
+
 
     The configuration .ini specifies a HAL section.
 

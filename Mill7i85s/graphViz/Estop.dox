@@ -1,7 +1,7 @@
 /*!
     \file Estop.dox
-
     \addtogroup EStopLatch
+    \brief This file illustrates the estop and encoder quad fault HAL connections.
 
     This diagram illustrates the .hal components for the estop latch logic of my mill.
     I moved encoder quadrature errors to joint/spindle amp-fault-in since they are not really recoverable.

@@ -1,3 +1,8 @@
+/*!
+    \file StepperControl.dox
+    \addtogroup Stepper_control
+    \brief This file illustrates the basic stepper HAL connections. Faults, homing, etc are covered in other diagrams.
+*/
 /*
 *<br>
     *@addtogroup Stepper_control
