@@ -76,4 +76,7 @@ unlock_way = no
 show_preview_on_offset = False
 use_keyboard_shortcuts = False
 tool_in_spindle = 0
+offset_axis_y = 0.0
+offset_axis_x = -7.0
+offset_axis_z = 10.0
 
