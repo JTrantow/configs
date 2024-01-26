@@ -1,7 +1,20 @@
-/*!
-    \file StepperControl.dox
+/*! \file StepperControl.dox
     \addtogroup Stepper_control
     \brief This file illustrates the basic stepper HAL connections. Faults, homing, etc are covered in other diagrams.
+
+<table>
+<caption id="multi_row">INI Values for Mill</caption>
+<tr><th>Variable                     <th>X axis <th> Y axis <th> Z axis
+<tr><td>STEP_SCALE          <td> 200    <td> -400       <td> -981.9361
+<tr><td>ENCODER_SCALE       <td> 200    <td> 1000       <td> 200 
+<tr><td>DEADBAND            <td> 0.0075 <td> 0.0015     <td> 0.0075
+<tr><td>FERROR (fast)       <td> 0.500    <td>  0.500     <td> 0.500
+<tr><td>MIN_FERROR (slow)   <td> 0.010   <td>  0.010       <td> 0.010
+
+<tr><td>P                   <td> 65.0  <td>  65.0 <td> 65.0
+<tr><td>FF1                 <td>  1.0  <td>   1.0<td> 1.0
+</table>
+
 */
 /*
 *<br>
