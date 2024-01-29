@@ -72,7 +72,7 @@ net estop-s-encoder         <= hm2_7i92.0.encoder.03.quad-error => spindle.0.amp
 # (only waiting for halui.machine.is-on sometimes came up with errrors.)
 # (only waiting for latch-reset sometimes came up with errors.)
 # (even waiting for estop-out sometimes came up with errors??? Doesn't seem like errors are cleared when enable is low, maybe only cleared on the T->F transition?
-net machine-is-on  => hm2_7i92.0.encoder.00.quad-error-enable hm2_7i92.0.encoder.01.quad-error-enable hm2_7i92.0.encoder.02.quad-error-enable hm2_7i92.0.encoder.03.quad-error-enable 
+net machine-is-on  <= halui.machine.is-on  => hm2_7i92.0.encoder.00.quad-error-enable hm2_7i92.0.encoder.01.quad-error-enable hm2_7i92.0.encoder.02.quad-error-enable hm2_7i92.0.encoder.03.quad-error-enable 
 
 
 
