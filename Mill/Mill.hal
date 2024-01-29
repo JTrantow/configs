@@ -50,7 +50,7 @@ setp   hm2_7i92.0.stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net x-pos-cmd    <= joint.0.motor-pos-cmd
-net x-output     <= hm2_7i92.0.stepgen.00.velocity-cmd
+net x-output     => hm2_7i92.0.stepgen.00.velocity-cmd
 net x-enable     <= joint.0.amp-enable-out
 net x-enable     => hm2_7i92.0.stepgen.00.enable
 
@@ -133,7 +133,7 @@ setp   hm2_7i92.0.stepgen.01.maxvel           [JOINT_1]STEPGEN_MAXVEL
 
 # ---closedloop stepper signals---
 
-net y-output     <= hm2_7i92.0.stepgen.01.velocity-cmd
+net y-output     => hm2_7i92.0.stepgen.01.velocity-cmd
 net y-enable     <= joint.1.amp-enable-out              => hm2_7i92.0.stepgen.01.enable
 net y-pos-cmd    <= joint.1.motor-pos-cmd
 
@@ -225,7 +225,7 @@ setp   hm2_7i92.0.stepgen.02.maxvel           [JOINT_2]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net z-pos-cmd    <= joint.2.motor-pos-cmd
-net z-output     <= hm2_7i92.0.stepgen.02.velocity-cmd
+net z-output     => hm2_7i92.0.stepgen.02.velocity-cmd
 net z-enable     <= joint.2.amp-enable-out
 net z-enable     => hm2_7i92.0.stepgen.02.enable
 
