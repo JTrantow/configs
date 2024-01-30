@@ -9,19 +9,19 @@
 loadusr -Wn spindle-vfd gs2_vfd --bits 8 --device /dev/ttyUSB0 --name spindle-vfd --parity none --rate 38400 --stopbits 2 --target 1 --accel-seconds 5.0 --decel-seconds 3.0 --braking-resistor 
 
 # --- Spindle Encoder signals/setup---
-setp    hm2_7i92.0.encoder.03.counter-mode 0
-setp    hm2_7i92.0.encoder.03.filter 1
-setp    hm2_7i92.0.encoder.03.index-invert 1
-setp    hm2_7i92.0.encoder.03.index-mask 0
-setp    hm2_7i92.0.encoder.03.index-mask-invert 0
-setp    hm2_7i92.0.encoder.03.scale  -4000
+setp    [MESA](CARD0).encoder.03.counter-mode 0
+setp    [MESA](CARD0).encoder.03.filter 1
+setp    [MESA](CARD0).encoder.03.index-invert 1
+setp    [MESA](CARD0).encoder.03.index-mask 0
+setp    [MESA](CARD0).encoder.03.index-mask-invert 0
+setp    [MESA](CARD0).encoder.03.scale  -4000
 
 #
 # Connect the Mesa encoder signals.
 #
-net spindle-revs         <= hm2_7i92.0.encoder.03.position
-net spindle-vel-fb-rps   <= hm2_7i92.0.encoder.03.velocity
-net spindle-index-enable <= hm2_7i92.0.encoder.03.index-enable 
+net spindle-revs         <= [MESA](CARD0).encoder.03.position
+net spindle-vel-fb-rps   <= [MESA](CARD0).encoder.03.velocity
+net spindle-index-enable <= [MESA](CARD0).encoder.03.index-enable 
 
 #
 # GS2 VFD 

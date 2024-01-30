@@ -38,17 +38,17 @@ net estop-out <= estop-latch.2.ok-out => iocontrol.0.emc-enable-in
 # --- Closed loop stepper driver alarm ---
 # Use joint.N.amp-fault-in instead of estop-latch?
 #
-net estop-driver            <= hm2_7i92.0.gpio.029.in_not       => estop-latch.0.fault-in
-net estop-overtravel        <= hm2_7i92.0.gpio.025.in           => estop-latch.1.fault-in
-net estop-VFD               <= hm2_7i92.0.gpio.031.in_not       => estop-latch.2.fault-in
+net estop-driver            <= [MESA](CARD0).gpio.029.in_not       => estop-latch.0.fault-in
+net estop-overtravel        <= [MESA](CARD0).gpio.025.in           => estop-latch.1.fault-in
+net estop-VFD               <= [MESA](CARD0).gpio.031.in_not       => estop-latch.2.fault-in
 
 # --- Encoder faults ---
 # Use amp-fault-in pins instead of the estop chain. This will require restart and rehome. (Spindle can be reset? May not want spindle to require restart??? )
 #
-net estop-x-encoder         <= hm2_7i92.0.encoder.00.quad-error => joint.0.amp-fault-in
-net estop-y-encoder         <= hm2_7i92.0.encoder.01.quad-error => joint.1.amp-fault-in
-net estop-z-encoder         <= hm2_7i92.0.encoder.02.quad-error => joint.2.amp-fault-in
-net estop-s-encoder         <= hm2_7i92.0.encoder.03.quad-error => spindle.0.amp-fault-in
+net estop-x-encoder         <= [MESA](CARD0).encoder.00.quad-error => joint.0.amp-fault-in
+net estop-y-encoder         <= [MESA](CARD0).encoder.01.quad-error => joint.1.amp-fault-in
+net estop-z-encoder         <= [MESA](CARD0).encoder.02.quad-error => joint.2.amp-fault-in
+net estop-s-encoder         <= [MESA](CARD0).encoder.03.quad-error => spindle.0.amp-fault-in
 
 #
 # Resetting the encoder and enabling the quad error are slightly more complicated.
@@ -64,7 +64,7 @@ net estop-s-encoder         <= hm2_7i92.0.encoder.03.quad-error => spindle.0.amp
 
 #net latch-reset     => and2_ff_clk.in1
 #net ff-latch-once   <= and2_ff_clk.out          => ff_encoder.clk 
-#net ff-Q            <= ff_encoder.out           => hm2_7i92.0.encoder.00.reset  hm2_7i92.0.encoder.01.reset hm2_7i92.0.encoder.02.reset hm2_7i92.0.encoder.03.reset
+#net ff-Q            <= ff_encoder.out           => [MESA](CARD0).encoder.00.reset  [MESA](CARD0).encoder.01.reset [MESA](CARD0).encoder.02.reset [MESA](CARD0).encoder.03.reset
 #net ff-Qnot         <= ff_encoder.out-not       => ff_encoder.data
 
 #
@@ -72,7 +72,7 @@ net estop-s-encoder         <= hm2_7i92.0.encoder.03.quad-error => spindle.0.amp
 # (only waiting for halui.machine.is-on sometimes came up with errrors.)
 # (only waiting for latch-reset sometimes came up with errors.)
 # (even waiting for estop-out sometimes came up with errors??? Doesn't seem like errors are cleared when enable is low, maybe only cleared on the T->F transition?
-net machine-is-on  <= halui.machine.is-on  => hm2_7i92.0.encoder.00.quad-error-enable hm2_7i92.0.encoder.01.quad-error-enable hm2_7i92.0.encoder.02.quad-error-enable hm2_7i92.0.encoder.03.quad-error-enable 
+net machine-is-on  <= halui.machine.is-on  => [MESA](CARD0).encoder.00.quad-error-enable [MESA](CARD0).encoder.01.quad-error-enable [MESA](CARD0).encoder.02.quad-error-enable [MESA](CARD0).encoder.03.quad-error-enable 
 
 
 
