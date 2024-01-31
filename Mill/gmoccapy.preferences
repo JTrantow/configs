@@ -76,4 +76,8 @@ unlock_way = no
 show_preview_on_offset = False
 use_keyboard_shortcuts = False
 tool_in_spindle = 0
+kbd_width = 880
+kbd_set_height = False
+kbd_set_width = False
+gcode_theme = classic
 

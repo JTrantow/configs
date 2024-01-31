@@ -1,11 +1,8 @@
 loadrt [KINS](KINEMATICS)
 loadrt [EMCMOT](EMCMOT) servo_period_nsec=[EMCMOT](SERVO_PERIOD) num_joints=[KINS](JOINTS)
-
 loadrt hostmot2
-loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=4 num_stepgens=4 sserial_port_0=00000000"
-
+loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=4 num_stepgens=4"
 setp   [MESA](CARD0).watchdog.timeout_ns 5000000
-
 loadrt pid names=pid.x,pid.y,pid.z
 
 addf [MESA](CARD0).read servo-thread
