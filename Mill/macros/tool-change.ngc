@@ -22,6 +22,7 @@ O100     return [999]
 O100 endif
 
 O200 if [#<_hal[gmoccapy.toolmeasurement]> EQ 0]
+      (debug toolmeasurement 0)
 O200 return [3] ; indicate no tool measurement 
 O200 endif
 
@@ -31,14 +32,25 @@ G90                                            ( Notice G53 requires absolute mo
 G53 G0 Z[#<_ini[CHANGE_POSITION]Z>]
 G53 G0 X[#<_ini[CHANGE_POSITION]X>] Y[#<_ini[CHANGE_POSITION]Y>] 
 
-M6                                             ( do the normal M6 stuff )
+
+(debug, In position)
+G28.1                                          (Save absolute machine coordinates to parameters.)
+(debug, G28.1 x #5162 Y #5162 Z #5163)
+
+M6                                             ( do the normal M6 stuff, tool change prompt)
 (  Check the search and probe velocity after M6 in case they get changed. )
 O300 if [#<_hal[gmoccapy.searchvel]> LE 0]
+   (debug, searchvel non-positive)
 O300 return [-1] ; indicate searchvel <= 0 
+O300 ELSE
+   (debug, searchvel valid)
 O300 endif
 
 O400 if [#<_hal[gmoccapy.probevel]> LE 0]
+   (debug, probevel non-positive)
 O400 return [-2] ; indicate probevel <= 0 
+O400 ELSE
+   (debug, probevel valid)
 O400 endif
 
 M9                                             ( turn off coolant, will be restored on return if it was on )
@@ -48,17 +60,36 @@ G49                                            ( clear tool length compensation 
 G94                                            ( use feedrate in units/min )
 G40                                            ( turn cutter radius compensation off here )
 
-G53 G0 Z[#<_ini[TOOLSENSOR]Z>]                 ( go to safe probe travel level on Z )
-G53 G0 X[#<_ini[TOOLSENSOR]X>] Y[#<_ini[TOOLSENSOR]Y>]   ( move over the tool length sensor)
+;
+; Only move up for safe TLM. If we are already up, don't go down.
+;
 
+G28.1                                          (Save absolute machine coordinates to parameters.)
+(debug, G28.1 #5163 TOOLSENSOR 350)
+O450 if [#5163 GT 350 ]  (#<_ini[TOOLSENSOR]Z>)
+  (debug, Already above TOOLSENSOR Z)
+O450 ELSE
+  G53 G0 Z[#<_ini[TOOLSENSOR]Z>]                 ( go to safe probe travel level on Z )
+O450 endif
+
+G53 G0 X[#<_ini[TOOLSENSOR]X>] Y[#<_ini[TOOLSENSOR]Y>]   ( move over the tool length sensor)
 G91                                          ( use relative positioning during probing, coordinate system doesn't matter. )
+
+
+(debug, Search.)
 
 G38.2 Z[#<_ini[TOOLSENSOR]MAXPROBE>] F[#<_hal[gmoccapy.searchvel]>]
 G1    Z[#<_ini[TOOLSENSOR]RETRACT_HEIGHT>]
 G38.2 Z[#<_ini[TOOLSENSOR]RETRACT_HEIGHT> * -1.25] F[#<_hal[gmoccapy.probevel]>] (Search 25% further than retraction, then probe very slowly to the trip point.)
 
+;
+; Move off the sensor.
+;
+G1    Z10 F[#<_hal[gmoccapy.searchvel]>]
+
 O500 if [#5070 EQ 0]
      G90
+  (debug, indicate probe contact failure to epilog)
 O500 return [-3] ; indicate probe contact failure to epilog
 O500 endif
 
@@ -66,8 +97,6 @@ O500 endif
 ; Check the current tool number.
 ;
 O900 IF [#5400 NE 0 ]
-
-(debug, Measure)
   ;
   ; Non-zero tool numbers will modify the tool length.
   ; Uses G10 L11 to set height relative to absolute coordinates so this script is independent of coordinate systems other than P9. 
@@ -76,8 +105,6 @@ O900 IF [#5400 NE 0 ]
   G43 H#5400                                   ( Reload the tool length offsets from the changed tool table.)
 O900 ELSE
 
-(debug, Set P9 offset)
-
   ;
   ; Zero tool will set the tool length sensor offset in P9 for subsequent tools. Recommend using an empty spindle for tool 0.
   ;
@@ -85,8 +112,9 @@ O900 ELSE
 O900 ENDIF
 
 ( Move to safe TOOLSENSOR Z position. )
+G1 Z25
 G90                                          ( G53 requires absolute positioning. )
-G53 G0 Z[#<_ini[TOOLSENSOR]Z>]               ( return to safe level )
+;G53 G0 Z[#<_ini[TOOLSENSOR]Z>]               ( return to safe level )
 
 M72                                          ( restore modal state )
 G43 H#5400                                   ( Reload the tool length offsets from the changed tool table.)

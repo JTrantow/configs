@@ -6,5 +6,6 @@ loadrt or2 names=or2_probe
 addf or2_probe servo-thread
 
 net length-in       <= [MESA](CARD0).gpio.027.in => or2_probe.in0
-net probe-in        <= [MESA](CARD0).gpio.033.in => or2_probe.in1
+#net probe-in        <= [MESA](CARD0).gpio.033.in => or2_probe.in1
+setp or2_probe.in1 false
 net probe-or-length <= or2_probe.out          => motion.probe-input
