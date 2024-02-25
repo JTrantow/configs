@@ -75,13 +75,13 @@ run_from_line = no_run
 unlock_way = no
 show_preview_on_offset = False
 use_keyboard_shortcuts = False
-tool_in_spindle = 2
+tool_in_spindle = 0
 kbd_width = 880
 kbd_set_height = False
 kbd_set_width = False
 gcode_theme = classic
-offset_axis_x = -193.04
-offset_axis_y = 8.89
-offset_axis_z = 23.2588
+offset_axis_x = 0.0
+offset_axis_y = 0.0
+offset_axis_z = 10.0
 show_keyboard_on_file_selection = False
 

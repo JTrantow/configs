@@ -47,7 +47,7 @@ M70                                            ( save current modal state before
 
 O220 if [#<tool> GT 0] 
   O221 if [#<tool> EQ #5400]
-    (debug, Tool #<tool> is already set? How can I give an option to skip measure?)
+    ;(debug, Tool #<tool> is already set? How can I give an option to skip measure?)
 O<tool-change> return [2]    
   O221 ELSE
     ;(debug, tool #<tool> 5400 #5400 normal TLM.)
