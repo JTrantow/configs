@@ -5,19 +5,35 @@
 clear all
 
 if (0)
-% MillY .1mm spacing.
-DEADBAND=0.0075;
-MIN_FERROR=0.02;
-millY2
+  % MillY .1mm spacing.
+  DEADBAND=0.0075;
+  MIN_FERROR=0.02;
+  millY2
+
+  home_offset = 180;
+  a1(:,2:3)=a1(:,2:3)+home_offset;
+  a2(:,2:3)=a2(:,2:3)+home_offset;
+
+elif (0)
+  LatheXAxisMap
+  %
+  % LatheX use G7/G8 in collection script to avoid this factor of 1/2.
+  %
+  a1(:,2:3)=a1(:,2:3) + HOME_OFFSET;
+  a2(:,2:3)=a2(:,2:3) + HOME_OFFSET;
 else
-encoderMap
+  LatheZAxisMap
+  %
+  % LatheZ doesn't home.
+  %
+  home_offset = mean([a1(:,1) - a1(:,3); a2(:,1) - a2(:,3)])
+
+  a1(:,2:3)=a1(:,2:3) + home_offset;
+  a2(:,2:3)=a2(:,2:3) + home_offset;
 end
 
-home_offset = 180;
-a1(:,2:3)=a1(:,2:3)+home_offset;
-a2(:,2:3)=a2(:,2:3)+home_offset;
 
-if (0)
+if (1)
     figure(1)
     hold off
     plot(a1(:,1), a1(:,2),'r')
@@ -58,81 +74,91 @@ if (1)
     title('(command - stepgen) vs position')
     legend(['dir-'; 'dir+'; 'DEADBAND';'MIN_FERROR']);
 
-min(d1)
-min(d2)
-a= [min(d1); min(d2)]
-min(a)
 c=min([min(d1); min(d2); -MIN_FERROR*1.05])
 d=max([max(d1); max(d2); +MIN_FERROR*1.05])
     a=[min(a1(:,1)), max(a1(:,1)), min([min(d1); min(d2); -MIN_FERROR*1.05]),max([max(d1); max(d2); +MIN_FERROR*1.05])]
     axis(a);
 end
 
-%
-% Figure 3 Show diff between command and encoder.position.
-% When using when using stepgen.position_fb as _pos_fb this shows backlash and any alignment problems.
-%
-figure(3)
-hold off
-e1=a1(:,1) - a1(:,3);
-plot(a1(:,1), e1,'r')
-hold on
-grid on
-e2=a2(:,1) - a2(:,3);
-plot(a2(:,1), e2,'g')
+if (1)
+  %
+  % Figure 3 Show diff between command and encoder.position.
+  % When using when using stepgen.position_fb as _pos_fb this shows backlash and any alignment problems.
+  %
+  figure(3)
+  hold off
+  e1=a1(:,1) - a1(:,3);
+  plot(a1(:,1), e1,'r')
+  hold on
+  grid on
+  e2=a2(:,1) - a2(:,3);
+  plot(a2(:,1), e2,'g')
 
-plot([a1(1,1),a1(end,1)]', [-DEADBAND,-DEADBAND]','--k')
-plot([a1(1,1),a1(end,1)]', [-MIN_FERROR,-MIN_FERROR]','--r')
-plot([a1(1,1),a1(end,1)]', [+DEADBAND,+DEADBAND]','--k');
-plot([a1(1,1),a1(end,1)]', [+MIN_FERROR,+MIN_FERROR]','--r');
+  plot([a1(1,1),a1(end,1)]', [-DEADBAND,-DEADBAND]','--k')
+  plot([a1(1,1),a1(end,1)]', [-MIN_FERROR,-MIN_FERROR]','--r')
+  plot([a1(1,1),a1(end,1)]', [+DEADBAND,+DEADBAND]','--k');
+  plot([a1(1,1),a1(end,1)]', [+MIN_FERROR,+MIN_FERROR]','--r');
 
-xlabel('command[mm]')
-ylabel('delta[mm]')
-title('(command - encoder) vs position')
-legend(['dir-'; 'dir+'; 'DEADBAND';'MIN\_FERROR']);
-ymin=   min([min(e1), min(e2), -MIN_FERROR*1.05])
-ymax=   max([max(e1), max(e2), +MIN_FERROR*1.05])
+  xlabel('command[mm]')
+  ylabel('delta[mm]')
+  title('(command - encoder) vs position')
+  legend(['dir-'; 'dir+'; 'DEADBAND';'MIN\_FERROR']);
+  ymin=   min([min(e1), min(e2), -MIN_FERROR*1.05])
+  ymax=   max([max(e1), max(e2), +MIN_FERROR*1.05])
 
-%a =[
-%%    min(a1(:,1)), 
- %   max(a1(:,1)), 
-%    min([min(e1), min(e2), -MIN_FERROR*1.05]), 
-%    max([max(e1), max(e2), +MIN_FERROR*1.05])
-%    ]
-%axis( a);
+  a =[
+      min(a1(:,1)),
+      max(a1(:,1)),
+      min([min(e1), min(e2), -MIN_FERROR*1.05]),
+      max([max(e1), max(e2), +MIN_FERROR*1.05])
+      ]
+  axis( a);
 
-%
-% Show a linear fit. The slope should correspond to the misalignment angle.
-%
+  %
+  % Show a linear fit. The slope should correspond to the misalignment angle.
+  %
 
-%
-% Discard the first and last values that may have backlash.
-%
-x1 =a1(2:end-1,1);
-x2 =a2(2:end-1,1);
-y1=e1(2:end-1);
-y2=e2(2:end-1);
+  %
+  % Discard the first and last values to calculate backlash.
+  %
+  x1 =a1(10:end-1,1);
+  x2 =flip(a2(10:end-1,1));
+  y1=e1(10:end-1);
+  y2=flip(e2(10:end-1));
 
-%scatter(x1,y1,25,'r','*')
-P = polyfit(x1,y1,1);
-yfit = polyval(P,x1);
-hold on;
-plot(x1,yfit,'r-.');
-eqn = sprintf(' Linear fit: y = %f x + %f', P(1), P(2));
-disp(eqn)
+  figure(4)
+  hold off
+  plot(x1,y1,'r')
+  hold on
+  plot(x2,y2,'g')
 
-%scatter(x2,y2,25,'g','*')
-P = polyfit(x2,y2,1);
-yfit2 = polyval(P,x2);
-hold on;
-plot(x2,yfit2,'g-.');
-eqn = sprintf(' Linear fit: y = %f x + %f', P(1), P(2));
-disp(eqn)
+  plot(x1,y1-y2,'b')
 
-%a =[min(x1), max(x1), min([min(y1), min(y2), -MIN_FERROR*1.05]), max([max(y1), max(y2), +MIN_FERROR*1.05])];
-%axis( a);
-grid on
 
+
+
+
+
+  %scatter(x1,y1,25,'r','*')
+  P = polyfit(x1,y1,1);
+  yfit = polyval(P,x1);
+  hold on;
+  plot(x1,yfit,'r-.');
+  eqn = sprintf(' Linear fit: y = %f x + %f', P(1), P(2));
+  disp(eqn)
+
+  %scatter(x2,y2,25,'g','*')
+  P = polyfit(x2,y2,1);
+  yfit2 = polyval(P,x2);
+  hold on;
+  plot(x2,yfit2,'g-.');
+  eqn = sprintf(' Linear fit: y = %f x + %f', P(1), P(2));
+  disp(eqn)
+
+  %a =[min(x1), max(x1), min([min(y1), min(y2), -MIN_FERROR*1.05]), max([max(y1), max(y2), +MIN_FERROR*1.05])];
+  %axis( a);
+  grid on
+end
 if (0)
     %
     % Even a linear fit (adjusting alignment, there is still quite a bit of error.)

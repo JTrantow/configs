@@ -1,24 +1,25 @@
 #
 #   Manually editted config file for latheMesa.
 #
-loadrt [KINS]KINEMATICS
-loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadrt [KINS](KINEMATICS)
+loadrt [EMCMOT](EMCMOT) servo_period_nsec=[EMCMOT](SERVO_PERIOD) num_joints=[KINS](JOINTS)
 loadrt hostmot2
-loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=3 num_pwmgens=1 num_stepgens=4 sserial_port_0=00xxxx" 
-setp    hm2_7i96.0.watchdog.timeout_ns 5000000
+loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=3 num_pwmgens=1 num_stepgens=4 sserial_port_0=00xxxx" 
+setp   [MESA](CARD0).watchdog.timeout_ns 5000000
+
 loadrt pid names=pid.x,pid.z,pid.s
 loadrt pwmgen output_type=1
 
 addf pwmgen.make-pulses servo-thread
 addf pwmgen.update servo-thread
 
-addf hm2_7i96.0.read          servo-thread
+addf [MESA](CARD0).read       servo-thread
 addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread
 addf pid.x.do-pid-calcs       servo-thread
 addf pid.z.do-pid-calcs       servo-thread
 addf pid.s.do-pid-calcs       servo-thread
-addf hm2_7i96.0.write         servo-thread
+addf [MESA](CARD0).write      servo-thread
 
 #*******************
 #  AXIS X JOINT 0
@@ -33,9 +34,7 @@ setp   pid.x.FF2       [JOINT_0]FF2
 setp   pid.x.deadband  [JOINT_0]DEADBAND
 setp   pid.x.maxoutput [JOINT_0]MAX_OUTPUT
 setp   pid.x.error-previous-target true
-# This setting is to limit bogus stepgen
-# velocity corrections caused by position
-# feedback sample time jitter.
+# This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
 setp   pid.x.maxerror 0.012700
 
 net x-enable        =>  pid.x.enable
@@ -44,58 +43,61 @@ net x-output        <=  pid.x.output
 
 # Step Gen signals/setup
 
-setp   hm2_7i96.0.stepgen.00.dirsetup        [JOINT_0]DIRSETUP
-setp   hm2_7i96.0.stepgen.00.dirhold         [JOINT_0]DIRHOLD
-setp   hm2_7i96.0.stepgen.00.steplen         [JOINT_0]STEPLEN
-setp   hm2_7i96.0.stepgen.00.stepspace       [JOINT_0]STEPSPACE
-setp   hm2_7i96.0.stepgen.00.position-scale  [JOINT_0]STEP_SCALE
-setp   hm2_7i96.0.stepgen.00.step_type        0
-setp   hm2_7i96.0.stepgen.00.control-type     1
-setp   hm2_7i96.0.stepgen.00.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
-setp   hm2_7i96.0.stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
+setp   [MESA](CARD0).stepgen.00.dirsetup        [JOINT_0]DIRSETUP
+setp   [MESA](CARD0).stepgen.00.dirhold         [JOINT_0]DIRHOLD
+setp   [MESA](CARD0).stepgen.00.steplen         [JOINT_0]STEPLEN
+setp   [MESA](CARD0).stepgen.00.stepspace       [JOINT_0]STEPSPACE
+setp   [MESA](CARD0).stepgen.00.position-scale  [JOINT_0]STEP_SCALE
+setp   [MESA](CARD0).stepgen.00.step_type        0
+setp   [MESA](CARD0).stepgen.00.control-type     1
+setp   [MESA](CARD0).stepgen.00.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
+setp   [MESA](CARD0).stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
 
 # ---closedloop stepper signals---
 
 net x-pos-cmd    <= joint.0.motor-pos-cmd
 net x-vel-cmd    <= joint.0.vel-cmd
-net x-output     => hm2_7i96.0.stepgen.00.velocity-cmd
+net x-output     => [MESA](CARD0).stepgen.00.velocity-cmd
 net x-enable     <= joint.0.amp-enable-out
-net x-enable     => hm2_7i96.0.stepgen.00.enable
+net x-enable     => [MESA](CARD0).stepgen.00.enable
 #
 # The Trajectory Planner gives us the velocity. Using this signal with the PID avoids estimating the velocity command.
 # According to PCW there is a pipeline issue with the joint vel-cmd which increases following error with this term.
-#net x-vel-cmd        <= joint.0.vel-cmd                 =>  pid.x.command-deriv
+net x-vel-cmd        <= joint.0.vel-cmd                 =>  pid.x.command-deriv
 
 #
 # If you want to use x-pos-fb from the stepgenposition-fb with HOME_USE_INDEX or the encoder position as joint fb,  then you will need to use a bit file that supports stepgen.00.index-enable.
 # This is required when using stepgen posititon for feedback and doesn't hurt when you use the encoder for feedback.
 #
-net x-index-enable  <=> joint.0.index-enable  <=>  hm2_7i96.0.encoder.00.index-enable <=>  pid.x.index-enable <=> hm2_7i96.0.stepgen.00.index-enable
+net x-index-enable  <=> joint.0.index-enable  <=>  [MESA](CARD0).encoder.00.index-enable <=>  pid.x.index-enable <=> [MESA](CARD0).stepgen.00.index-enable
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
 # This should be the optimal configuration.
-net x-pos-fb         <= hm2_7i96.0.encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
-net x-vel-fb         <= hm2_7i96.0.encoder.00.velocity  => pid.x.feedback-deriv
+#net x-pos-fb         <= [MESA](CARD0).encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
+#net x-vel-fb         <= [MESA](CARD0).encoder.00.velocity  => pid.x.feedback-deriv
 #
 # Enable/Disable BOTH the following TWO lines to use stepgen position to close the control loop.
 # Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
 # Do not use the encoder x-vel-fb is you are using the stepgen position for x-pos-fb.
 #
-#net x-pos-fb         <= hm2_7i96.0.stepgen.00.position-fb  => pid.x.feedback    
-#net x-pos-encoder    <= hm2_7i96.0.encoder.00.position  => joint.0.motor-pos-fb
+setp   pid.x.Pgain     1000.0
+setp   pid.x.Igain     0.0
+setp   pid.x.deadband  [JOINT_0]DEADBAND
+net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback  => joint.0.motor-pos-fb
+#net x-pos-encoder    <= [MESA](CARD0).encoder.00.position  
 
 # ---Encoder feedback signals/setup---
 
-setp    hm2_7i96.0.encoder.00.counter-mode 0
-setp    hm2_7i96.0.encoder.00.filter 1
-setp    hm2_7i96.0.encoder.00.index-invert 0
-setp    hm2_7i96.0.encoder.00.index-mask 0
-setp    hm2_7i96.0.encoder.00.index-mask-invert 0
-setp    hm2_7i96.0.encoder.00.scale  [JOINT_0]ENCODER_SCALE
+setp    [MESA](CARD0).encoder.00.counter-mode 0
+setp    [MESA](CARD0).encoder.00.filter 1
+setp    [MESA](CARD0).encoder.00.index-invert 0
+setp    [MESA](CARD0).encoder.00.index-mask 0
+setp    [MESA](CARD0).encoder.00.index-mask-invert 0
+setp    [MESA](CARD0).encoder.00.scale  [JOINT_0]ENCODER_SCALE
 
 # ---setup home / limit switch signals--- 
-net x-home-sw       <= hm2_7i96.0.gpio.001.in_not =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
+net x-home-sw       <= [MESA](CARD0).gpio.001.in_not =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
 
 #*******************
 #  AXIS Z JOINT 1
@@ -119,47 +121,50 @@ net z-output        <=  pid.z.output
 
 # Step Gen signals/setup
 
-setp   hm2_7i96.0.stepgen.02.dirsetup        [JOINT_1]DIRSETUP
-setp   hm2_7i96.0.stepgen.02.dirhold         [JOINT_1]DIRHOLD
-setp   hm2_7i96.0.stepgen.02.steplen         [JOINT_1]STEPLEN
-setp   hm2_7i96.0.stepgen.02.stepspace       [JOINT_1]STEPSPACE
+setp   [MESA](CARD0).stepgen.02.dirsetup        [JOINT_1]DIRSETUP
+setp   [MESA](CARD0).stepgen.02.dirhold         [JOINT_1]DIRHOLD
+setp   [MESA](CARD0).stepgen.02.steplen         [JOINT_1]STEPLEN
+setp   [MESA](CARD0).stepgen.02.stepspace       [JOINT_1]STEPSPACE
 # Do not use the encoder x-vel-fb is you are using the stepgen position for x-pos-fb.
-setp   hm2_7i96.0.stepgen.02.position-scale  [JOINT_1]STEP_SCALE
-setp   hm2_7i96.0.stepgen.02.step_type        0
-setp   hm2_7i96.0.stepgen.02.control-type     1
-setp   hm2_7i96.0.stepgen.02.maxaccel         [JOINT_1]STEPGEN_MAXACCEL
-setp   hm2_7i96.0.stepgen.02.maxvel           [JOINT_1]STEPGEN_MAXVEL
+setp   [MESA](CARD0).stepgen.02.position-scale  [JOINT_1]STEP_SCALE
+setp   [MESA](CARD0).stepgen.02.step_type        0
+setp   [MESA](CARD0).stepgen.02.control-type     1
+setp   [MESA](CARD0).stepgen.02.maxaccel         [JOINT_1]STEPGEN_MAXACCEL
+setp   [MESA](CARD0).stepgen.02.maxvel           [JOINT_1]STEPGEN_MAXVEL
 
 # ---closedloop stepper signals---
 
 net z-pos-cmd    <= joint.1.motor-pos-cmd
-net z-output     <= hm2_7i96.0.stepgen.02.velocity-cmd
+net z-output     <= [MESA](CARD0).stepgen.02.velocity-cmd
 net z-enable     <= joint.1.amp-enable-out
-net z-enable     => hm2_7i96.0.stepgen.02.enable
+net z-enable     => [MESA](CARD0).stepgen.02.enable
 
 #
 # The Trajectory Planner gives us the velocity. Using this signal with the PID avoids estimating the velocity command.
 # According to PCW there is a pipeline issue with the joint vel-cmd which increases following error with this term.
-#net z-vel-cmd        <= joint.1.vel-cmd                =>  pid.z.command-deriv
+net z-vel-cmd        <= joint.1.vel-cmd                =>  pid.z.command-deriv
 
 #
 # If you want to use x-pos-fb from the stepgenposition-fb with HOME_USE_INDEX or the encoder position as joint fb,  then you will need to use a bit file that supports stepgen.00.index-enable.
 # This is required when using stepgen posititon for feedback and doesn't hurt when you use the encoder for feedback.
 #
-net z-index-enable  <=> joint.1.index-enable  <=>  hm2_7i96.0.encoder.01.index-enable <=>  pid.z.index-enable <=> hm2_7i96.0.stepgen.02.index-enable
+net z-index-enable  <=> joint.1.index-enable  <=>  [MESA](CARD0).encoder.01.index-enable <=>  pid.z.index-enable <=> [MESA](CARD0).stepgen.02.index-enable
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
 # This should be the optimal configuration.
-net z-pos-fb         <= hm2_7i96.0.encoder.01.position  => pid.z.feedback        => joint.1.motor-pos-fb
-net z-vel-fb         <= hm2_7i96.0.encoder.01.velocity  => pid.z.feedback-deriv
+#net z-pos-fb         <= [MESA](CARD0).encoder.01.position  => pid.z.feedback        => joint.1.motor-pos-fb
+#net z-vel-fb         <= [MESA](CARD0).encoder.01.velocity  => pid.z.feedback-deriv
 #
 # Enable/Disable BOTH the following TWO lines to use stepgen position to close the control loop.
 # Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
 # Do not use the encoder -vel-fb is you are using the stepgen position for -pos-fb.
 #
-#net z-pos-fb         <= hm2_7i96.0.stepgen.02.position-fb  => pid.z.feedback 
-#net z-pos-encoder    <= hm2_7i96.0.encoder.01.position     => joint.1.motor-pos-fb
+setp   pid.x.Pgain     1000.0
+setp   pid.x.Igain     0.0
+setp   pid.x.deadband  [JOINT_0]DEADBAND
+net z-pos-fb         <= [MESA](CARD0).stepgen.02.position-fb  => pid.z.feedback => joint.1.motor-pos-fb
+#net z-pos-encoder    <= [MESA](CARD0).encoder.01.position     => joint.1.motor-pos-fb
 
 # ---setup home / limit switch signals---
 
@@ -169,12 +174,12 @@ net z-pos-limit     =>  joint.1.pos-lim-sw-in
 
 # ---Encoder feedback signals/setup---
 
-setp    hm2_7i96.0.encoder.01.counter-mode 0
-setp    hm2_7i96.0.encoder.01.filter 1
-setp    hm2_7i96.0.encoder.01.index-invert 0
-setp    hm2_7i96.0.encoder.01.index-mask 0
-setp    hm2_7i96.0.encoder.01.index-mask-invert 0
-setp    hm2_7i96.0.encoder.01.scale 200
+setp    [MESA](CARD0).encoder.01.counter-mode 0
+setp    [MESA](CARD0).encoder.01.filter 1
+setp    [MESA](CARD0).encoder.01.index-invert 0
+setp    [MESA](CARD0).encoder.01.index-mask 0
+setp    [MESA](CARD0).encoder.01.index-mask-invert 0
+setp    [MESA](CARD0).encoder.01.scale [JOINT_1]ENCODER_SCALE
 
 #******************************
 # connect miscellaneous signals

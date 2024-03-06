@@ -1,0 +1,53 @@
+o<spiral> sub
+   (screw subroutine)
+   (spiral.ngc)
+
+   #<_OutsideDiameter>    = #1 (Nom or Act Dia, D)
+   #<_TPI>		          = #2 (=0 TPI, 0 for auto)
+   #<_First_Cut_Depth>	  = #3 (=0.015 First Cut)
+   #<_Total_Depth>        = #4
+
+   #<_Taper>              = 15
+   #<_X_Clearance>        = 5
+   #<_Z_LeadIn>           = 3.732
+
+;(debug, Using OD #<_OutsideDiameter> TPI #<_TPI> Depth #<_First_Cut_Depth> Total Depth #<_Total_Depth>)
+
+#<dx> =  [-COS[#<_Taper>] * #<_First_Cut_Depth> * 2]
+#<dz> =  [-SIN[#<_Taper>] * #<_First_Cut_Depth>]
+
+#<xi> = -2
+#<zi> = [#<xi>/2 / TAN[#<_Taper>]]
+
+#<rx> = [-#<xi> + #<_OutsideDiameter> + 1]
+#<rz> = [-#<rx>/2 / TAN[#<_Taper>]]
+;(debug, Relative move along taper x #<rx>, z #<rz>)
+
+   (Move to Initial position beyond the tip. )
+    G90 
+    G0 Z[#<zi>]
+    G0 X[#<xi>]
+
+   (main thread cutting loop)
+
+   #<loop_count> = 0
+   #<N_loops>    = [FIX[#<_Total_Depth> / #<_First_Cut_Depth>] ] 
+   o200 do 
+        (Move to start adjusted for cut depth offset.)     
+        G0 X[#<xi> + #<dx> * #<loop_count>] Z[#<zi> + #<dz> * #<loop_count>]
+
+        (Relative move from start along the taper.)
+        G91
+       G33 X[#<rx>] Z[#<rz>] K#<_TPI>
+        (test movement without spindle)
+;        G1 X[#<rx>]	 Z[#<rz>] F200 
+        G0 X1
+        G90
+        ( Safely return to initial Z start position.)
+        G0 Z[#<zi>]
+ 
+        #<loop_count> = [#<loop_count> + 1]
+   o200 while [#<loop_count> LT #<N_loops> ]
+
+   M2
+o<spiral> endsub

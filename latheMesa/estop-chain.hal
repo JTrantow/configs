@@ -6,7 +6,8 @@
 #
 # The default setup has estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in. 
 # This file inserts a chain of estop latches between user-enable-out and emc-enable-in.
-# Set up six estop latches for motor driver alarm, probe overtravel, x, y, z, spindle encoder quadrature fault.
+# Set up multiple estop latches for G540 driver and encoder quadrature faults.
+#
 loadrt estop_latch count=4
 
 addf estop-latch.0            servo-thread
