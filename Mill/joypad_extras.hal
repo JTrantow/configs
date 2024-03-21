@@ -5,9 +5,14 @@
 #
 # Add this file to postgui_call_list.hal using a line with "source joypad_extras.hal".
 #
-loadrt and2 names=and2_extras0,and2_extras1 # Add two and2 gate components so pause/resume can use same button.
+loadrt and2 names=and2_extras0,and2_extras1,and2_extras2,and2_extras3 # Add two and2 gate components so pause/resume can use same button.
+loadrt not names=not_extras0
+
 addf and2_extras0 servo-thread
 addf and2_extras1 servo-thread
+addf and2_extras2 servo-thread
+addf and2_extras3 servo-thread
+addf not_extras0   servo-thread
 
 #
 # Extra HAL to connect joypad buttons for jog xz plus/minus at the chosen jog speed.
@@ -30,17 +35,26 @@ net jog-z-neg <= input.0.abs-hat0x-is-neg => halui.axis.z.minus halui.joint.1.mi
 #net feedoverPos  <= input.0.abs-hat0y-is-neg => halui.feed-override.increase
 
 #
+# Spindle start/stop from base4 button.
+#
+net base4-button    <= input.0.btn-base4     => and2_extras2.in0      and2_extras3.in1
+net spindle-on      <= halui.spindle.0.is-on => and2_extras2.in1      not_extras0.in
+net spindle-is-off  <= not_extras0.out       => and2_extras3.in0
+net spindle-stop    <= and2_extras2.out      => halui.spindle.0.stop
+net spindle-start   <= and2_extras3.out      => halui.spindle.0.start
+
+#
 # Start/Pause the current program.
 #
-net start <= input.0.btn-base4 => halui.program.run 
+#net start <= input.0.btn-base4 => halui.program.run 
 #
 # Nice to have btn-base2 button do either pause/resume. 
 #
-net a0in0 <= halui.program.is-running => and2_extras0.in0
-net ain   <= input.0.btn-base2        => and2_extras0.in1 and2_extras1.in0
-net a1in1 <= halui.program.is-paused  => and2_extras1.in1
-net a0out <= and2_extras0.out         => halui.program.pause
-net a1out <= and2_extras1.out         => halui.program.resume
+#net a0in0 <= halui.program.is-running => and2_extras0.in0
+#net ain   <= input.0.btn-base2        => and2_extras0.in1 and2_extras1.in0
+#net a1in1 <= halui.program.is-paused  => and2_extras1.in1
+#net a0out <= and2_extras0.out         => halui.program.pause
+#net a1out <= and2_extras1.out         => halui.program.resume
 
 #
 # Set mode to manual or auto.

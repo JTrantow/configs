@@ -79,19 +79,8 @@ net x-vel-cmd        <= joint.0.vel-cmd  => pid.x.command-deriv
 #
 #setp   pid.x.Pgain     1000.0
 #setp   pid.x.Igain     0.0
-#setp   pid.x.Dgain     0.0
-#setp   pid.x.bias      0.0
-#setp   pid.x.FF0       0.0
 #setp   pid.x.FF1       1.0
-#setp   pid.x.FF2       0.0
 #net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback  => joint.0.motor-pos-fb
-#
-# Enable/Disable BOTH the following TWO lines to use stepgen position to close the control loop.
-# Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
-# Do not use the encoder -vel-fb is you are using the stepgen position for -pos-fb.
-#
-#net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback    
-#net x-pos-encoder    <= [MESA](CARD0).encoder.00.position     => joint.0.motor-pos-fb
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
@@ -170,29 +159,10 @@ net y-vel-cmd        <= joint.1.vel-cmd  => pid.y.command-deriv
 #
 # When this works, it just tells you that the stepper driver told the motor to move. This will not catch problems that the encoder might. (motor spins but bad coupling, stepper step skip, etc..)
 #setp   pid.y.Pgain     1000.0
-#setp   pid.y.Igain     0.0
-#setp   pid.y.Dgain     0.0
-#setp   pid.y.bias      0.0
-#setp   pid.y.FF0       0.0
 #setp   pid.y.FF1       1.0
-#setp   pid.y.FF2       0.0
 #net y-pos-fb         <= [MESA](CARD0).stepgen.01.position-fb  => pid.y.feedback  => joint.1.motor-pos-fb
 #
-# STEP 2. Use stepgen for pid feedback and encoder for joint motor-pos-fb.
-#
-# Enable/Disable BOTH the following TWO lines. Use this with P=1000, FF1=1.0.
-# This REQUIRES the encoder measurement is identical to stepgen position-fb. 
-# Using STEP 1. verify your encoder position against stepgen position-fb over the range of travel before trying this. They must agree within <= MIN_FERROR over the entire range.
-# Advantage of this config is catching small movement errors with the encoder while still using trivial PID settings.
-#
-# Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
-# Do not use the encoder -vel-fb is you are using the stepgen position for -pos-fb.
-#
-#net y-pos-fb         <= [MESA](CARD0).stepgen.01.position-fb  => pid.y.feedback    
-#net y-pos-encoder    <= [MESA](CARD0).encoder.01.position     => joint.1.motor-pos-fb
-
-#
-# STEP 3. Use encoder position for pid feedback and joint motor-pos-fb.\
+# Use encoder position for pid feedback and joint motor-pos-fb.\
 #
 # Enable/Disable the following lines to use the encoder for both joint and pid.
 # IFF you use the encoder position for pid feedback, also use encoder velocity for feedback-deriv see https://forum.linuxcnc.org/10-advanced-configuration/37989-2-8-2-9-pid-seems-broken
@@ -267,13 +237,6 @@ net z-vel-cmd        <= joint.2.vel-cmd  => pid.z.command-deriv
 # PNCConf default config. Use this with P=1000, FF1=1.0.
 #
 #net z-pos-fb         <= [MESA](CARD0).stepgen.02.position-fb  => pid.z.feedback  => joint.2.motor-pos-fb
-#
-# Enable/Disable BOTH the following TWO lines to use stepgen position to close the control loop.
-# Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
-# Do not use the encoder -vel-fb is you are using the stepgen position for -pos-fb.
-#
-#net z-pos-fb         <= [MESA](CARD0).stepgen.02.position-fb  => pid.z.feedback
-#net z-pos-encoder    <= [MESA](CARD0).encoder.02.position     => joint.2.motor-pos-fb
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
