@@ -35,9 +35,9 @@ net adir            => parport.0.pin-09-out
 #
 # Limit switch for each joint.
 #
-net min-home-y      <= parport.0.pin-12-in
+net max-home-y      <= parport.0.pin-12-in
 net max-home-z      <= parport.0.pin-11-in
-net min-home-a      <= parport.0.pin-10-in
+net max-home-a      <= parport.0.pin-10-in
 #net min-home-x      <= parport.0.pin-13-in
 
 net G540-fault      <= parport.0.pin-15-in
@@ -55,11 +55,11 @@ net GS2-fault-raw   <= parport.1.pin-11-in      => debounce.0.1.in    # Short ph
 #net available      <= parport.1.pin-12-in                            # 2 pin connector.
 #net available      <= parport.1.pin-13-in                            # 2 pin connector.
 net length-in-raw   <= parport.1.pin-15-in      => debounce.0.2.in    # Long phone wire.
-net min-home-x-raw  <= parport.0.pin-13-in      => debounce.0.3.in
+net max-home-x-raw  <= parport.0.pin-13-in      => debounce.0.3.in
 
 net probe-in        <= debounce.0.0.out
 net GS2-fault       <= debounce.0.1.out
 net length-in       <= debounce.0.2.out
-net min-home-x      <= debounce.0.3.out
+net max-home-x      <= debounce.0.3.out
 
 
