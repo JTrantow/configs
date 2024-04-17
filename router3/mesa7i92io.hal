@@ -1,0 +1,55 @@
+# Define signals connected to mesa 7i92T gpio and any necessary conditioning.
+#
+#   Basic motion control signals:
+#       max-home-x
+#       max-home-y
+#       max-home-y2
+#       max-home-z
+#       G540-fault
+#       laser cross-hair enable?
+#
+#   Additional signals for Laser control:
+#       Laser enable.
+#       Air Compressor relay
+#       Laser PWM. (automatically connected by PWM to G540 VFD PWM pin.)
+#
+#   Additional signas for Plasma control:
+#       Plasma enable.
+#       Breakaway input.
+#       THCAD arc height. (automatically connected by encode to G50 XXX pin.)
+#       THCAD ohmic sense. (automatically connected by encoder to G540 XXX pin.)
+#
+
+#
+# Add debounce filtering for inputs which were giving erroneous signals.
+#
+loadrt debounce cfg=4
+addf debounce.0 servo-thread
+setp debounce.0.delay 30
+
+#
+# Mesa 7i92T P2 Connector to G540.
+#   May need to use one of the inputs as THCAD encoder.
+#
+net laser-enable       =>  [HMOT](CARD0).gpio.017.out 
+net laser-air-relay    =>  [HMOT](CARD0).gpio.007.out 
+
+net G540-fault         <=  [HMOT](CARD0).gpio.003.in
+net max-home-y2-raw    <=  [HMOT](CARD0).gpio.013.in => debounce.0.0.in
+net max-home-z         <=  [HMOT](CARD0).gpio.014.in
+net max-home-y-raw     <=  [HMOT](CARD0).gpio.015.in => debounce.0.1.in
+net max-home-x         <=  [HMOT](CARD0).gpio.016.in
+
+net max-home-y2        <=  debounce.0.0.out
+net max-home-y         <=  debounce.0.1.out
+
+#
+# Mesa 7i92T P1 Connector to 7i75.
+#   May need debouncing.
+net probe-in        <=  [HMOT](CARD0).gpio.030.in # Spiral corded.
+net length-in       <=  [HMOT](CARD0).gpio.031.in # Long phone wire.
+net GS2-fault       <=  [HMOT](CARD0).gpio.032.in # Short phone wire. True for open connection which is a fault.
+
+net plasma_on       =>  [HMOT](CARD0).gpio.016.out
+net plasma_arc_ok   <=  [HMOT](CARD0).gpio.019.out
+

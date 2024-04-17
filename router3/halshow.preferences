@@ -1,0 +1,29 @@
+# Halshow settings
+# This file is generated automatically.
+wm geometry . 568x568+-125+78
+placeFrames 0.3
+set ::ratio 0.3
+set ::old_w_leftf 160
+set ::watchlist {
+    sig+max-home-x
+    sig+max-home-z
+    sig+estop-out
+    sig+G540-fault
+    pin+hm2_7i92.0.pwmgen.00.enable
+    pin+hm2_7i92.0.pwmgen.00.value
+    pin+motion.analog-out-00
+    pin+iocontrol.0.coolant-flood
+    pin+iocontrol.0.coolant-mist
+    pin+motion.analog-out-01
+    pin+hm2_7i92.0.gpio.007.in
+    pin+hm2_7i92.0.gpio.007.out
+    pin+hm2_7i92.0.gpio.000.out
+    pin+hm2_7i92.0.gpio.017.out
+}
+set ::workmode watchhal
+set ::watchInterval 100
+set ::col1_width 100
+set ::ffmts 
+set ::ifmts 
+set ::alwaysOnTop 0
+set ::autoSaveWatchlist 1

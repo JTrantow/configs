@@ -1,0 +1,24 @@
+#
+# This file sets up the laser HAL components for cutting and engraving.
+# The laser is implemented as spindle.2.
+#
+setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
+setp    [HMOT](CARD0).pwmgen.pdm_frequency 6000000
+
+setp [HMOT](CARD0).pwmgen.00.output-type     1
+setp [HMOT](CARD0).pwmgen.00.scale         100
+
+#
+# Laser on/off is controlled via a relay. 
+#   M3 starts all spindles at their set speed
+#   M3 $3 starts only spindle 3]
+#   M5 stops all spindles
+#   M5 $2 stops only spindle 2.
+#net laser-enable    <= spindle.0.on   => [HMOT](CARD0).pwmgen.00.enable           
+#
+# Laser power is modulated by the M67/M68 gcode.
+#
+#net laser_pwm       <= motion.analog-out-00   => [HMOT](CARD0).pwmgen.00.value # M67 E0 Q#
+
+net laser-air-relay <= iocontrol.0.coolant-flood
+net laser-enable <= iocontrol.0.coolant-mist
