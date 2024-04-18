@@ -3,22 +3,38 @@
 # The laser is implemented as spindle.2.
 #
 setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
-setp    [HMOT](CARD0).pwmgen.pdm_frequency 6000000
 
-setp [HMOT](CARD0).pwmgen.00.output-type     1
 setp [HMOT](CARD0).pwmgen.00.scale         100
+setp [HMOT](CARD0).pwmgen.00.output-type     1
+setp [HMOT](CARD0).pwmgen.00.offset-mode false
+#setp [HMOT](CARD0).pwmgen.00.dither       true
 
+setp [HMOT](CARD0).pwmgen.01.scale         100
+setp [HMOT](CARD0).pwmgen.01.output-type     1
+setp [HMOT](CARD0).pwmgen.01.offset-mode false
+#setp [HMOT](CARD0).pwmgen.01.dither       true
+
+set  [HMOT](CARD0).pwmgen.00.enable      false
+set  [HMOT](CARD0).pwmgen.00.value         0.0
 #
-# Laser on/off is controlled via a relay. 
+# Laser +12V power on/off is controlled via a relay controlled by laser-enable signal.
+#
+# CRITICALLY IMPORTANT THAT THIS IS OFF DURING POWERUP AND ESTOP.
+#
 #   M3 starts all spindles at their set speed
-#   M3 $3 starts only spindle 3]
+#   M3 $1 starts only spindle 1.
 #   M5 stops all spindles
-#   M5 $2 stops only spindle 2.
-#net laser-enable    <= spindle.0.on   => [HMOT](CARD0).pwmgen.00.enable           
+#   M5 $1 stops only spindle 1.
 #
+net laser-enable    <= iocontrol.0.coolant-mist    => [HMOT](CARD0).pwmgen.01.enable 
+#          
 # Laser power is modulated by the M67/M68 gcode.
+# M67 E0 Q50 followed by a G1 move will put 50% PWM to the laser.
+# pwmgen from P1 connector. PWM output is on 7i75 IO18.
 #
-#net laser_pwm       <= motion.analog-out-00   => [HMOT](CARD0).pwmgen.00.value # M67 E0 Q#
+net laser_pwm       <= motion.analog-out-00        => [HMOT](CARD0).pwmgen.01.value 
 
+#
+# Control the air compressor with a relay.
+#
 net laser-air-relay <= iocontrol.0.coolant-flood
-net laser-enable <= iocontrol.0.coolant-mist
