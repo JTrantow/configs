@@ -27,10 +27,6 @@ loadrt debounce cfg=4
 addf debounce.0 servo-thread
 setp debounce.0.delay 20
 
-# --- CHARGE-PUMP (not currently used) ---
-#setp hm2_5i25.0.gpio.005.is_output true
-#net charge-pump  =>     hm2_5i25.0.gpio.005.out #connects to DB25 pin 16
-
 #
 # Mesa 7i92T P2 Connector to G540.
 # 
@@ -95,18 +91,25 @@ net max-home-y2        <=  debounce.0.1.out
 # IO1 gpio.026 plasma-on             IO0 gpio.025 length-in
 
 # GND                                GND
-# IO7 gpio.024 laser-cross-hair      IO6 gpio.023 GS2-fault
+# IO7 gpio.024 laser-enable          IO6 gpio.023 GS2-fault
 # GND                                GND
-# IO5 gpio.022 laser-enable          IO4 gpio.021 StepGen.5.Direction
+# IO5 gpio.022 laser-air-relay       IO4 gpio.021 StepGen.5.Direction
 # GND                                GND
-# IO3 gpio.020 laser-air-relay       IO2 gpio.019 StepGen.5.Step
+# IO3 gpio.020 laser-cross-hair      IO2 gpio.019 StepGen.5.Step
 # GND                                GND
 # IO1 gpio.018 pwmgen.01.Out0        IO0 gpio.017 max-home-y-raw
+
 
 setp [HMOT](CARD0).gpio.026.is_output true
 setp [HMOT](CARD0).gpio.024.is_output true
 setp [HMOT](CARD0).gpio.022.is_output true
 setp [HMOT](CARD0).gpio.020.is_output true
+#
+# Relay board uses reverse logic. Pull low when you want to turn it on.
+#
+setp [HMOT](CARD0).gpio.024.invert_output true
+setp [HMOT](CARD0).gpio.022.invert_output true
+setp [HMOT](CARD0).gpio.020.invert_output true
 
 #
 # Reserve pins for stepgen.05 and encoder.01.A and 
@@ -115,7 +118,7 @@ setp [HMOT](CARD0).gpio.020.is_output true
 net io33                 <=  [HMOT](CARD0).gpio.033.in 
 
 net plasma-arc-ok        <=  [HMOT](CARD0).gpio.032.in 
-#net encoder.01.A        <=  [HMOT](CARD0).gpio.030.in 
+#encoder.01.A            <=  [HMOT](CARD0).gpio.030.in 
 net torch-breakaway      <=  [HMOT](CARD0).gpio.028.in 
 net plasma-on            =>  [HMOT](CARD0).gpio.026.out
 
@@ -124,13 +127,13 @@ net io29                 <=  [HMOT](CARD0).gpio.029.in
 net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
 
-net laser-cross-hair     =>  [HMOT](CARD0).gpio.024.out
-net laser-enable         =>  [HMOT](CARD0).gpio.022.out
-net laser-air-relay      <=  [HMOT](CARD0).gpio.020.out
-#net pwmgen.01.Out0      =>  [HMOT](CARD0).gpio.018.out
+net laser-enable         =>  [HMOT](CARD0).gpio.024.out
+net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
+net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
+#pwmgen.01.Out0          =>  [HMOT](CARD0).gpio.018.out
 
 net GS2-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
-#net stepgen.05.dir      =>  [HMOT](CARD0).gpio.021.out
-#net stepgen.05.step     =>  [HMOT](CARD0).gpio.019.out
+#stepgen.05.dir          =>  [HMOT](CARD0).gpio.021.out
+#stepgen.05.step         =>  [HMOT](CARD0).gpio.019.out
 net max-home-y-raw       <=  [HMOT](CARD0).gpio.017.in => debounce.0.0.in
 

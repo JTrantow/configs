@@ -30,14 +30,7 @@ net latch0-out <= estop-latch.0.ok-out => estop-latch.1.ok-in
 #
 net estop-out <= estop-latch.1.ok-out => iocontrol.0.emc-enable-in 
 #
-#   Connect various inputs to the estop latch fault_in pins 
+#   Connect various fault inputs to the estop latch fault_in pins 
 #
-
-#
-# Fault signals (connected to signals defined by the parallel port pins.)
-#
-#net G540-fault => estop-latch.0.fault-in
-#net GS2-fault  => estop-latch.1.fault-in
-
-setp  estop-latch.0.fault-in false
-setp  estop-latch.1.fault-in false
+net G540-fault => estop-latch.0.fault-in
+net GS2-fault  => estop-latch.1.fault-in
