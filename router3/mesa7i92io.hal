@@ -51,11 +51,10 @@ setp debounce.0.delay 20
 # IO Pin 016 (P2-13): gpio.016 max-home-x
 
 setp [HMOT](CARD0).gpio.000.is_output true
-setp [HMOT](CARD0).gpio.003.is_output true
 setp [HMOT](CARD0).gpio.007.is_output true
 
 net OUTPUT_2           =>  [HMOT](CARD0).gpio.000.out
-net G540-fault         =>  [HMOT](CARD0).gpio.003.out
+net G540-fault         <=  [HMOT](CARD0).gpio.003.in_not
 net OUTPUT_1           =>  [HMOT](CARD0).gpio.007.out
 
 net max-home-z         <=  [HMOT](CARD0).gpio.014.in
