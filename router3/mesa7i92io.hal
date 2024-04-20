@@ -99,7 +99,6 @@ net max-home-y2        <=  debounce.0.1.out
 # GND                                GND
 # IO1 gpio.018 pwmgen.01.Out0        IO0 gpio.017 max-home-y-raw
 
-
 setp [HMOT](CARD0).gpio.026.is_output true
 setp [HMOT](CARD0).gpio.024.is_output true
 setp [HMOT](CARD0).gpio.022.is_output true
@@ -127,7 +126,7 @@ net io29                 <=  [HMOT](CARD0).gpio.029.in
 net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
 
-net laser-enable         =>  [HMOT](CARD0).gpio.024.out
+net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
 net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
 net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
 #pwmgen.01.Out0          =>  [HMOT](CARD0).gpio.018.out

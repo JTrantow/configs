@@ -3,7 +3,7 @@
 # This file sets up the basic motion of my router machine.
 # 
 loadrt [KINS]KINEMATICS
-loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_spindles=2
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_spindles=1
 loadrt hostmot2
 #
 # Using double G540 firmware. 7i92_G540d.bin.
@@ -227,26 +227,6 @@ net z-enable     => [HMOT](CARD0).stepgen.02.enable
 
 net max-home-z     =>  joint.3.home-sw-in joint.3.pos-lim-sw-in
 
-#*******************
-#  SPINDLE
-#*******************
-
-setp   pid.s.Pgain     [SPINDLE_0]P
-setp   pid.s.Igain     [SPINDLE_0]I
-setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
-setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
-setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
-
-net spindle-index-enable  =>  pid.s.index-enable
-net spindle-enable        =>  pid.s.enable
-net spindle-vel-cmd-rpm     => pid.s.command
-net spindle-vel-fb-rpm      => pid.s.feedback
-net spindle-output        <=  pid.s.output
 
 # ---setup spindle control signals---
 

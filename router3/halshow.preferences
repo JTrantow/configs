@@ -1,8 +1,8 @@
 # Halshow settings
 # This file is generated automatically.
-wm geometry . 568x568+-25+0
-placeFrames 0.3
-set ::ratio 0.3
+wm geometry . 660x568+-25+0
+placeFrames 0.38848920863309355
+set ::ratio 0.38848920863309355
 set ::old_w_leftf 160
 set ::watchlist {
     pin+iocontrol.0.coolant-flood
@@ -14,14 +14,12 @@ set ::watchlist {
     pin+hm2_7i92.0.gpio.020.in_not
     pin+debounce.0.0.in
     pin+debounce.0.0.out
-    sig+laser_pwm
     pin+motion.analog-out-00
-    pin+spindle.1.on
     pin+spindle.0.on
     pin+hm2_7i92.0.pwmgen.01.enable
     pin+hm2_7i92.0.pwmgen.01.value
 }
-set ::workmode watchhal
+set ::workmode showhal
 set ::watchInterval 100
 set ::col1_width 100
 set ::ffmts 
