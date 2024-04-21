@@ -224,6 +224,15 @@ net z-enable     => [HMOT](CARD0).stepgen.02.enable
 net max-home-z     =>  joint.3.home-sw-in joint.3.pos-lim-sw-in
 
 
+#
+#   G540 fault stops all joints connected to it.
+#
+net G540-fault => joint.0.amp-fault-in joint.1.amp-fault-in joint.2.amp-fault-in joint.3.amp-fault-in 
+
+#
+# No need for estop latches.
+#
+net estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
 
 #******************************
 # connect miscellaneous signals

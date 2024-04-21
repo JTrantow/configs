@@ -28,8 +28,9 @@ set  [HMOT](CARD0).pwmgen.00.value         0.0
 #
 # Gave up on multiple spindles. Use two configs instead.
 #
-#net laser-enable    <= spindle.1.on                => [HMOT](CARD0).pwmgen.01.enable 
-net spindle-enable   => [HMOT](CARD0).pwmgen.01.enable 
+#
+net spindle-enable      => [HMOT](CARD0).gpio.024.out
+net spindle-enable      => [HMOT](CARD0).pwmgen.01.enable 
 #          
 # Laser power is modulated by the M67/M68 gcode.
 # M67 E0 Q50 followed by a G1 move will put 50% PWM to the laser.

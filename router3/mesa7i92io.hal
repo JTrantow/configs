@@ -54,7 +54,7 @@ setp [HMOT](CARD0).gpio.000.is_output true
 setp [HMOT](CARD0).gpio.007.is_output true
 
 net OUTPUT_2           =>  [HMOT](CARD0).gpio.000.out
-net G540-fault         <=  [HMOT](CARD0).gpio.003.in_not
+net G540-fault         <=  [HMOT](CARD0).gpio.003.in
 net OUTPUT_1           =>  [HMOT](CARD0).gpio.007.out
 
 net max-home-z         <=  [HMOT](CARD0).gpio.014.in
@@ -125,7 +125,10 @@ net io29                 <=  [HMOT](CARD0).gpio.029.in
 net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
 
-net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
+#
+# Only turn on gpio.024 in spindle.hal configuration
+#
+#net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
 net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
 net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
 #pwmgen.01.Out0          =>  [HMOT](CARD0).gpio.018.out
