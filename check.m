@@ -4,36 +4,64 @@
 
 clear all
 
-if (0)
-  % MillY .1mm spacing.
-  DEADBAND=0.0075;
-  MIN_FERROR=0.02;
-  millY2
-
-  home_offset = 180;
-  a1(:,2:3)=a1(:,2:3)+home_offset;
-  a2(:,2:3)=a2(:,2:3)+home_offset;
-
-elif (0)
-  LatheXAxisMap
+if (1)
   %
-  % LatheX use G7/G8 in collection script to avoid this factor of 1/2.
+  % Mill
   %
-  a1(:,2:3)=a1(:,2:3) + HOME_OFFSET;
-  a2(:,2:3)=a2(:,2:3) + HOME_OFFSET;
+  if (0)
+    %
+    % Mill X
+    %
+  else
+    %
+    % Mill Y 
+    %
+    DEADBAND=0.0075;
+    MIN_FERROR=0.02;
+    MillDoubleYAxisMap
+    t4=['Double nut'];
+
+    a1(:,2:3)=a1(:,2:3)+HOME_OFFSET;
+    a2(:,2:3)=a2(:,2:3)+HOME_OFFSET;
+  end
 else
-  LatheZAxisMap
   %
-  % LatheZ doesn't home.
+  % Lathe
   %
-  home_offset = mean([a1(:,1) - a1(:,3); a2(:,1) - a2(:,3)])
+  if (0)
+    LatheXAxisMap
+    %
+    % LatheX use G7/G8 in collection script to avoid this factor of 1/2.
+    %
+    a1(:,2:3)=a1(:,2:3) + HOME_OFFSET;
+    a2(:,2:3)=a2(:,2:3) + HOME_OFFSET;
+  elif (0)
+    %
+    % Single nut setup.
+    %
+    LatheZAxisMap
+    t4=['Single nut'];
+    home_offset = mean([a1(:,1) - a1(:,3); a2(:,1) - a2(:,3)])
 
-  a1(:,2:3)=a1(:,2:3) + home_offset;
-  a2(:,2:3)=a2(:,2:3) + home_offset;
+    a1(:,2:3)=a1(:,2:3) + home_offset;
+    a2(:,2:3)=a2(:,2:3) + home_offset;
+  else
+    %
+    % double nut
+    %
+    LatheDoubleZAxisMap
+    t4=['Double nut'];
+    %
+    % LatheZ doesn't home.
+    %
+    home_offset = mean([a1(:,1) - a1(:,3); a2(:,1) - a2(:,3)])
+
+    a1(:,2:3)=a1(:,2:3) + home_offset;
+    a2(:,2:3)=a2(:,2:3) + home_offset;
+  end
 end
 
-
-if (1)
+if (0)
     figure(1)
     hold off
     plot(a1(:,1), a1(:,2),'r')
@@ -50,7 +78,7 @@ if (1)
     axis( a);
 end
 
-if (1)
+if (0)
     %
     % Figure 2 shows diff between command and stepgen.position-fb. These values should agree within +-DEADBAND when using stepgen.position_fb as _pos_fb.
     %
@@ -83,15 +111,18 @@ end
 if (1)
   %
   % Figure 3 Show diff between command and encoder.position.
+  # a1 and a2 contain triplets of (<commanded>, <stepgen_pos>, #<encoder_pos>)
+  #
   % When using when using stepgen.position_fb as _pos_fb this shows backlash and any alignment problems.
   %
   figure(3)
   hold off
-  e1=a1(:,1) - a1(:,3);
+  e1 = a1(:,1) - a1(:,3)
   plot(a1(:,1), e1,'r')
+  
   hold on
   grid on
-  e2=a2(:,1) - a2(:,3);
+  e2 = a2(:,1) - a2(:,3)
   plot(a2(:,1), e2,'g')
 
   plot([a1(1,1),a1(end,1)]', [-DEADBAND,-DEADBAND]','--k')
@@ -113,9 +144,12 @@ if (1)
       max([max(e1), max(e2), +MIN_FERROR*1.05])
       ]
   axis( a);
+end
 
+if (0)
   %
-  % Show a linear fit. The slope should correspond to the misalignment angle.
+  % Figure 4 Show a linear fit to each direction.
+  % The slope should correspond to the misalignment angle.
   %
 
   %
@@ -133,11 +167,7 @@ if (1)
   plot(x2,y2,'g')
 
   plot(x1,y1-y2,'b')
-
-
-
-
-
+  title(t4);
 
   %scatter(x1,y1,25,'r','*')
   P = polyfit(x1,y1,1);
@@ -159,6 +189,7 @@ if (1)
   %axis( a);
   grid on
 end
+
 if (0)
     %
     % Even a linear fit (adjusting alignment, there is still quite a bit of error.)
