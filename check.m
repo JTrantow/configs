@@ -12,14 +12,17 @@ if (1)
     %
     % Mill X
     %
+    MillDoubleYAxisMap
+    t4=['Double nut X'];
+
+    a1(:,2:3)=a1(:,2:3)+HOME_OFFSET;
+    a2(:,2:3)=a2(:,2:3)+HOME_OFFSET;
   else
     %
     % Mill Y 
     %
-    DEADBAND=0.0075;
-    MIN_FERROR=0.02;
     MillDoubleYAxisMap
-    t4=['Double nut'];
+    t4=['Double nut Y'];
 
     a1(:,2:3)=a1(:,2:3)+HOME_OFFSET;
     a2(:,2:3)=a2(:,2:3)+HOME_OFFSET;
@@ -62,6 +65,9 @@ else
 end
 
 if (0)
+    %
+    % Figure 1 shows command vs stepgen,encoder. Should be a linear line with slope 1 if the scaling is correct.
+    %
     figure(1)
     hold off
     plot(a1(:,1), a1(:,2),'r')
@@ -113,7 +119,7 @@ if (1)
   % Figure 3 Show diff between command and encoder.position.
   # a1 and a2 contain triplets of (<commanded>, <stepgen_pos>, #<encoder_pos>)
   #
-  % When using when using stepgen.position_fb as _pos_fb this shows backlash and any alignment problems.
+  % When using when using stepgen.position_fb as _pos_fb this shows backlash and any encoder alignment problems.
   %
   figure(3)
   hold off
@@ -146,7 +152,7 @@ if (1)
   axis( a);
 end
 
-if (0)
+if (1)
   %
   % Figure 4 Show a linear fit to each direction.
   % The slope should correspond to the misalignment angle.
@@ -155,10 +161,10 @@ if (0)
   %
   % Discard the first and last values to calculate backlash.
   %
-  x1 =a1(10:end-1,1);
-  x2 =flip(a2(10:end-1,1));
-  y1=e1(10:end-1);
-  y2=flip(e2(10:end-1));
+  x1 =a1(2:end-1,1)
+  x2 =flip(a2(2:end-1,1))
+  y1=e1(2:end-1)
+  y2=flip(e2(2:end-1))
 
   figure(4)
   hold off
