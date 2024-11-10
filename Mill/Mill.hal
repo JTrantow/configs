@@ -77,17 +77,17 @@ net x-vel-cmd        <= joint.0.vel-cmd  => pid.x.command-deriv
 #
 # PNCConf default config. Use this with P=1000, FF1=1.0.
 #
-#setp   pid.x.Pgain     1000.0
-#setp   pid.x.Igain     0.0
-#setp   pid.x.FF1       1.0
-#net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback  => joint.0.motor-pos-fb
+setp   pid.x.Pgain     1000.0
+setp   pid.x.Igain     0.0
+setp   pid.x.FF1       1.0
+net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback  => joint.0.motor-pos-fb
 #
 # Enable/Disable BOTH the following TWO lines to use the encoder to close the control loop.
 # Use both the encoder position and velocity.
 # This should be the optimal configuration.
 #
-net x-pos-fb         <= [MESA](CARD0).encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
-net x-vel-fb         <= [MESA](CARD0).encoder.00.velocity  => pid.x.feedback-deriv
+#net x-pos-fb         <= [MESA](CARD0).encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
+#net x-vel-fb         <= [MESA](CARD0).encoder.00.velocity  => pid.x.feedback-deriv
 
 # ---setup home / limit switch signals---
 net x-home-sw        <= [MESA](CARD0).gpio.019.in =>  joint.0.home-sw-in joint.0.neg-lim-sw-in
@@ -158,9 +158,10 @@ net y-vel-cmd        <= joint.1.vel-cmd  => pid.y.command-deriv
 # STEP 1. Use the PNCConf default configuration using -pos-fb signal using stepgen position-fb. (Comment out the .hal line with "net -pos-fb <= [MESA](CARD0).encoder.01.position")
 #
 # When this works, it just tells you that the stepper driver told the motor to move. This will not catch problems that the encoder might. (motor spins but bad coupling, stepper step skip, etc..)
-#setp   pid.y.Pgain     1000.0
-#setp   pid.y.FF1       1.0
-#net y-pos-fb         <= [MESA](CARD0).stepgen.01.position-fb  => pid.y.feedback  => joint.1.motor-pos-fb
+setp   pid.y.Pgain     1000.0
+setp   pid.y.Igain     0.0
+setp   pid.y.FF1       1.0
+net y-pos-fb         <= [MESA](CARD0).stepgen.01.position-fb  => pid.y.feedback  => joint.1.motor-pos-fb
 #
 # Use encoder position for pid feedback and joint motor-pos-fb.\
 #
@@ -169,8 +170,8 @@ net y-vel-cmd        <= joint.1.vel-cmd  => pid.y.command-deriv
 #
 # This requires PID tuning and should be the optimal configuration.
 #
-net y-pos-fb         <= [MESA](CARD0).encoder.01.position  => pid.y.feedback        => joint.1.motor-pos-fb
-net y-vel-fb         <= [MESA](CARD0).encoder.01.velocity  => pid.y.feedback-deriv
+#net y-pos-fb         <= [MESA](CARD0).encoder.01.position  => pid.y.feedback        => joint.1.motor-pos-fb
+#net y-vel-fb         <= [MESA](CARD0).encoder.01.velocity  => pid.y.feedback-deriv
 
 # ---setup home / limit switch signals---
 net y-home-sw   <= [MESA](CARD0).gpio.021.in    =>  joint.1.home-sw-in   joint.1.pos-lim-sw-in
@@ -246,3 +247,10 @@ net z-vel-fb         <= [MESA](CARD0).encoder.02.velocity  => pid.z.feedback-der
 
 # ---setup home / limit switch signals---
 net z-home-sw        <= [MESA](CARD0).gpio.017.in             =>  joint.2.home-sw-in      joint.2.pos-lim-sw-in
+
+
+
+#
+# Enable linuxcncrsh for lightburn control over TCP.
+#
+loadusr linuxcncrsh --port 23 --name EMCNETSVR --ini emc.ini

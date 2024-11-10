@@ -4,7 +4,7 @@
 
 #
 # load the user space component for the Automation Direct GS2 VFD's
-# Need 200 ohm resistor before using --braking-resistor --decel-seconds 30 options.
+# Need 200 ohm resistor (not 80 ohm) before using --braking-resistor --decel-seconds 30 options.
 #
 loadusr -Wn spindle-vfd gs2_vfd --bits 8 --device /dev/ttyUSB0 --name spindle-vfd --parity none --rate 38400 --stopbits 2 --target 1 --accel-seconds 5.0 --decel-seconds 3.0 --braking-resistor 
 
