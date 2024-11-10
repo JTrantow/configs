@@ -1,6 +1,6 @@
 # Halshow settings
 # This file is generated automatically.
-wm geometry . 694x603+65+29
+wm geometry . 694x603+128+298
 placeFrames 0.38848920863309355
 set ::ratio 0.38848920863309355
 set ::old_w_leftf 160
@@ -12,28 +12,12 @@ set ::watchlist {
     pin+spindle.0.speed-out
     pin+hm2_7i92.0.gpio.024.out
     sig+spindle-enable
-    sig+spindle-at-speed
-    sig+spindle-ccw
-    sig+spindle-cw
-    sig+spindle-rpm
-    sig+spindle-vel-cmd-rpm
-    pin+spindle-vfd.DC-bus-volts
-    pin+spindle-vfd.enable
-    pin+spindle-vfd.firmware-revision
-    pin+spindle-vfd.frequency-command
-    pin+spindle-vfd.frequency-out
-    pin+spindle-vfd.initialized
-    pin+spindle-vfd.is-stopped
-    pin+spindle-vfd.load-percentage
-    pin+spindle-vfd.motor-RPM
-    pin+spindle-vfd.output-current
-    pin+spindle-vfd.output-voltage
-    pin+spindle-vfd.power-factor
-    pin+spindle-vfd.scale-frequency
-    pin+spindle-vfd.speed-command
-    pin+spindle-vfd.spindle-on
-    pin+spindle-vfd.spindle-fwd
-    pin+spindle-vfd.spindle-rev
+    sig+max-home-x
+    sig+max-home-y
+    sig+max-home-y-raw
+    sig+max-home-y2
+    sig+max-home-y2-raw
+    sig+max-home-z
 }
 set ::workmode watchhal
 set ::watchInterval 100
