@@ -253,4 +253,4 @@ net z-home-sw        <= [MESA](CARD0).gpio.017.in             =>  joint.2.home-s
 #
 # Enable linuxcncrsh for lightburn control over TCP.
 #
-loadusr linuxcncrsh --port 23 --name EMCNETSVR --ini emc.ini
+#loadusr linuxcncrsh --port 5007 --name EMCNETSVR -ini emc.ini
