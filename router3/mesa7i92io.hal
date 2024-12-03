@@ -128,15 +128,13 @@ net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
 
 #
-# Only turn on gpio.024 in spindle.hal configuration
+# Three relays are used to control power to laser, air assist, cross-hair led power. (New module does not have independent control of cross hair.)
 #
-#net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
+net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
 net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
 net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
-#pwmgen.01.Out0          =>  [HMOT](CARD0).gpio.018.out
 
 net GS2-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
 #stepgen.05.dir          =>  [HMOT](CARD0).gpio.021.out
 #stepgen.05.step         =>  [HMOT](CARD0).gpio.019.out
 net max-home-y-raw       <=  [HMOT](CARD0).gpio.017.in => debounce.0.0.in
-
