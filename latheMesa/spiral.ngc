@@ -3,7 +3,7 @@ o<spiral> sub
    (spiral.ngc)
 
    #<_OutsideDiameter>    = #1 (Nom or Act Dia, D)
-   #<_TPI>		          = #2 (=0 TPI, 0 for auto)
+   #<_TPI>		           = #2 (=0 TPI, 0 for auto)
    #<_First_Cut_Depth>	  = #3 (=0.015 First Cut)
    #<_Total_Depth>        = #4
 
@@ -17,12 +17,19 @@ o<spiral> sub
 #<dz> =  [-SIN[#<_Taper>] * #<_First_Cut_Depth>]
 
 #<xi> = -2
-#<zi> = [#<xi>/2 / TAN[#<_Taper>]]
+#<zi> = [-#<xi>/2 / TAN[#<_Taper>]]
 
 #<rx> = [-#<xi> + #<_OutsideDiameter> + 1]
 #<rz> = [-#<rx>/2 / TAN[#<_Taper>]]
 ;(debug, Relative move along taper x #<rx>, z #<rz>)
 
+
+   ;G7 G18 G20 G54 G90 G94
+   G95 (feed per revolution mode)
+   M3 (dummy command required for G33)
+   F1 S500 (dummy command required for G33)
+
+   M3 S200
    (Move to Initial position beyond the tip. )
     G90 
     G0 Z[#<zi>]
@@ -38,7 +45,7 @@ o<spiral> sub
 
         (Relative move from start along the taper.)
         G91
-       G33 X[#<rx>] Z[#<rz>] K#<_TPI>
+        G33 X[#<rx>] Z[#<rz>] K#<_TPI>
         (test movement without spindle)
 ;        G1 X[#<rx>]	 Z[#<rz>] F200 
         G0 X1

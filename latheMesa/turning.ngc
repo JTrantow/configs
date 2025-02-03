@@ -21,7 +21,7 @@ M6 T#8 G43
 #24 = [[#13 - #23] * TAN[#7]]
 
 
-G96 D800 S#2 ; Constant Surface Speed Mode
+G96 D600 S#2 ; Constant Surface Speed Mode
 ;G96 D400 S20 $0; Constant Surface Speed Mode, D is max rpm, S is surface speed in M/min NOT RPM,
 
 m3 ;Start Spindle
@@ -32,6 +32,9 @@ g95 F#4 ; Feed-Per-Rev Mode
 O90 IF [#9 GT 0.5]
 	M8
 O90 ENDIF
+
+
+
 
  
 ; At speed will wait for spindle to get up to speed.
