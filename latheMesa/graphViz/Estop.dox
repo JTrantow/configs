@@ -1,6 +1,38 @@
 /*!
     \file Estop.dox
 
+    \addtogroup HAL
+
+    The configuration .ini specifies a HAL section.
+
+    \code
+        [HAL]
+        TWOPASS = on
+        HALUI = halui
+        HALFILE = latheMesa.hal
+        HALFILE = LatheSpindle.hal
+        HALFILE = estop-chain.hal
+        HALFILE = custom.hal
+        POSTGUI_HALFILE = postgui_call_list.hal
+        SHUTDOWN = shutdown.hal
+    \endcode
+
+    HALFILE
+        - latheMesa.hal Traditional configuration file with basic stepper control.
+        - LatheSpindle.hal Configures the spindle components including encoder and pid/pwmgen for the VFD.
+        - estop-chain.hal Estop logic for G540 and encoder quadrature faults.
+        - custom.hal (Empty)
+
+    POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
+        - postgui_call_list.hal - Contains the following list of files to load after the GUI.
+            - spindle_postgui.hal - Filters spindle speed for pyvcp display.
+            - joypad_jog_speed.hal - Logitech joypad jogging speed functionality.
+            - joypad_xz.hal - Connects joypad to joystick controls for lathe.
+            - joypad_extras.hal - Connnects jogging to the digital joypad, program run, pause, resume and manual/auto modoe of operation. 
+
+    SHUTDOWN
+        - shutdown.hal (empty)
+
     \addtogroup EStopLatch
 
     This diagram illustrates the .hal components for the estop latch logic of my lathe.
@@ -42,7 +74,8 @@
                         </TR>
                     
                     </TABLE>
-                >]
+                >
+                ]
             }
 
             subgraph cluster_estop1{
@@ -76,7 +109,8 @@
                         </TR>
                     
                     </TABLE>
-                >]
+                >
+                ]
             }
 
             subgraph cluster_estop2{
@@ -110,7 +144,8 @@
                         </TR>
                     
                     </TABLE>
-                >]
+                >
+                ]
             }
             subgraph cluster_estop3{
                 label="estop-latch.3"
@@ -143,9 +178,9 @@
                         </TR>
                     
                     </TABLE>
-                >]
+                >
+                ]
             }
-
             subgraph cluster_iocontrol{
                 label="iocontrol.0"
                 iocontrol [shape="box" label=<
@@ -165,38 +200,35 @@
                 >]
             }
 
-            iocontrol -> estop0 -> estop1 -> estop2 -> estop3  [style=invis]
+            n0 [label="G540-fault"      shape="none" ];
+            n1 [label="x-encoder-fault" shape="none" ];
+            n2 [label="y-encoder-fault" shape="none" ];
+            n3 [label="z-encoder-fault" shape="none" ];
 
-            n0 [shape="none" label=""];
-            n1 [shape="none" label=""];
-            n2 [shape="none" label=""];
-            n3 [shape="none" label=""];
+            n0:e -> estop0:i0:w;
+            n1:e -> estop1:i0:w ;
+            n2:e -> estop2:i0:w ;
+            n3:e -> estop3:i0:w ;
 
-            n0 -> estop0:i0:w [label="estop-G540"      fontcolor="red" color="red"];
-            n1 -> estop1:i0:w [label="x-encoder-estop" fontcolor="red" color="red"];
-            n2 -> estop2:i0:w [label="z-encoder-estop" fontcolor="red" color="red"];
-            n3 -> estop3:i0:w [label="s-encoder-estop" fontcolor="red" color="red"];
+            iocontrol:o0:e  -> estop0:i1:e;
+            
+            iocontrol:o1:se -> estop0:f0:s [color="blue" style="dashed"];
+            iocontrol:o1:se -> estop1:f0:s [color="blue" style="dashed"];
+            iocontrol:o1:se -> estop2:f0:s [color="blue" style="dashed"];
+            iocontrol:o1:se -> estop3:f0:s [color="blue" label="latch-reset"  fontsize = "12" fontcolor="blue" style="dashed"];
 
-            estop0:o1 -> estop1:i1 [label="latch0-out" fontsize = "10" ];
-            estop1:o1 -> estop2:i1 [label="latch1-out" fontsize = "10" ];
-            estop2:o1 -> estop3:i1 [label="latch2-out" fontsize = "10" ];
-            estop3:o1:w -> iocontrol:i0 [label="estop-out"];
+            estop0:o1 -> estop1:i1 [color="black"];
+            estop1:o1 -> estop2:i1 [color="black"];
+            estop2:o1 -> estop3:i1 [color="black"];
+            estop3:o1 -> iocontrol:i0   [label="estop-out"  fontsize = "12" fontcolor="black" color="black"];
 
-            iocontrol:o0:e  -> estop0:i1 [label="latch0-ok-in" fontsize = "10" fontcolor="black" color="black"];
-            iocontrol:o1:se -> estop0:f0:s [label="latch-reset" fontsize = "10" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop1:f0:s [label="" fontsize = "10" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop2:f0:s [label="" fontsize = "10" fontcolor="blue" color="blue"];
-            iocontrol:o1:se -> estop3:f0:s [label="" fontsize = "10" fontcolor="blue" color="blue"];
+            {rank=source; iocontrol}
         }
-    \enddot    
+    \enddot
+
+    
 */
 /*
-            iocontrol:o1:se -> estop1:f0:s [color="blue"];
-
-
-
-            estop2:o1 -> estop3:i2 [label="latch0-ok-in" fontsize = "12" fontcolor="blue" color="blue"];
-
-            iocontrol:o1:se -> estop2:f0:s [color="blue"];
-            iocontrol:o1:se -> estop3:f0:s [color="blue"];
+[label="G540-fault"];
+            {rank=same; iocontrol estop0 estop1 estop2 estop3}
 */
