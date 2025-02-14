@@ -8,6 +8,10 @@ loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=3 num_pwmgens=
 setp   [MESA](CARD0).watchdog.timeout_ns 5000000
 
 loadrt pid names=pid.x,pid.z,pid.s
+
+#
+# LCNC pwmgen for VFD. (Use mesa instead???)
+#
 loadrt pwmgen output_type=1
 
 addf pwmgen.make-pulses servo-thread
@@ -97,7 +101,7 @@ setp    [MESA](CARD0).encoder.00.index-mask-invert 0
 setp    [MESA](CARD0).encoder.00.scale  [JOINT_0]ENCODER_SCALE
 
 # ---setup home / limit switch signals--- 
-net x-home-sw       <= [MESA](CARD0).gpio.001.in_not =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
+net x-home-sw       <= [MESA](CARD0).gpio.001.in =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
 
 #*******************
 #  AXIS Z JOINT 1
