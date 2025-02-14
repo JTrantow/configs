@@ -9,14 +9,6 @@ setp   [MESA](CARD0).watchdog.timeout_ns 5000000
 
 loadrt pid names=pid.x,pid.z,pid.s
 
-#
-# LCNC pwmgen for VFD. (Use mesa instead???)
-#
-loadrt pwmgen output_type=1
-
-addf pwmgen.make-pulses servo-thread
-addf pwmgen.update servo-thread
-
 addf [MESA](CARD0).read       servo-thread
 addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread

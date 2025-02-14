@@ -65,21 +65,8 @@ net spindle-output        <=  pid.s.output
 net spindle-fb-filtered   =>  pid.s.feedback
 
 #
-# Use linuxCNC pwmgem to convert speed-out to pwm for the G540 pwm input.
-#
+# Use Mesa pwmgem to convert speed-out to pwm for the G540 pwm input.
 # Set the scale and offset to get spindle RPM in correct range without using PID, then use PID to dial it in.
-#
-setp pwmgen.0.pwm-freq   50.0
-setp pwmgen.0.scale     1000.0
-setp pwmgen.0.offset     +0.0
-setp pwmgen.0.dither-pwm true
-
-net spindle-output  => pwmgen.0.value
-net spindle-enable  => pwmgen.0.enable
-net spindle-pwm     <= pwmgen.0.pwm
-
-#
-# Use Mesa 7i92 stepgen 4 as PWM output???? NOT working.
 #
 setp [MESA](CARD0).pwmgen.pwm_frequency 10000
 setp [MESA](CARD0).pwmgen.00.scale       1000
@@ -118,7 +105,6 @@ net spindle-cw-override        <= [MESA](CARD0).gpio.003.in
 setp [MESA](CARD0).ssr.00.invert-01 true
 net spindle-enable             => [MESA](CARD0).ssr.00.out-00
 net spindle-cw                 => [MESA](CARD0).ssr.00.out-01  
-net spindle-pwm                => [MESA](CARD0).ssr.00.out-02               
 #
 # Compare encoder rpm to spindle command to determine if spindle is up to speed.
 # Use the filtered encoder values.
