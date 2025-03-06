@@ -44,8 +44,8 @@ net laser-air-relay  <= iocontrol.0.coolant-flood
 net laser-cross-hair <= iocontrol.0.coolant-mist
 
 # ---setup spindle control signals---
-
 net spindle-enable             <=  spindle.0.on
+
 #
 # Enable linuxcncrsh for lightburn control over TCP.
 #
