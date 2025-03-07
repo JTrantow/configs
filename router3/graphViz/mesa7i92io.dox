@@ -128,18 +128,3 @@
         }
     \enddot
 */
-
-/*
-net max-home-y-raw       <=  [HMOT](CARD0).gpio.017.in => debounce.0.0.in
-net GS2-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
-net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
-net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
-net torch-breakaway      <=  [HMOT](CARD0).gpio.028.in 
-net plasma-arc-ok        <=  [HMOT](CARD0).gpio.032.in 
-
-net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
-net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
-net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
-net plasma-on            =>  [HMOT](CARD0).gpio.026.out
-
-*/
