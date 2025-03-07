@@ -23,7 +23,7 @@
 #
 # Add debounce filtering for inputs which were giving erroneous signals.
 #
-loadrt debounce cfg=4
+loadrt debounce cfg=3
 addf debounce.0 servo-thread
 setp debounce.0.delay 20
 
