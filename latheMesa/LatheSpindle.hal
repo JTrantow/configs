@@ -5,16 +5,10 @@
 # Implement spindle vfd control using encoder.
 # 
 loadrt near names=near_spindle
-loadrt mux_generic config="bb2,bb2,ff2" 
 loadrt lowpass count=1
-loadrt abs count=1
 
 addf near_spindle servo-thread
-addf mux-gen.00 servo-thread
-addf mux-gen.01 servo-thread
-addf mux-gen.02 servo-thread
 addf lowpass.0 servo-thread
-addf abs.0 servo-thread
 
 # ---Encoder feedback signals/setup---
 
@@ -38,9 +32,9 @@ net encoder-velocity           =>  spindle.0.speed-in
 #setp spindle.0.at-speed true
 net spindle-at-speed          =>  spindle.0.at-speed
 
-net spindle-velocity-cmd-cnc  <=  spindle.0.speed-out-abs           
-net spindle-enable-cnc        <=  spindle.0.on         
-net spindle-cw-cnc            <=  spindle.0.forward   
+net spindle-velocity-cmd      <=  spindle.0.speed-out-abs           
+net spindle-enable            <=  spindle.0.on         
+net spindle-cw                <=  spindle.0.forward   
 net spindle-index-enable      <=> spindle.0.index-enable
 
 #
@@ -62,45 +56,24 @@ net spindle-velocity-cmd  =>  pid.s.command
 net spindle-enable        =>  pid.s.enable        
 net spindle-index-enable  <=> pid.s.index-enable
 net spindle-output        <=  pid.s.output        
-net spindle-fb-filtered   =>  pid.s.feedback
+net encoder-rpm-filtered  =>  pid.s.feedback
 
 #
-# Use Mesa pwmgem to convert speed-out to pwm for the G540 pwm input.
-# Set the scale and offset to get spindle RPM in correct range without using PID, then use PID to dial it in.
+# Use Mesa 7i92 stepgen 4 as PWM 0 output.
+# Output type 1: PWM on Out0, Dir on Out1.
 #
-setp [MESA](CARD0).pwmgen.pwm_frequency 10000
-setp [MESA](CARD0).pwmgen.00.scale       1000
 setp [MESA](CARD0).pwmgen.00.output-type    1
+
+setp [MESA](CARD0).pwmgen.pwm_frequency  1000
+setp [MESA](CARD0).pwmgen.00.scale       1000
 setp [MESA](CARD0).pwmgen.00.offset-mode false
+setp [MESA](CARD0).pwmgen.00.out0.invert_output true
 
 net spindle-output  => [MESA](CARD0).pwmgen.00.value
 net spindle-enable  => [MESA](CARD0).pwmgen.00.enable
 
 #
-# Multiplex spindle-enable, spindle-cw, spindle_pwm from the cnc and override versions.
-#
-net spindle-enable-override  => mux-gen.00.sel-bit-00 mux-gen.01.sel-bit-00 mux-gen.02.sel-bit-00
-
-net spindle-enable-cnc       => mux-gen.00.in-bit-00
-net spindle-enable-override  => mux-gen.00.in-bit-01
-net spindle-enable           <= mux-gen.00.out-bit
-
-net spindle-cw-cnc           => mux-gen.01.in-bit-00
-net spindle-cw-override      => mux-gen.01.in-bit-01
-net spindle-cw               <= mux-gen.01.out-bit
-
-net spindle-velocity-cmd-cnc => mux-gen.02.in-float-00
-setp                            mux-gen.02.in-float-01 333.3
-net spindle-velocity-cmd     <= mux-gen.02.out-float
-
-#
-#  IOPorts on TB3, IN0 is referenced as gpio.000.in
-#  
-net spindle-enable-override    <= [MESA](CARD0).gpio.004.in_not
-net spindle-cw-override        <= [MESA](CARD0).gpio.003.in
-
-#
-# Use Solid State Relay for outputs. 
+# Use Mesa Solid State Relay for outputs. 
 #
 setp [MESA](CARD0).ssr.00.invert-01 true
 net spindle-enable             => [MESA](CARD0).ssr.00.out-00
@@ -116,11 +89,21 @@ setp lowpass.0.gain 0.0063
 setp near_spindle.scale 1.25
 
 net encoder-velocity-rpm        => lowpass.0.in
-net encoder-rpm-filtered        <= lowpass.0.out     => abs.0.in
-net spindle-fb-filtered         <= abs.0.out                  
+net encoder-rpm-filtered        <= lowpass.0.out     
 
-net spindle-fb-filtered  => near_spindle.in1
-net spindle-velocity-cmd => near_spindle.in2
+#net encoder-rpm-filtered        => scale.0.in
+#net spindle-fb-filtered         <= scale.0.out                  
+#
+# See if we are near enough to be considered at speed.
+#
+net encoder-rpm-filtered  => near_spindle.in1
+#net spindle-velocity-cmd => near_spindle.in2
+
+#
+# Manually turning the spindle to align threading tool to existing threads.
+#
+net encoder-rpm-filtered => near_spindle.in2
+
+
+
 net spindle-at-speed     <= near_spindle.out
-
-

@@ -9,7 +9,7 @@
                 </label>
                 <bar>
                         <halpin>"spindle-speed"</halpin>
-                        <max_>3000</max_>
+                        <max_>1000</max_>
                 </bar>
                 <label>
                         <text>"Spindle-At-Speed:"</text>
