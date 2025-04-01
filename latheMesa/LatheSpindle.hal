@@ -4,11 +4,17 @@
 #
 # Implement spindle vfd control using encoder.
 # 
-loadrt near names=near_spindle
+loadrt near names=near-spindle,near-zero
 loadrt lowpass count=1
+loadrt limit2 names=spindle-ramp
+loadrt not names=spindle-enable-not,estop-not
 
-addf near_spindle servo-thread
+addf near-spindle servo-thread
+addf near-zero servo-thread
 addf lowpass.0 servo-thread
+addf spindle-ramp servo-thread
+addf spindle-enable-not servo-thread
+addf estop-not servo-thread
 
 # ---Encoder feedback signals/setup---
 
@@ -24,18 +30,36 @@ net encoder-velocity         <=   [MESA](CARD0).encoder.02.velocity
 net encoder-velocity-rpm     <=   [MESA](CARD0).encoder.02.velocity-rpm
 net spindle-index-enable     <=>  [MESA](CARD0).encoder.02.index-enable
 
+#
 # ---setup spindle control signals---
-net encoder-position           =>  spindle.0.revs
-net encoder-velocity           =>  spindle.0.speed-in
+#
+net encoder-position            =>  spindle.0.revs
+net encoder-velocity            =>  spindle.0.speed-in
+net spindle-at-speed            =>  spindle.0.at-speed
 
+net spindle-cmd                 <=  spindle.0.speed-out 
+#
+# If we just use spindle.0.on for spindle-enable it will shut off immediately without deceleration.
+# Instead use near-zero to stay enabled while it ramps down.
+#
+#net spindle-enable              <=  spindle.0.on         
+net spindle-cw                  <=  spindle.0.forward   
+net spindle-index-enable        <=> spindle.0.index-enable
 
-#setp spindle.0.at-speed true
-net spindle-at-speed          =>  spindle.0.at-speed
+#
+# ---Limit2 used to slow down spindle acceleration and deceleration
+#
+setp spindle-ramp.min -800
+setp spindle-ramp.max [DISPLAY]MAX_SPINDLE_0_SPEED
+setp spindle-ramp.maxv 200
 
-net spindle-velocity-cmd      <=  spindle.0.speed-out-abs           
-net spindle-enable            <=  spindle.0.on         
-net spindle-cw                <=  spindle.0.forward   
-net spindle-index-enable      <=> spindle.0.index-enable
+net spindle-cmd                 => spindle-ramp.in
+net spindle-ramped-cmd          <= spindle-ramp.out 
+#
+# estop should immediately stop the spindle. (by immediate load of limit2 causing spindle-enable to go false).
+#
+net estop-out                   => estop-not.in
+net estop-out-not               <= estop-not.out       => spindle-ramp.load
 
 #
 # Spindle pid.s settings.
@@ -52,7 +76,7 @@ setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
 setp   pid.s.error-previous-target true
 setp   pid.s.maxerrorI 1.0
 
-net spindle-velocity-cmd  =>  pid.s.command
+net spindle-ramped-cmd    =>  pid.s.command
 net spindle-enable        =>  pid.s.enable        
 net spindle-index-enable  <=> pid.s.index-enable
 net spindle-output        <=  pid.s.output        
@@ -78,6 +102,17 @@ net spindle-enable  => [MESA](CARD0).pwmgen.00.enable
 setp [MESA](CARD0).ssr.00.invert-01 true
 net spindle-enable             => [MESA](CARD0).ssr.00.out-00
 net spindle-cw                 => [MESA](CARD0).ssr.00.out-01  
+
+#
+# Use near_stop to keep the pid and pwm going while spindle decelerates.
+# Notice estops will trigger the limit2.load causing an immediate stop.
+#
+setp near-zero.scale 1.0
+setp near-zero.in1   0.0
+net spindle-ramped-cmd          => near-zero.in2
+net spindle-stop-not            <= near-zero.out => spindle-enable-not.in
+net spindle-enable              <= spindle-enable-not.out
+
 #
 # Compare encoder rpm to spindle command to determine if spindle is up to speed.
 # Use the filtered encoder values.
@@ -86,24 +121,23 @@ net spindle-cw                 => [MESA](CARD0).ssr.00.out-01
 #   1hz gain=0.0063
 
 setp lowpass.0.gain 0.0063
-setp near_spindle.scale 1.25
+setp near-spindle.scale 1.25
 
-net encoder-velocity-rpm        => lowpass.0.in
-net encoder-rpm-filtered        <= lowpass.0.out     
+net encoder-velocity-rpm    => lowpass.0.in
+net encoder-rpm-filtered    <= lowpass.0.out     
 
 #net encoder-rpm-filtered        => scale.0.in
 #net spindle-fb-filtered         <= scale.0.out                  
 #
 # See if we are near enough to be considered at speed.
 #
-net encoder-rpm-filtered  => near_spindle.in1
-#net spindle-velocity-cmd => near_spindle.in2
-
+net encoder-rpm-filtered    => near-spindle.in1
+net spindle-cmd             => near-spindle.in2
 #
-# Manually turning the spindle to align threading tool to existing threads.
+# Use this line to manually turns the spindle to align threading tool to existing threads.
 #
-net encoder-rpm-filtered => near_spindle.in2
+#net encoder-rpm-filtered => near-spindle.in2
+net spindle-at-speed        <= near-spindle.out
 
 
 
-net spindle-at-speed     <= near_spindle.out

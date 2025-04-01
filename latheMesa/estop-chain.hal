@@ -18,8 +18,8 @@ addf estop-latch.3            servo-thread
 #
 # Enable the XZ and spindle encoder quadrature error detection.
 # 
-net machine-is-on <= halui.machine.is-on           => hm2_7i96.0.encoder.00.quad-error-enable hm2_7i96.0.encoder.01.quad-error-enable hm2_7i96.0.encoder.02.quad-error-enable 
-net latch-reset                                    => hm2_7i96.0.encoder.00.reset             hm2_7i96.0.encoder.01.reset             hm2_7i96.0.encoder.02.reset
+net machine-is-on <= halui.machine.is-on           => [MESA](CARD0).encoder.00.quad-error-enable [MESA](CARD0).encoder.01.quad-error-enable [MESA](CARD0).encoder.02.quad-error-enable 
+net latch-reset                                    => [MESA](CARD0).encoder.00.reset             [MESA](CARD0).encoder.01.reset             [MESA](CARD0).encoder.02.reset
 
 #
 #   Reset signal for each latch.
@@ -45,12 +45,12 @@ net estop-out <= estop-latch.3.ok-out => iocontrol.0.emc-enable-in
 # --- Closed loop stepper driver alarm ---
 # Could use joint.N.amp-fault-in instead of estop-latch.
 #
-net estop-G540      <= hm2_7i96.0.gpio.000.in    => estop-latch.0.fault-in
+net estop-G540      <= [MESA](CARD0).gpio.000.in    => estop-latch.0.fault-in
 
 # --- Encoder faults ---
-net x-encoder-estop <= hm2_7i96.0.encoder.00.quad-error => estop-latch.1.fault-in
-net z-encoder-estop <= hm2_7i96.0.encoder.01.quad-error => estop-latch.2.fault-in
-net s-encoder-estop <= hm2_7i96.0.encoder.02.quad-error => estop-latch.3.fault-in
+net x-encoder-estop <= [MESA](CARD0).encoder.00.quad-error => estop-latch.1.fault-in
+net z-encoder-estop <= [MESA](CARD0).encoder.01.quad-error => estop-latch.2.fault-in
+net s-encoder-estop <= [MESA](CARD0).encoder.02.quad-error => estop-latch.3.fault-in
 
 
 
