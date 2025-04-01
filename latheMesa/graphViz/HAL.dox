@@ -1,30 +1,7 @@
 /*!
-        \file mainPage.dox	
-        \brief This file contains the doxygen mainpage.
-        
-        Having this in a separate file allows the documentation to be updated without changing a code file.
-                
-        \mainpage Lathe documentation
-                        
-        \section features_section Features
-                
-        \section toDo_section ToDo 
-                - Document estop latch
-                - Document probe
-                
-        \section ref_section References
-                - Mesa 7i96 Manual
-                - Mesa 7i85s Manual
-                - G540 Manual
-                - Minarek VFD docs
-
-
-
-
-
-
-
-\addtogroup HAL
+    \file HAL.dox	
+    \addtogroup HAL
+    \brief This file contains the doxygen for the HAL file structure for the lathe.
 
     The configuration .ini specifies a HAL section.
 

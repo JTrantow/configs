@@ -131,8 +131,8 @@ net encoder-rpm-filtered    <= lowpass.0.out
 #
 # See if we are near enough to be considered at speed.
 #
-net encoder-rpm-filtered    => near-spindle.in1
-net spindle-cmd             => near-spindle.in2
+net encoder-rpm-filtered    => near-spindle.in2
+net spindle-cmd             => near-spindle.in1
 #
 # Use this line to manually turns the spindle to align threading tool to existing threads.
 #

@@ -1,4 +1,8 @@
-/*!
+/*
+
+
+NOT USED WITH LATHE.
+
     \file Probes.dox
     \addtogroup Probes
     \brief This file illustrates the .hal components for the tool length and touch off probes for my machine.

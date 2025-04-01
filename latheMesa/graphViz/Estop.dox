@@ -1,39 +1,8 @@
 /*!
     \file Estop.dox
+    \addtogroup ESTOP
+    \brief This file contains the doxygen description and diagram illustrating the HAL for the ESTOP functionality.
 
-    \addtogroup HAL
-
-    The configuration .ini specifies a HAL section.
-
-    \code
-        [HAL]
-        TWOPASS = on
-        HALUI = halui
-        HALFILE = latheMesa.hal
-        HALFILE = LatheSpindle.hal
-        HALFILE = estop-chain.hal
-        HALFILE = custom.hal
-        POSTGUI_HALFILE = postgui_call_list.hal
-        SHUTDOWN = shutdown.hal
-    \endcode
-
-    HALFILE
-        - latheMesa.hal Traditional configuration file with basic stepper control.
-        - LatheSpindle.hal Configures the spindle components including encoder and pid/pwmgen for the VFD.
-        - estop-chain.hal Estop logic for G540 and encoder quadrature faults.
-        - custom.hal (Empty)
-
-    POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
-        - postgui_call_list.hal - Contains the following list of files to load after the GUI.
-            - spindle_postgui.hal - Filters spindle speed for pyvcp display.
-            - joypad_jog_speed.hal - Logitech joypad jogging speed functionality.
-            - joypad_xz.hal - Connects joypad to joystick controls for lathe.
-            - joypad_extras.hal - Connnects jogging to the digital joypad, program run, pause, resume and manual/auto modoe of operation. 
-
-    SHUTDOWN
-        - shutdown.hal (empty)
-
-    \addtogroup EStopLatch
 
     This diagram illustrates the .hal components for the estop latch logic of my lathe.
 
@@ -210,7 +179,7 @@
             n2:e -> estop2:i0:w ;
             n3:e -> estop3:i0:w ;
 
-            iocontrol:o0:e  -> estop0:i1:e;
+            iocontrol:o0:e  -> estop0:i1:w;
             
             iocontrol:o1:se -> estop0:f0:s [color="blue" style="dashed"];
             iocontrol:o1:se -> estop1:f0:s [color="blue" style="dashed"];
