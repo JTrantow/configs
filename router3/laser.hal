@@ -3,18 +3,18 @@
 #
 setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
 
-setp [HMOT](CARD0).pwmgen.00.scale         100
-setp [HMOT](CARD0).pwmgen.00.output-type     1
-setp [HMOT](CARD0).pwmgen.00.offset-mode false
+#setp [HMOT](CARD0).pwmgen.00.scale         100
+#setp [HMOT](CARD0).pwmgen.00.output-type     1
+#setp [HMOT](CARD0).pwmgen.00.offset-mode false
 #setp [HMOT](CARD0).pwmgen.00.dither       true
+#set  [HMOT](CARD0).pwmgen.00.enable      false
+#set  [HMOT](CARD0).pwmgen.00.value         0.0
 
-setp [HMOT](CARD0).pwmgen.01.scale         100
+setp [HMOT](CARD0).pwmgen.01.scale         1.0
 setp [HMOT](CARD0).pwmgen.01.output-type     1
 setp [HMOT](CARD0).pwmgen.01.offset-mode false
 #setp [HMOT](CARD0).pwmgen.01.dither       true
 
-set  [HMOT](CARD0).pwmgen.00.enable      false
-set  [HMOT](CARD0).pwmgen.00.value         0.0
 #
 # Laser power (12V or 24V) on/off is controlled via a relay controlled by laser-enable signal.
 #
