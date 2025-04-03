@@ -1,8 +1,11 @@
-/**<br>
- *@addtogroup StepperControl
+/*!
+   \file StepperControl.dox
+   \addtogroup StepperControl
+   \brief This file contains the doxygen diagram and documentation for the stepper control for my router.
 
 
-    ToDo
- 
+   The router runs a XYYZ gantry using a Gecko G540. There is no stepper feedback.
+
+    \todo Copy simple stepper diagram from Mill or Lathe documentation. 
  */
 

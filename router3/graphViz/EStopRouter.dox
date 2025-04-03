@@ -1,7 +1,7 @@
 /*!
-    \addtogroup EStopLatch
-
-    This diagram illustrates the .hal components for the estop latch logic of my router.
+    \file EStopRouter.dox
+    \addtogroup EStopLatchRouter
+    \brief This diagram illustrates the .hal components for the estop latch logic of my router.
 
     \dot
         digraph structs {
@@ -101,7 +101,7 @@
             n1 [shape="none" label=""];
 
             n0 -> estop0:i0:w [label="G540-fault"];
-            n1 -> estop1:i0:w [label="GS2-fault "];
+            n1 -> estop1:i0:w [label="VFD-fault "];
 
             iocontrol:o0:e  -> estop0:i1:e [label="latch0-ok-in" fontsize = "12" fontcolor="blue" color="blue"];
             iocontrol:o1:se -> estop0:f0:s [color="blue"];

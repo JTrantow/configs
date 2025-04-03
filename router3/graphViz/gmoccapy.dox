@@ -1,0 +1,22 @@
+            subgraph cluster_gmoccapy {
+                label="gmoccapy"
+                gmoccapy [shape="box" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="i0">spindle-feedback-bar</TD></TR>
+                       <TR><TD ALIGN="LEFT" port="i1">spindle-at-speed-led</TD></TR>
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_pyvcb{
+                color="red"
+                fontcolor="red"
+                label="pyvcp [optional]"
+                pyvcp [ shape="box" color="red" fontcolor="red" label=<
+                    <TABLE CELLBORDER="0" BORDER="0">
+                       <TR><TD ALIGN="LEFT" port="i0">spindle-at-speed-led</TD></TR>
+                    </TABLE>
+                >
+                ]
+            }

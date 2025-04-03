@@ -1,7 +1,7 @@
-/*!
-    \addtogroup SpindleControl
+/*
+    \addtogroup SpindleControlGS2
 
-    This diagram illustrates the .hal components I use with a GS2 VFD using the serial communications.
+    This diagram illustrates the .hal components I use with a VFD using the serial communications.
     Note, pid is used to get the correct rpm from the vfd. 
 
     The fault relay is documented in the estoplatch documentation.

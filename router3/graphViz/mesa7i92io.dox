@@ -3,12 +3,15 @@
     \addtogroup mesa7i92io
     \brief This file contains the doxygen description and diagram illustrating the MESA gpio component.
 
-    The io is implemented using a 7i92T with P2 connected to a G540 and the P1 connection to a 7i75 configured as a G540.
-    Using double G540 firmware. 7i92_G540d.bin.
+    The io is implemented using a 7i92T with P2 connected to a G540 and the P1 connection to a 7i75 configured as a G540
+    using double G540 firmware(7i92_G540d.bin).
+    All the gpio necessary to run as a router, laser, or plasma cutter are always assigned. 
+    Each of the router3.ini, laser.ini, plasma.ini configurations use a subset of these signals.
+    
     2 encoders for arc voltage and initial ohmic contact.
     2 pwmgens P2 not used, P1 used for laser PWM.
 
-    Notice gpio inputs feed the HAL signals.
+    Notice gpio inputs source HAL signals and gpio outputs sink HAL signals.
 
     \dot
     digraph G { 
@@ -90,6 +93,10 @@
                 n8 [shape="point" style="invis"];
                 n9 [shape="point" style="invis"];
 
+                n10 [shape="point" style="invis"];
+                n11 [shape="point" style="invis"];
+                n12 [shape="point" style="invis"];
+
                 o0 [shape="point" style="invis"];
                 o1 [shape="point" style="invis"];
                 o2 [shape="point "style="invis"];
@@ -97,6 +104,10 @@
                 o4 [shape="point" style="invis"];
                 o5 [shape="point "style="invis"];
                 o6 [shape="point "style="invis"];
+
+                o10 [shape="point" style="invis"];
+                o11 [shape="point" style="invis"];
+                o12 [shape="point" style="invis"];
 
                 gpioG540:in003 -> debounce2:in [label="G540-fault-raw"];
                 debounce2:out -> n0 [label="G540-fault"];
@@ -112,7 +123,7 @@
                 debounce1:out -> n4 [label="max-home-y2"];
 
                 gpio7i75:in017 -> debounce0:in [label="max-home-y-raw"];
-                gpio7i75:in023 -> n5 [label="GS2-fault "];
+                gpio7i75:in023 -> n5 [label="VFD-fault "];
                 gpio7i75:in025 -> n6 [label="length-in"];
                 gpio7i75:in027 -> n7 [label="probe-in"];
                 gpio7i75:in028 -> n8 [label="torch-breakaway"];
@@ -123,8 +134,13 @@
                 o5 -> gpio7i75:out024 [label="spindle-enable"];
                 o6 -> gpio7i75:out026 [label="plasma-on"];
 
-                {rank=sink; n0 n1 n2 n3 n4 n5 n6 n7 n8 n9}
-                {rank=source; o0 o1 o2 o3 o4 o5 o6}
+
+                n10 -> o10 [label="io29 (unassigned)" dir=both];
+                n11 -> o11 [label="io31 (unassigned)" dir=both];
+                n12 -> o12 [label="io33 (unassigned)" dir=both];
+
+                {rank=sink; n0 n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12}
+                {rank=source; o0 o1 o2 o3 o4 o5 o6        o10 o11 o12}
         }
     \enddot
 */

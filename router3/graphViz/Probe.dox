@@ -1,11 +1,11 @@
 /*!
-    \addtogroup Probes
-
-    This diagram illustrates the .hal components for the tool length and touch off probes for my router.
+    \file Probe.dox
+    \addtogroup PROBES
+    \brief This diagram illustrates the .hal components for the tool length and touch off probes for my router.
 
     There are two probes:
-    - tool length
-    - touch off
+    - tool length for measuring tool stick out from collet.
+    - touch off for probing the workpiece to set coordinates.
 
     \dot
         digraph structs {
