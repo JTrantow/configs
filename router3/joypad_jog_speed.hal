@@ -27,11 +27,13 @@ addf or2_joy1 servo-thread
 addf mux4.0 servo-thread
 #
 # Set the jog speed for the joypad speed selection. Use numbers that make sense for your machine.
-#
+# Tried using 60.0 * [TRAJ] DEFAULT_LINEAR_VELOCITY but expression doesn't work. Could use scale component...
+#             60.0 * [TRAJ] MAX_LINEAR_ACCELERATION 
+
 setp mux4.0.in0    0.0  # Setting this input to 0 prevents motion unless one of the other buttons is pressed.
-setp mux4.0.in1   30.0  # Max jog speed when first speed select button is pressed.
-setp mux4.0.in2  300.0  # Max jog speed when second speed select button is pressed.
-setp mux4.0.in3 1500.0  # Max jog speed when third(or multiple) speed select button is pressed.
+setp mux4.0.in1   50.0  # Max jog speed when first speed select button is pressed.
+setp mux4.0.in2  500.0  # Max jog speed when second speed select button is pressed.
+setp mux4.0.in3 1600.0  # Max jog speed when third(or multiple) speed select button is pressed.
 #
 # The following lines do the magic of setting the jog speed selection. You must hold at least one of the buttons while jogging.
 # Notice this does not fully decode the button possibilities. If you simultaneously press multiple buttons you will get the higher speed.
