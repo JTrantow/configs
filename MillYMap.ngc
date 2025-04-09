@@ -10,16 +10,16 @@
 ( You also need to change the axis letters and the mesa symbols to match your config.)
 ( Search for AXIS_ and JOINT_ and G to find these change locations.                         )
 ( ----------------------------------------------------------------------------- )
-#<_samples> = [16+1]	( Number of samples to be taken across the range, >= 2	)
+#<_MIN_LIMIT> =   5.0 (#<_ini[AXIS_X]MIN_LIMIT> )
+#<_MAX_LIMIT> = 405.0 ([#<_ini[AXIS_X]MAX_LIMIT> - 1]) 
+#<_feedrate> = [#<_ini[AXIS_X]MAX_VELOCITY> * 60/2]	
+
+#<_encoder_scale> = [#<_ini[JOINT_0]ENCODER_SCALE>]
+#<_step_scale>    = [#<_ini[JOINT_0]STEP_SCALE>]
+#<_home_offset>   = [#<_ini[JOINT_0]HOME_OFFSET>]
+
+#<_samples> = [21]; (<_MAX_LIMIT> - <_MIN_LIMIT> +1 ])	( Number of samples to be taken across the range, >= 2	)
 #<_dwell> = 0.5		( Seconds of dwell time to settle mechanically, >= 0.0	)
-
-#<_MIN_LIMIT> = [#<_ini[AXIS_Y]MIN_LIMIT> + 10 + 0.1]
-#<_MAX_LIMIT> = [#<_ini[AXIS_Y]MAX_LIMIT> - 10]
-#<_feedrate> = [#<_ini[AXIS_Y]MAX_VELOCITY> * 60/2]	
-
-#<_encoder_scale> = [#<_ini[JOINT_1]ENCODER_SCALE>]
-#<_step_scale>    = [#<_ini[JOINT_1]STEP_SCALE>]
-#<_home_offset>   = [#<_ini[JOINT_1]HOME_OFFSET>]
 
 ( ----------------------------------------------------------------------------- )
 ( Subroutine: log the current realtime sampling state and DRO measurement	)
@@ -37,8 +37,8 @@ o100 sub
 
     m66 p0 L0 ( Queue-buster with no other effect )
     #<commanded> = #1
-    #<stepgen_pos> = #<_hal[hm2_7i92.0.stepgen.01.position-fb]>
-    #<encoder_pos> = #<_hal[hm2_7i92.0.encoder.01.position]>
+    #<stepgen_pos> = #<_hal[hm2_7i92.0.stepgen.00.position-fb]>
+    #<encoder_pos> = #<_hal[hm2_7i92.0.encoder.00.position]>
     (LOG,#<commanded> #<stepgen_pos> #<encoder_pos>)
 o100 endsub
 
@@ -60,7 +60,7 @@ o101 sub
         #<min> = [ #<start> ]
         #<max> = [ #<end> ]
         #<incr> = [ + #<_step> ]
-    o103 else
+    o103 elses
         (LOG,% NON-GOING)
     o103 endif
 
@@ -72,18 +72,18 @@ o101 sub
         o105 if [ #<loc> lt #<min> ]
             o101 return
         o105 endif
-        g53 g1 f#<_feedrate> Y#<loc>
+        g53 g1 f#<_feedrate> X#<loc>
         o100 call [ #<loc> ]
         #<loc> = [ #<loc> + #<incr> ]
     o102 endwhile
-    (LOG,];)
+    (LOG, How do I close out array)
 o101 endsub
 
 ( ----------------------------------------------------------------------------- )
 ( Main program which moves axis and samples points along the way.               ) 
 ( ----------------------------------------------------------------------------- )
 
-(LOGOPEN,../../nc_files/MillDoubleYAxisMap.m)
+(LOGOPEN,../../nc_files/MillDoubleXAxisMap.m)
 (LOG,% Axis sampling in Octave/Matlab format.)
 
 ( Emit all configuration parameters and conditions to the log output, for use by post-processing programs. Note: I used Octave/Matlab. )
@@ -92,21 +92,21 @@ o101 endsub
 (LOG,SAMPLES       = #<_samples>)
 (LOG,FEEDRATE      = #<_feedrate>)
 (LOG,DWELL         = #<_dwell>)
-(LOG,ENCODER_SCALE = #<_ini[JOINT_1]ENCODER_SCALE>)
-(LOG,STEP_SCALE    = #<_ini[JOINT_1]STEP_SCALE>)
-(LOG,HOME_OFFSET   = #<_ini[JOINT_1]HOME_OFFSET>)
-(LOG,FERROR        = #<_ini[JOINT_1]FERROR>)
-(LOG,MIN_FERROR    = #<_ini[JOINT_1]MIN_FERROR>)
-(LOG,DEADBAND      = #<_ini[JOINT_1]DEADBAND>)
+(LOG,ENCODER_SCALE = #<_ini[JOINT_0]ENCODER_SCALE>)
+(LOG,STEP_SCALE    = #<_ini[JOINT_0]STEP_SCALE>)
+(LOG,HOME_OFFSET   = #<_ini[JOINT_0]HOME_OFFSET>)
+(LOG,FERROR        = #<_ini[JOINT_0]FERROR>)
+(LOG,MIN_FERROR    = #<_ini[JOINT_0]MIN_FERROR>)
+(LOG,DEADBAND      = #<_ini[JOINT_0]DEADBAND>)
 
 #<_step> = [ [ #<_MAX_LIMIT> - #<_MIN_LIMIT> ] / [ #<_samples> - 1] ]
 
 ( Starting move to most-positive end )
-g53 g0 Y#<_MAX_LIMIT>
+g53 g0 X#<_MAX_LIMIT>
 o101 call [ #<_MAX_LIMIT> ] [ #<_MIN_LIMIT> ]
 o101 call [ #<_MIN_LIMIT> ] [ #<_MAX_LIMIT> ]
 
-(g53 g0 Y[#<_MAX_LIMIT>/2 - #<_MIN_LIMIT>/2])
+(g53 g0 X[#<_MAX_LIMIT>/2 - #<_MIN_LIMIT>/2])
 
 (LOGCLOSE)
 (MSG, DONE)

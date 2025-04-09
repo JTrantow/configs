@@ -4,6 +4,10 @@
     \brief This file illustrates the estop and encoder quad fault HAL connections.
 
     This diagram illustrates the .hal components for the estop latch logic of my mill.
+    The estop-driver is connected to all the closed loop stepper drivers so that if any driver goes into fault mode the estop-driver is activated.
+    The estop-overtravel monitors the tool length probe overtravel limit.
+    The estop-VFD monitors the status of the VFD.
+
     I moved encoder quadrature errors to joint/spindle amp-fault-in since they are not really recoverable.
 
     \dot

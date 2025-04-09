@@ -67,8 +67,6 @@
                                     <TABLE CELLBORDER="0" BORDER="0">
                                         <TR><TD ALIGN="LEFT" port="i10"> max x limit</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="i11"> min z limit</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="i12"> spindle on override</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="i13"> spindle cw override</TD></TR> 
                                     </TABLE>
                     >]
                 }
@@ -108,9 +106,7 @@
             pigtail:i15 -> g540 [ dir=back];
             
             terminals:p1 -> dio:i10 [label="red" dir=back];
-
-            terminals:p3 -> dio:i12 [label="brown" dir=back];
-            terminals:p4 -> dio:i13 [label="brown/white" dir=back];
+            terminals:p2 -> dio:i11 [ dir=back];
 
             terminals:p5    -> MinarekVFD:E2 [label="blue"];
             terminals:p6    -> MinarekVFD:D  [label="blue/white"];
@@ -121,8 +117,6 @@
 
             n10 -> pigtail:i10 [label="x-home-sw" dir=back];
             n11 -> pigtail:i11 [label="z-home-sw (reserved)" dir=back];
-            n12 -> pigtail:i12 [label="spindle-on-override" dir=back];
-            n13 -> pigtail:i13 [label="spindle-cw-override" dir=back];
             
 
             n01 -> pigtail:o1  [label="spindle-cw"];
@@ -141,6 +135,13 @@
 */
 
 /*
+    Decided there was no need for override signals.
+                                            <TR><TD ALIGN="LEFT" port="i12"> spindle on override</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="i13"> spindle cw override</TD></TR> 
+
+            n12 -> pigtail:i12 [label="spindle-on-override" dir=back];
+            n13 -> pigtail:i13 [label="spindle-cw-override" dir=back];
+
     Don't bother showing these connections.
             terminal0:o2 -> pigtail:o2 [label="xstep"];
             terminal0:o3 -> pigtail:o3 [label="xdir"];

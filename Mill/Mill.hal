@@ -70,7 +70,7 @@ setp    [MESA](CARD0).encoder.00.scale  [JOINT_0]ENCODER_SCALE
 net x-index-enable  <=> joint.0.index-enable  <=>  [MESA](CARD0).encoder.00.index-enable <=>  pid.x.index-enable <=> [MESA](CARD0).stepgen.00.index-enable
 #
 # Use the available joint velocity instead of PID estimate.
-# PCW says this shouldn't be used??? But forum inidicates it should be fine in 2.9.2 https://forum.linuxcnc.org/39-pncconf/38320-command-derivative
+# PCW says this shouldn't be used??? But forum indicates it should be fine in 2.9.2 https://forum.linuxcnc.org/39-pncconf/38320-command-derivative
 # If you use command-deriv make sure it's connected to vel-cmd.
 net x-vel-cmd        <= joint.0.vel-cmd  => pid.x.command-deriv
 

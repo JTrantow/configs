@@ -1,5 +1,0 @@
-#
-# Some GUIs support halfiles that are processed after the GUI is started in order to connect hal pins that are created by the GUI. When using a postgui halfile with TWOPASS processing, include all loadrt items for components added by postgui halfiles in a separate halfile that is processed before the GUI. The addf commands can also be included in the file. Example:
-#
-loadrt or2 names=or2_joy0,or2_joy1
-

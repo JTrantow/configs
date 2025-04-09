@@ -418,7 +418,7 @@
             encoder -> joint -> null00 -> pid -> stepgen [style="invis" weight=10.0];
 
             joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="black" color="black"];
-            joint:o1    -> null00       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="black"];
+            joint:o1    -> pid:i1       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="black"];
             pid:o0      -> stepgen:i0   [label="x-output" fontsize = "12" fontcolor="black" color="black"];
 
             stepgen:o0  -> pid:f0:s     [label="x-pos-fb" fontsize = "12" fontcolor="black" color="black"];
@@ -426,7 +426,7 @@
             encoder:o0  -> joint:i0:w   [label="x-pos-encoder" fontsize = "12" fontcolor="red" color="red"];
             
             encoder:02 -> joint:i1 -> pid:i2 [label="x-index-enable" fontsize = "12" fontcolor="black" color="black" dir="both"];
-            pid:i2 -> stepgen:i1 [label="x-index-enable" fontsize = "12" fontcolor="red2" color="red2" dir="both"];
+            pid:i2 -> stepgen:i1 [label="x-index-enable" fontsize = "12" fontcolor="black" color="black" dir="both"];
         }
     \enddot
 */
@@ -562,13 +562,13 @@
             encoder -> joint -> null00 -> pid -> stepgen [style="invis" weight=10.0];
 
             joint:o0    -> pid:i0       [label="x-pos-cmd" fontsize = "12" fontcolor="black" color="black"];
-            joint:o1    -> null00       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="black"];
+            joint:o1    -> pid:i1       [label="x-vel-cmd" fontsize = "12" fontcolor="black" color="black"];
             pid:o0      -> stepgen:i0   [label="x-output" fontsize = "12" fontcolor="black" color="black"];
       
             encoder:o0  -> joint:i0:w -> pid:f0 [label="x-pos-fb" fontsize = "12" fontcolor="red" color="red"];            
             encoder:o1  -> pid:f1:s   [label="x-vel-fb" fontsize = "12" fontcolor="red2" color="red2"];
             encoder:02 -> joint:i1 -> pid:i2 [label="x-index-enable" fontsize = "12" fontcolor="black" color="black"];
-            pid:i2 -> stepgen:i1 [label="x-index-enable" fontsize = "12" fontcolor="red2" color="red2"];
+            pid:i2 -> stepgen:i1 [label="x-index-enable" fontsize = "12" fontcolor="black" color="black"];
         }
     \enddot
 */

@@ -169,17 +169,17 @@
                 >]
             }
 
-            n0 [label="G540-fault"      shape="none" ];
-            n1 [label="x-encoder-fault" shape="none" ];
-            n2 [label="y-encoder-fault" shape="none" ];
-            n3 [label="z-encoder-fault" shape="none" ];
+            n0 [label="estop-G540"      shape="none" ];
+            n1 [label="x-encoder-estop" shape="none" ];
+            n2 [label="z-encoder-estop" shape="none" ];
+            n3 [label="s-encoder-estop" shape="none" ];
 
             n0:e -> estop0:i0:w;
             n1:e -> estop1:i0:w ;
             n2:e -> estop2:i0:w ;
             n3:e -> estop3:i0:w ;
 
-            iocontrol:o0:e  -> estop0:i1:w;
+            iocontrol:o0:e  -> estop0:i1:w [label="latch0-ok-in"];
             
             iocontrol:o1:se -> estop0:f0:s [color="blue" style="dashed"];
             iocontrol:o1:se -> estop1:f0:s [color="blue" style="dashed"];
@@ -198,6 +198,5 @@
     
 */
 /*
-[label="G540-fault"];
             {rank=same; iocontrol estop0 estop1 estop2 estop3}
 */
