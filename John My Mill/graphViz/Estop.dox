@@ -1,0 +1,202 @@
+/*!
+    \file Estop.dox
+    \addtogroup ESTOP
+    \brief This file contains the doxygen description and diagram illustrating the HAL for the ESTOP functionality.
+
+
+    This diagram illustrates the .hal components for the estop latch logic of my lathe.
+
+    \dot
+        digraph structs {
+            rankdir="LR"
+            concentrate=true
+            label="EStopLatch control."
+
+            subgraph cluster_estop0{
+                label="estop-latch.0"
+                estop0 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_estop1{
+                label="estop-latch.1"
+                estop1 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+
+            subgraph cluster_estop2{
+                label="estop-latch.2"
+                estop2 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+            subgraph cluster_estop3{
+                label="estop-latch.3"
+                estop3 [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">fault-in</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">ok-in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">fault-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o1">ok-out</TD></TR> 
+                                    <TR><TD ALIGN="RIGHT" port="o2">watchdog</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">reset</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >
+                ]
+            }
+            subgraph cluster_iocontrol{
+                label="iocontrol.0"
+                iocontrol [shape="box" label=<
+                    <TABLE>
+                        <TR><TD>
+                              <TABLE CELLBORDER="0" BORDER="0">
+                                <TR><TD ALIGN="LEFT" port="i0"> emc-enable-in </TD></TR>
+                            </TABLE>
+                        </TD>
+                        <TD>
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR><TD ALIGN="RIGHT" port="o0"> user-enable-out </TD></TR> 
+                                <TR><TD ALIGN="RIGHT" port="o1"> user-request-enable </TD></TR>
+                            </TABLE>
+                        </TD></TR>                    
+                    </TABLE>
+                >]
+            }
+
+            n0 [label="estop-G540"      shape="none" ];
+            n1 [label="x-encoder-estop" shape="none" ];
+            n2 [label="z-encoder-estop" shape="none" ];
+            n3 [label="s-encoder-estop" shape="none" ];
+
+            n0:e -> estop0:i0:w;
+            n1:e -> estop1:i0:w ;
+            n2:e -> estop2:i0:w ;
+            n3:e -> estop3:i0:w ;
+
+            iocontrol:o0:e  -> estop0:i1:w [label="latch0-ok-in"];
+            
+            iocontrol:o1:se -> estop0:f0:s [color="blue" style="dashed"];
+            iocontrol:o1:se -> estop1:f0:s [color="blue" style="dashed"];
+            iocontrol:o1:se -> estop2:f0:s [color="blue" style="dashed"];
+            iocontrol:o1:se -> estop3:f0:s [color="blue" label="latch-reset"  fontsize = "12" fontcolor="blue" style="dashed"];
+
+            estop0:o1 -> estop1:i1 [color="black"];
+            estop1:o1 -> estop2:i1 [color="black"];
+            estop2:o1 -> estop3:i1 [color="black"];
+            estop3:o1 -> iocontrol:i0   [label="estop-out"  fontsize = "12" fontcolor="black" color="black"];
+
+            {rank=source; iocontrol}
+        }
+    \enddot
+
+    
+*/
+/*
+            {rank=same; iocontrol estop0 estop1 estop2 estop3}
+*/

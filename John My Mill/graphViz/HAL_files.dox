@@ -1,0 +1,28 @@
+/*!
+    \file HAL_files.dox
+    \addtogroup HAL
+
+    \brief This file documents the HAL file organization.
+
+HALFILE
+        - latheMesa.hal Traditional configuration file with basic stepper control.
+        - LatheSpindle.hal Configures the spindle components including encoder and pid/pwmgen for the VFD.
+        - custom.hal
+
+POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
+
+        - postgui_call_list.hal
+
+            #source custom_postgui.hal
+            source spindle_postgui.hal
+
+            source joypad_jog_speed.hal
+            source joypad_xz.hal
+            source joypad_extras.hal
+
+
+SHUTDOWN
+        - shutdown.hal (empty)
+
+*/
+

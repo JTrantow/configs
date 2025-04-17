@@ -1,0 +1,155 @@
+/*!
+    \file SpindleWiring.dox
+    \addtogroup G540
+
+    \brief This file illustrates the wiring for the Gecko G540 used with my lathe spindle.
+
+    I wired a parallel port cable pig tail between Mesa boards and the G540, I am NOT loading a parallel port component. This illustrates the hardware connections.
+
+    An 8 wire conductor cables (four colored pairs) runs from control box to VFD.
+    Two wires run to the max x limit switch (red/black).
+    
+    \dot
+        digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="Lathe Spindle Wiring Connections."
+
+            subgraph cluster_pigtail{
+                label="DB25 pigtail cable"
+                pigtail [shape="box" label=<
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="i10"> 10 INPUT 1</TD></TR>
+                                    <TR><TD ALIGN="RIGHT" port="i11"> 11 INPUT 2</TD></TR>
+                                    <TR><TD ALIGN="RIGHT" port="i12"> 12 INPUT 3</TD></TR>
+                                    <TR><TD ALIGN="RIGHT" port="i13"> 13 INPUT 4</TD></TR>
+ 
+                                    <TR><TD ALIGN="LEFT" port="o1"> 1 OUTPUT 2</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o2"> 2 X-AXIS STEP</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o3"> 3 X-AXIS DIRECTION</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o4"> 4 Y-AXIS STEP</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o5"> 5 Y-AXIS DIRECTION</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o6"> 6 Z-AXIS STEP</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o7"> 7 Z-AXIS DIRECTION</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o8"> 8 A-AXIS STEP</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o9"> 9 A-AXIS DIRECTION</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o14"> 14 VFD PWM</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="o17"> 17 OUTPUT 1</TD></TR> 
+
+                                    <TR><TD ALIGN="RIGHT" port="i15"> 15 FAULT</TD></TR>
+                                </TABLE>
+                >]
+            }
+
+            subgraph cluster_terminals{
+                label="G540 screw terminals"
+                terminals [shape="box" label=<
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="LEFT" port="p1"> 1 INPUT 1 (DB25 PIN 10)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p2"> 2 INPUT 2 (DB25 PIN 11)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p3"> 3 INPUT 3 (DB25 PIN 12)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p4"> 4 INPUT 4 (DB25 PIN 13)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p5"> 5 OUTPUT 1 (DB25 PIN 17)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p6"> 6 OUTPUT 2 (DB25 PIN 1)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p7"> 7 VFD GROUND</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p8"> 8 VFD OUTPUT</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p9"> 9 VFD +5VDC</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p10"> 10 DISABLE INPUT (E-STOP)</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p11"> 11 SUPPLY +18-50VDC</TD></TR> 
+                                    <TR><TD ALIGN="LEFT" port="p12"> 12 POWER SUPPLY GND</TD></TR> 
+                                </TABLE>
+                >]
+            }
+
+            subgraph cluster_dio{
+                subgraph d {
+                    dio[shape="box" label=<
+                                    <TABLE CELLBORDER="0" BORDER="0">
+                                        <TR><TD ALIGN="LEFT" port="i10"> max x limit</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="i11"> min z limit</TD></TR> 
+                                    </TABLE>
+                    >]
+                }
+                label="digital input switches"
+            }
+
+            subgraph cluster_vfd{
+                label="Minarek VFD TB501"
+                subgraph v {
+                    MinarekVFD[shape="box" label=<
+                                    <TABLE CELLBORDER="0" BORDER="0">
+                                        <TR><TD ALIGN="LEFT" port="D"> D Direction</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S3"> S3 5VDC</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S2"> S2 Wiper (0-5V)</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S1"> S1 GND</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="E1"> E1 Common</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="E2"> E2 Enable</TD></TR> 
+                                    </TABLE>
+                    >]
+                }
+            }
+
+            g540 [shape="box" label="G540 FAULT"];
+
+            n10 [shape="point" style="invis"];
+            n11 [shape="point" style="invis"];
+            n12 [shape="point" style="invis"];
+            n13 [shape="point" style="invis"];
+            n01 [shape="point" style="invis"];
+            n14 [shape="point" style="invis"];
+            n17 [shape="point" style="invis"];
+            n15 [shape="point" style="invis"];
+
+            pigtail:o17 -> terminals:p5;
+            pigtail:o1 -> terminals:p6;
+            pigtail:o14 -> terminals:p8;
+            pigtail:i15 -> g540 [ dir=back];
+            
+            terminals:p1 -> dio:i10 [label="red" dir=back];
+            terminals:p2 -> dio:i11 [ dir=back];
+
+            terminals:p5    -> MinarekVFD:E2 [label="blue"];
+            terminals:p6    -> MinarekVFD:D  [label="blue/white"];
+            terminals:p7    -> MinarekVFD:S1 [label="green" dir=back];
+            terminals:p8    -> MinarekVFD:S2 [label="green/white"];
+            terminals:p9    -> MinarekVFD:S3 [label="orange" ];
+            terminals:p12   -> MinarekVFD:E1 [label="orange/white" dir=none];
+
+            n10 -> pigtail:i10 [label="x-home-sw" dir=back];
+            n11 -> pigtail:i11 [label="z-home-sw (reserved)" dir=back];
+            
+
+            n01 -> pigtail:o1  [label="spindle-cw"];
+            n14 -> pigtail:o14 [label="spindle-pwm"];
+            n17 -> pigtail:o17 [label="spindle-enable"];
+            n15 -> pigtail:i15 [label="estop-G540-fault" dir=back];
+
+            {rank=same n10 n11 n12 n13 n01 n14 n17 n15};
+
+            pigtail:i10 -> terminals:p1  [dir=back];
+            pigtail:i11 -> terminals:p2  [dir=back];
+            pigtail:i12 -> terminals:p3  [dir=back];
+            pigtail:i13 -> terminals:p4  [dir=back];
+       }
+    \enddot
+*/
+
+/*
+    Decided there was no need for override signals.
+                                            <TR><TD ALIGN="LEFT" port="i12"> spindle on override</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="i13"> spindle cw override</TD></TR> 
+
+            n12 -> pigtail:i12 [label="spindle-on-override" dir=back];
+            n13 -> pigtail:i13 [label="spindle-cw-override" dir=back];
+
+    Don't bother showing these connections.
+            terminal0:o2 -> pigtail:o2 [label="xstep"];
+            terminal0:o3 -> pigtail:o3 [label="xdir"];
+            terminal0:o4 -> pigtail:o4 [label="ystep"];
+            terminal0:o5 -> pigtail:o5 [label="ydir"];
+            terminal0:o6 -> pigtail:o6 [label="zstep"];
+            terminal0:o7 -> pigtail:o7 [label="zdir"];
+            terminal0:o8 -> pigtail:o8 [label="astep"];
+            terminal0:o9 -> pigtail:o9 [label="adir"];
+            terminal0:o16 -> pigtail:o16 [label="charge pump"];
+*/
