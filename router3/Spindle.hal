@@ -11,10 +11,11 @@ loadusr -Wn spindle-vfd gs2_vfd --bits 8 --device /dev/ttyS0   --name spindle-vf
 #
 # VFD 
 #
-net spindle-vel-cmd-rpm   => spindle-vfd.speed-command
-net spindle-enable        => spindle-vfd.spindle-on 
-net spindle-cw            => spindle-vfd.spindle-fwd
-net spindle-at-speed      <= spindle-vfd.at-speed
+net spindle-vel-cmd-rpm   <= spindle-vfd.speed-command
+net spindle-enable        <= spindle-vfd.spindle-on 
+net spindle-cw            <= spindle-vfd.spindle-fwd
+net spindle-ccw           <= spindle-vfd.spindle-rev
+#net spindle-at-speed      <= spindle-vfd.at-speed
 net spindle-rpm           <= spindle-vfd.motor-RPM
 net spindle-load-percent  <= spindle-vfd.load-percentage
 #
@@ -22,11 +23,13 @@ net spindle-load-percent  <= spindle-vfd.load-percentage
 #
 
 
-
-
-
 net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
 net spindle-enable             <=  spindle.0.on
 net spindle-cw                 <=  spindle.0.forward
-net spindle-at-speed           =>  spindle.0.at-speed
-
+#net spindle-at-speed           =>  spindle.0.at-speed
+setp spindle.0.at-speed true
+#
+# Control the air compressor and cross-hair laser with relays. This belongs in a different file.
+#
+net laser-air-relay  <= iocontrol.0.coolant-flood
+net laser-cross-hair <= iocontrol.0.coolant-mist

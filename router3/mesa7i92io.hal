@@ -92,7 +92,7 @@ net max-home-y2        <=  debounce.0.1.out
 # IO1 gpio.026 plasma-on             IO0 gpio.025 length-in
 
 # GND                                GND
-# IO7 gpio.024 laser-enable          IO6 gpio.023 VFD-fault
+# IO7 gpio.024 laser-enable          IO6 gpio.023 GS2-fault
 # GND                                GND
 # IO5 gpio.022 laser-air-relay       IO4 gpio.021 StepGen.5.Direction
 # GND                                GND
@@ -134,7 +134,7 @@ net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
 net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
 net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
 
-net VFD-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
+net GS2-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
 #stepgen.05.dir          =>  [HMOT](CARD0).gpio.021.out
 #stepgen.05.step         =>  [HMOT](CARD0).gpio.019.out
 net max-home-y-raw       <=  [HMOT](CARD0).gpio.017.in => debounce.0.0.in
