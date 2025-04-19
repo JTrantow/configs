@@ -16,10 +16,38 @@ addf estop-latch.2            servo-thread
 addf estop-latch.3            servo-thread
 
 #
-# Enable the XZ and spindle encoder quadrature error detection.
+# Even with TWO_PASS, I was having problems using and2 conflicting with the post gui loadrt???
+# Use a lut5 to implement a simple and.
+#loadrt and2 names=and2_estop 
+loadrt lut5 names=lut5_estop
+addf lut5_estop servo-thread
+setp lut5_estop.function 0x08
+
+#
+# Enable Z quad errors when RPM is within +-300RPM of zero.
+#
+loadrt near names=near-300
+addf near-300 servo-thread
+
+#
+# Enable the XZ encoder quadrature error detection whenever machine-is-on.
 # 
-net machine-is-on <= halui.machine.is-on           => [MESA](CARD0).encoder.00.quad-error-enable [MESA](CARD0).encoder.01.quad-error-enable [MESA](CARD0).encoder.02.quad-error-enable 
+net machine-is-on <= halui.machine.is-on           => [MESA](CARD0).encoder.00.quad-error-enable [MESA](CARD0).encoder.01.quad-error-enable 
 net latch-reset                                    => [MESA](CARD0).encoder.00.reset             [MESA](CARD0).encoder.01.reset             [MESA](CARD0).encoder.02.reset
+
+
+#
+# Spindle encoder quadrature error is only reliable up to +-300 RPM.
+#
+setp near-300.scale 1.0
+setp near-300.difference 300.0
+setp near-300.in1   0.0
+#net spindle-cmd         => near-300.in2
+net encoder-rpm-filtered         => near-300.in2
+
+net en-spindle-quad     <= near-300.out     => lut5_estop.in-0
+net machine-is-on                           => lut5_estop.in-1
+net enable-spindle-quad <= lut5_estop.out   => [MESA](CARD0).encoder.02.quad-error-enable 
 
 #
 #   Reset signal for each latch.
@@ -41,9 +69,6 @@ net latch2-out <= estop-latch.2.ok-out => estop-latch.3.ok-in
 net estop-out <= estop-latch.3.ok-out => iocontrol.0.emc-enable-in 
 #
 #   Connect various inputs to the estop latch fault_in pins 
-#
-# --- Closed loop stepper driver alarm ---
-# Could use joint.N.amp-fault-in instead of estop-latch.
 #
 net estop-G540      <= [MESA](CARD0).gpio.000.in    => estop-latch.0.fault-in
 

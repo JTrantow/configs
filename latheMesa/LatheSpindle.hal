@@ -8,13 +8,18 @@ loadrt near names=near-spindle,near-zero
 loadrt lowpass count=1
 loadrt limit2 names=spindle-ramp
 loadrt not names=spindle-enable-not,estop-not
+loadrt abs names=spindle-speed-abs
+#loadrt lincurve names=lincurve-spindle personality=11
+loadrt lincurve names=lincurve-spindle personality=6
 
 addf near-spindle servo-thread
-addf near-zero servo-thread
-addf lowpass.0 servo-thread
-addf spindle-ramp servo-thread
+addf near-zero          servo-thread
+addf lowpass.0          servo-thread
+addf spindle-ramp       servo-thread
 addf spindle-enable-not servo-thread
-addf estop-not servo-thread
+addf estop-not          servo-thread
+addf spindle-speed-abs  servo-thread
+addf lincurve-spindle   servo-thread
 
 # ---Encoder feedback signals/setup---
 
@@ -44,19 +49,73 @@ net spindle-cmd                 <=  spindle.0.speed-out
 # If we just use spindle.0.on for spindle-enable it will shut off immediately without deceleration.
 # Instead use near-zero to stay enabled while it ramps down.
 #
-#net spindle-enable              <=  spindle.0.on         
 net spindle-cw                  <=  spindle.0.forward   
 net spindle-index-enable        <=> spindle.0.index-enable
 
 #
 # ---Limit2 used to slow down spindle acceleration and deceleration
 #
-setp spindle-ramp.min -800
+setp spindle-ramp.min -2650
 setp spindle-ramp.max [DISPLAY]MAX_SPINDLE_0_SPEED
 setp spindle-ramp.maxv 200
 
 net spindle-cmd                 => spindle-ramp.in
-net spindle-ramped-cmd          <= spindle-ramp.out 
+net spindle-ramped-cmd          <= spindle-ramp.out         => spindle-speed-abs.in
+net spindle-ramped-abs          <= spindle-speed-abs.out    => lincurve-spindle.in
+net spindle-output              <= lincurve-spindle.out     
+
+
+#
+# Until the spindle encoder is improved, use a table lookup to convert spindle-speed to pwm.
+#
+setp lincurve-spindle.x-val-00       0.0
+setp lincurve-spindle.x-val-01     311.0
+setp lincurve-spindle.x-val-02     450.0
+setp lincurve-spindle.x-val-03    1400.0
+setp lincurve-spindle.x-val-04    2440.0
+setp lincurve-spindle.x-val-05    2560.0
+
+setp lincurve-spindle.y-val-00       0.0
+setp lincurve-spindle.y-val-01      11.0
+setp lincurve-spindle.y-val-02      15.0
+setp lincurve-spindle.y-val-03      50.0
+setp lincurve-spindle.y-val-04      90.0
+setp lincurve-spindle.y-val-05     100.0
+
+setp [MESA](CARD0).pwmgen.00.scale 100.0
+
+#
+# This is a special mapping used to figure out the PWM to RPM output.
+# RPM maps directly to PWM percentage.
+# Use this to figure out y values above.
+#
+#setp lincurve-spindle.x-val-00    0.0
+#setp lincurve-spindle.x-val-01   10.0
+#setp lincurve-spindle.x-val-02   20.0
+#setp lincurve-spindle.x-val-03   30.0
+#setp lincurve-spindle.x-val-04   40.0
+#setp lincurve-spindle.x-val-05   50.0
+#setp lincurve-spindle.x-val-06   60.0
+#setp lincurve-spindle.x-val-07   70.0
+#setp lincurve-spindle.x-val-08   80.0
+#setp lincurve-spindle.x-val-09   90.0
+#setp lincurve-spindle.x-val-10  100.0
+
+#setp lincurve-spindle.y-val-00 0.0
+#setp lincurve-spindle.y-val-01 0.1
+#setp lincurve-spindle.y-val-02 0.2
+#setp lincurve-spindle.y-val-03 0.3
+#setp lincurve-spindle.y-val-04 0.4
+#setp lincurve-spindle.y-val-05 0.5
+#setp lincurve-spindle.y-val-06 0.6
+#setp lincurve-spindle.y-val-07 0.7
+#setp lincurve-spindle.y-val-08 0.8
+#setp lincurve-spindle.y-val-09 0.9
+#setp lincurve-spindle.y-val-10 1.0
+
+#setp [MESA](CARD0).pwmgen.00.scale       1
+
+
 #
 # estop should immediately stop the spindle. (by immediate load of limit2 causing spindle-enable to go false)
 #
@@ -66,24 +125,24 @@ net estop-out-not               <= estop-not.out       => spindle-ramp.load
 #
 # Spindle pid.s settings.
 #
-setp   pid.s.Pgain     [SPINDLE_0]P
-setp   pid.s.Igain     [SPINDLE_0]I
-setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
-setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
-setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
-setp   pid.s.maxerrorI 1.0
+#setp   pid.s.Pgain     [SPINDLE_0]P
+#setp   pid.s.Igain     [SPINDLE_0]I
+#setp   pid.s.Dgain     [SPINDLE_0]D
+#setp   pid.s.bias      [SPINDLE_0]BIAS
+#setp   pid.s.FF0       [SPINDLE_0]FF0
+#setp   pid.s.FF1       [SPINDLE_0]FF1
+#setp   pid.s.FF2       [SPINDLE_0]FF2
+#setp   pid.s.deadband  [SPINDLE_0]DEADBAND
+#setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
+#setp   pid.s.error-previous-target true
+#setp   pid.s.maxerrorI 1.0
 
-net spindle-ramped-cmd    =>  pid.s.command
-net spindle-enable        =>  pid.s.enable        
-net spindle-index-enable  <=> pid.s.index-enable
-net spindle-output        <=  pid.s.output        
+#net spindle-ramped-cmd    =>  pid.s.command
+#net spindle-enable        =>  pid.s.enable        
+#net spindle-index-enable  <=> pid.s.index-enable
+#net spindle-output        <=  pid.s.output        
 
-net encoder-rpm-filtered  =>  pid.s.feedback
+#net encoder-rpm-filtered  =>  pid.s.feedback
 #net encoder-velocity-rpm  =>  pid.s.feedback
 #
 # Use Mesa 7i92 stepgen 4 as PWM 0 output.
@@ -92,7 +151,6 @@ net encoder-rpm-filtered  =>  pid.s.feedback
 setp [MESA](CARD0).pwmgen.00.output-type    1
 
 setp [MESA](CARD0).pwmgen.pwm_frequency  1000
-setp [MESA](CARD0).pwmgen.00.scale       -2000
 setp [MESA](CARD0).pwmgen.00.offset-mode false
 setp [MESA](CARD0).pwmgen.00.out0.invert_output true
 
@@ -125,13 +183,15 @@ net spindle-enable              <= spindle-enable-not.out
 
 setp lowpass.0.gain 0.0063
 net encoder-velocity-rpm    => lowpass.0.in
-net encoder-rpm-filtered    <= lowpass.0.out     
+#net encoder-rpm-filtered    <= lowpass.0.out     
 
 #
 # See if we are near enough to be considered at speed.
+# We can user tighter limits with the limit2 ramped signal.
 #
-setp near-spindle.scale 1.25
-net encoder-rpm-filtered    => near-spindle.in1
+setp near-spindle.scale 1.10
+setp near-spindle.difference 10
+net spindle-ramped-cmd      => near-spindle.in1
 net spindle-cmd             => near-spindle.in2
 #
 # Use this line to manually turns the spindle to align threading tool to existing threads.
