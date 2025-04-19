@@ -18,8 +18,10 @@ addf estop-not servo-thread
 
 # ---Encoder feedback signals/setup---
 
+setp    [MESA](CARD0).encoder.muxed-sample-frequency 350000
+
 setp    [MESA](CARD0).encoder.02.counter-mode 0
-setp    [MESA](CARD0).encoder.02.filter 1
+setp    [MESA](CARD0).encoder.02.filter true
 setp    [MESA](CARD0).encoder.02.index-invert 0
 setp    [MESA](CARD0).encoder.02.index-mask 0
 setp    [MESA](CARD0).encoder.02.index-mask-invert 0
@@ -56,7 +58,7 @@ setp spindle-ramp.maxv 200
 net spindle-cmd                 => spindle-ramp.in
 net spindle-ramped-cmd          <= spindle-ramp.out 
 #
-# estop should immediately stop the spindle. (by immediate load of limit2 causing spindle-enable to go false).
+# estop should immediately stop the spindle. (by immediate load of limit2 causing spindle-enable to go false)
 #
 net estop-out                   => estop-not.in
 net estop-out-not               <= estop-not.out       => spindle-ramp.load
@@ -80,8 +82,9 @@ net spindle-ramped-cmd    =>  pid.s.command
 net spindle-enable        =>  pid.s.enable        
 net spindle-index-enable  <=> pid.s.index-enable
 net spindle-output        <=  pid.s.output        
-net encoder-rpm-filtered  =>  pid.s.feedback
 
+net encoder-rpm-filtered  =>  pid.s.feedback
+#net encoder-velocity-rpm  =>  pid.s.feedback
 #
 # Use Mesa 7i92 stepgen 4 as PWM 0 output.
 # Output type 1: PWM on Out0, Dir on Out1.
@@ -89,7 +92,7 @@ net encoder-rpm-filtered  =>  pid.s.feedback
 setp [MESA](CARD0).pwmgen.00.output-type    1
 
 setp [MESA](CARD0).pwmgen.pwm_frequency  1000
-setp [MESA](CARD0).pwmgen.00.scale       1000
+setp [MESA](CARD0).pwmgen.00.scale       -2000
 setp [MESA](CARD0).pwmgen.00.offset-mode false
 setp [MESA](CARD0).pwmgen.00.out0.invert_output true
 
@@ -121,18 +124,15 @@ net spindle-enable              <= spindle-enable-not.out
 #   1hz gain=0.0063
 
 setp lowpass.0.gain 0.0063
-setp near-spindle.scale 1.25
-
 net encoder-velocity-rpm    => lowpass.0.in
 net encoder-rpm-filtered    <= lowpass.0.out     
 
-#net encoder-rpm-filtered        => scale.0.in
-#net spindle-fb-filtered         <= scale.0.out                  
 #
 # See if we are near enough to be considered at speed.
 #
-net encoder-rpm-filtered    => near-spindle.in2
-net spindle-cmd             => near-spindle.in1
+setp near-spindle.scale 1.25
+net encoder-rpm-filtered    => near-spindle.in1
+net spindle-cmd             => near-spindle.in2
 #
 # Use this line to manually turns the spindle to align threading tool to existing threads.
 #
