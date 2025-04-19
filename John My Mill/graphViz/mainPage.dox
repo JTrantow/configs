@@ -4,57 +4,15 @@
         
         Having this in a separate file allows the documentation to be updated without changing a code file.
                 
-        \mainpage Lathe documentation
+        \mainpage John's Mill documentation
+
+        High level documentation goes here here.
                         
         \section features_section Features
-                
         \section toDo_section ToDo 
                 - Document estop latch
                 - Document probe
                 
         \section ref_section References
-                - Mesa 7i96 Manual
-                - Mesa 7i85s Manual
-                - G540 Manual
                 - Minarek VFD docs
-
-
-
-
-
-
-
-\addtogroup HAL
-
-    The configuration .ini specifies a HAL section.
-
-    \code
-        [HAL]
-        TWOPASS = on
-        HALUI = halui
-        HALFILE = latheMesa.hal
-        HALFILE = LatheSpindle.hal
-        HALFILE = estop-chain.hal
-        HALFILE = custom.hal
-        POSTGUI_HALFILE = postgui_call_list.hal
-        SHUTDOWN = shutdown.hal
-    \endcode
-
-    HALFILE
-        - latheMesa.hal Traditional configuration file with basic stepper control.
-        - LatheSpindle.hal Configures the spindle components including encoder and pid/pwmgen for the VFD.
-        - estop-chain.hal Estop logic for G540 and encoder quadrature faults.
-        - custom.hal (Empty)
-
-    POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
-        - postgui_call_list.hal - Contains the following list of files to load after the GUI.
-            - spindle_postgui.hal - Filters spindle speed for pyvcp display.
-            - joypad_jog_speed.hal - Logitech joypad jogging speed functionality.
-            - joypad_xz.hal - Connects joypad to joystick controls for lathe.
-            - joypad_extras.hal - Connnects jogging to the digital joypad, program run, pause, resume and manual/auto modoe of operation. 
-
-    SHUTDOWN
-        - shutdown.hal (empty)
 */
-
-

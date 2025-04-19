@@ -1,0 +1,36 @@
+#
+# This file contains the Hardware Abstraction Level for connecting driver alarms and encoder alarms to the e-stop.
+# Based on https://forum.linuxcnc.org/10-advanced-configuration/32789-educate-me-about-estop-chains-and-latches?start=10#93394
+#
+
+#
+# The default setup has estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in. 
+# This file inserts a chain of estop latches between user-enable-out and emc-enable-in.
+# Set up multiple estop latches for G540 driver and encoder quadrature faults.
+#
+loadrt estop_latch count=1
+
+addf estop-latch.0            servo-thread
+
+#
+#   Reset signal for each latch.
+#
+net latch-reset <= iocontrol.0.user-request-enable => estop-latch.0.reset  
+#
+#  Hook the first latch to Linuxcnc iocontrol stuff.
+#
+net latch0-ok-in <= iocontrol.0.user-enable-out => estop-latch.0.ok-in
+#
+#  Connect each ok_out to the next ok_in to create a chain of latches.
+#   Last estop in the chain tells LinuxCNC we have an estop.
+#
+net estop-out <= estop-latch.0.ok-out => iocontrol.0.emc-enable-in 
+#
+#   Connect various inputs to the estop latch fault_in pins 
+#
+net estop-button    => estop-latch.0.fault-in
+
+
+
+
+

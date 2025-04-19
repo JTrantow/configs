@@ -1,28 +1,39 @@
 /*!
-    \file HAL_files.dox
+    \file HAL.dox	
     \addtogroup HAL
+    \brief This file contains the doxygen for the HAL file structure for John's mill.
 
-    \brief This file documents the HAL file organization.
+    The configuration .ini specifies a HAL section.
 
-HALFILE
-        - latheMesa.hal Traditional configuration file with basic stepper control.
-        - LatheSpindle.hal Configures the spindle components including encoder and pid/pwmgen for the VFD.
-        - custom.hal
+HALFILE = my-mill1.hal
 
-POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
+    \code
+        [HAL]
+        TWOPASS = on
+        HALUI = halui
+        HALFILE = my-mill1.hal
+        HALFILE = spindle.hal
+        HALFILE = estop-chain.hal
+        HALFILE = custom.hal
+        POSTGUI_HALFILE = postgui_call_list.hal
+        SHUTDOWN = shutdown.hal
+    \endcode
 
-        - postgui_call_list.hal
+    HALFILE
+        - my-mill1.hal Traditional configuration file with basic stepper control.
+        - spindle.hal Configures the spindle components including pid and pwmgen for the VFD.
+        - estop-chain.hal Estop logic for faults.
+        - custom.hal (Empty)
 
-            #source custom_postgui.hal
-            source spindle_postgui.hal
+    POSTGUI_HALFILE These files are loaded post GUI, in the order they appear
+        - postgui_call_list.hal - Contains the following list of files to load after the GUI.
+            - spindle_postgui.hal - Filters spindle speed for pyvcp display.
+            - joypad_jog_speed.hal - Logitech joypad jogging speed functionality.
+            - joypad_xz.hal - Connects joypad to joystick controls for lathe.
+            - joypad_extras.hal - Connnects jogging to the digital joypad, program run, pause, resume and manual/auto modoe of operation. 
 
-            source joypad_jog_speed.hal
-            source joypad_xz.hal
-            source joypad_extras.hal
-
-
-SHUTDOWN
+    SHUTDOWN
         - shutdown.hal (empty)
-
 */
+
 

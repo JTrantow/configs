@@ -1,7 +1,7 @@
 /*!
     \file GPIO.dox
     \addtogroup GPIO
-    \brief This file contains the doxygen description and diagram illustrating the MESA gpio component.
+    \brief This file contains the doxygen description and diagram illustrating the Parallel Port.
 
     Notice gpio inputs feed the HAL signals.
 
@@ -9,11 +9,11 @@
         digraph structs {
             concentrate=true
             rankdir="LR"
-            label="Lathe GPIO"
+            label="Mill"
     
             subgraph cluster_gpio{
 
-                label="hm.0.gpio"
+                label="Parallel Port"
                 gpio [shape="box" label=<
                     <TABLE CELLBORDER="0" BORDER="0">
                         <TR><TD ALIGN="LEFT" port="in0">000.in</TD></TR>
