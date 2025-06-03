@@ -1,0 +1,275 @@
+/*!
+	\file joypad.dox
+    \addtogroup joypad
+
+	\brief This file contains the doxygen description of HAL joystick jogging.
+
+	This file is meant to be processed with doxygen to produce formatted documentation for the application.
+
+   \dot
+
+	digraph hal_nets {
+		graph [rankdir = "LR"];
+		node [fontsize = "8"];
+
+		"and2" [
+			label = "<and2_extras2.in0> and2_extras2.in0 | <and2_extras2.in1> and2_extras2.in1 | <and2_extras2.out> and2_extras2.out | <and2_extras3.in0> and2_extras3.in0 | <and2_extras3.in1> and2_extras3.in1 | <and2_extras3.out> and2_extras3.out"
+			shape = "record"
+		]
+		"halui" [
+			label = "<halui.axis.jog-speed> halui.axis.jog-speed | <halui.axis.x.analog> halui.axis.x.analog | <halui.axis.x.minus> halui.axis.x.minus | <halui.axis.x.plus> halui.axis.x.plus | <halui.axis.y.analog> halui.axis.y.analog | <halui.axis.z.analog> halui.axis.z.analog | <halui.axis.z.minus> halui.axis.z.minus | <halui.axis.z.plus> halui.axis.z.plus | <halui.joint.0.analog> halui.joint.0.analog | <halui.joint.0.minus> halui.joint.0.minus | <halui.joint.0.plus> halui.joint.0.plus | <halui.joint.1.analog> halui.joint.1.analog | <halui.joint.1.minus> halui.joint.1.minus | <halui.joint.1.plus> halui.joint.1.plus | <halui.joint.2.analog> halui.joint.2.analog | <halui.joint.jog-speed> halui.joint.jog-speed | <halui.machine.is-on> halui.machine.is-on | <halui.mode.auto> halui.mode.auto | <halui.mode.manual> halui.mode.manual | <halui.spindle.0.is-on> halui.spindle.0.is-on | <halui.spindle.0.start> halui.spindle.0.start | <halui.spindle.0.stop> halui.spindle.0.stop"
+			shape = "record"
+		]
+
+
+
+
+		"hal_input" [
+			label = "<input.0.abs-hat0x-is-neg> input.0.abs-hat0x-is-neg | <input.0.abs-hat0x-is-pos> input.0.abs-hat0x-is-pos | <input.0.abs-hat0y-is-neg> input.0.abs-hat0y-is-neg | <input.0.abs-hat0y-is-pos> input.0.abs-hat0y-is-pos | <input.0.abs-rz-position> input.0.abs-rz-position | <input.0.abs-x-position> input.0.abs-x-position | <input.0.abs-y-position> input.0.abs-y-position | <input.0.btn-base> input.0.btn-base | <input.0.btn-base4> input.0.btn-base4 | <input.0.btn-thumb> input.0.btn-thumb | <input.0.btn-thumb2> input.0.btn-thumb2 | <input.0.btn-top2> input.0.btn-top2 | <input.0.btn-trigger> input.0.btn-trigger"
+			shape = "record"
+		]
+
+
+
+
+		"mux2" [
+			label = "<mux2_x.in0> mux2_x.in0 | <mux2_x.in1> mux2_x.in1 | <mux2_x.out> mux2_x.out | <mux2_x.sel> mux2_x.sel | <mux2_y.in0> mux2_y.in0 | <mux2_y.in1> mux2_y.in1 | <mux2_y.out> mux2_y.out | <mux2_y.sel> mux2_y.sel | <mux2_z.in0> mux2_z.in0 | <mux2_z.in1> mux2_z.in1 | <mux2_z.out> mux2_z.out | <mux2_z.sel> mux2_z.sel"
+			shape = "record"
+		]
+
+
+
+
+		"mux4" [
+			label = "<mux4.0.out> mux4.0.out | <mux4.0.sel0> mux4.0.sel0 | <mux4.0.sel1> mux4.0.sel1"
+			shape = "record"
+		]
+
+
+
+
+		"not" [
+			label = "<not_extras0.in> not_extras0.in | <not_extras0.out> not_extras0.out"
+			shape = "record"
+		]
+
+
+
+
+		"or2" [
+			label = "<or2_joy0.in0> or2_joy0.in0 | <or2_joy0.in1> or2_joy0.in1 | <or2_joy0.out> or2_joy0.out | <or2_joy1.in0> or2_joy1.in0 | <or2_joy1.in1> or2_joy1.in1 | <or2_joy1.out> or2_joy1.out"
+			shape = "record"
+		]
+
+
+		"base4-button" -> "and2":"and2_extras2.in0";
+		"spindle-on" -> "and2":"and2_extras2.in1";
+		"and2":"and2_extras2.out" -> "spindle-stop";
+		"spindle-is-off" -> "and2":"and2_extras3.in0";
+		"base4-button" -> "and2":"and2_extras3.in1";
+		"and2":"and2_extras3.out" -> "spindle-start";
+		"jog-speed" -> "halui":"halui.axis.jog-speed";
+		"jog-x-analog" -> "halui":"halui.axis.x.analog";
+		"jog-x-neg" -> "halui":"halui.axis.x.minus";
+		"jog-x-pos" -> "halui":"halui.axis.x.plus";
+		"jog-y-analog" -> "halui":"halui.axis.y.analog";
+		"jog-z-analog" -> "halui":"halui.axis.z.analog";
+		"jog-z-neg" -> "halui":"halui.axis.z.minus";
+		"jog-z-pos" -> "halui":"halui.axis.z.plus";
+		"jog-x-analog" -> "halui":"halui.joint.0.analog";
+		"jog-x-neg" -> "halui":"halui.joint.0.minus";
+		"jog-x-pos" -> "halui":"halui.joint.0.plus";
+		"jog-y-analog" -> "halui":"halui.joint.1.analog";
+		"jog-z-neg" -> "halui":"halui.joint.1.minus";
+		"jog-z-pos" -> "halui":"halui.joint.1.plus";
+		"jog-z-analog" -> "halui":"halui.joint.2.analog";
+		"jog-speed" -> "halui":"halui.joint.jog-speed";
+		"halui":"halui.machine.is-on" -> "machine-is-on";
+		"auto" -> "halui":"halui.mode.auto";
+		"manual" -> "halui":"halui.mode.manual";
+		"halui":"halui.spindle.0.is-on" -> "spindle-on";
+		"spindle-start" -> "halui":"halui.spindle.0.start";
+		"spindle-stop" -> "halui":"halui.spindle.0.stop";
+		"hal_input":"input.0.abs-hat0x-is-neg" -> "jog-z-neg";
+		"hal_input":"input.0.abs-hat0x-is-pos" -> "jog-z-pos";
+		"hal_input":"input.0.abs-hat0y-is-neg" -> "jog-x-neg";
+		"hal_input":"input.0.abs-hat0y-is-pos" -> "jog-x-pos";
+		"hal_input":"input.0.abs-rz-position" -> "jog-z-pre";
+		"hal_input":"input.0.abs-x-position" -> "jog-x-pre";
+		"hal_input":"input.0.abs-y-position" -> "jog-y-pre";
+		"hal_input":"input.0.btn-base" -> "manual";
+		"hal_input":"input.0.btn-base4" -> "base4-button";
+		"hal_input":"input.0.btn-thumb" -> "medium";
+		"hal_input":"input.0.btn-thumb2" -> "fast";
+		"hal_input":"input.0.btn-top2" -> "auto";
+		"hal_input":"input.0.btn-trigger" -> "slow";
+		"jog-x-analog" -> "mux2":"mux2_x.in0";
+		"jog-x-pre" -> "mux2":"mux2_x.in1";
+		"mux2":"mux2_x.out" -> "jog-x-analog";
+		"machine-is-on" -> "mux2":"mux2_x.sel";
+		"jog-y-analog" -> "mux2":"mux2_y.in0";
+		"jog-y-pre" -> "mux2":"mux2_y.in1";
+		"mux2":"mux2_y.out" -> "jog-y-analog";
+		"machine-is-on" -> "mux2":"mux2_y.sel";
+		"jog-z-analog" -> "mux2":"mux2_z.in0";
+		"jog-z-pre" -> "mux2":"mux2_z.in1";
+		"mux2":"mux2_z.out" -> "jog-z-analog";
+		"machine-is-on" -> "mux2":"mux2_z.sel";
+		"mux4":"mux4.0.out" -> "jog-speed";
+		"joy-speed-sel0" -> "mux4":"mux4.0.sel0";
+		"joy-speed-sel1" -> "mux4":"mux4.0.sel1";
+		"spindle-on" -> "not":"not_extras0.in";
+		"not":"not_extras0.out" -> "spindle-is-off";
+		"slow" -> "or2":"or2_joy0.in0";
+		"fast" -> "or2":"or2_joy0.in1";
+		"or2":"or2_joy0.out" -> "joy-speed-sel0";
+		"medium" -> "or2":"or2_joy1.in0";
+		"fast" -> "or2":"or2_joy1.in1";
+		"or2":"or2_joy1.out" -> "joy-speed-sel1";
+		}
+
+	\enddot
+*/
+
+/*
+digraph hal_nets {
+graph [
+rankdir = "LR"
+];
+node [
+fontsize = "8"
+];
+
+
+"and2" [
+	label = "<and2_extras2.in0> and2_extras2.in0 | <and2_extras2.in1> and2_extras2.in1 | <and2_extras2.out> and2_extras2.out | <and2_extras3.in0> and2_extras3.in0 | <and2_extras3.in1> and2_extras3.in1 | <and2_extras3.out> and2_extras3.out"
+	shape = "record"
+]
+
+
+
+
+"halui" [
+	label = "<halui.axis.jog-speed> halui.axis.jog-speed | <halui.axis.x.analog> halui.axis.x.analog | <halui.axis.x.minus> halui.axis.x.minus | <halui.axis.x.plus> halui.axis.x.plus | <halui.axis.y.analog> halui.axis.y.analog | <halui.axis.z.analog> halui.axis.z.analog | <halui.axis.z.minus> halui.axis.z.minus | <halui.axis.z.plus> halui.axis.z.plus | <halui.joint.0.analog> halui.joint.0.analog | <halui.joint.0.minus> halui.joint.0.minus | <halui.joint.0.plus> halui.joint.0.plus | <halui.joint.1.analog> halui.joint.1.analog | <halui.joint.1.minus> halui.joint.1.minus | <halui.joint.1.plus> halui.joint.1.plus | <halui.joint.2.analog> halui.joint.2.analog | <halui.joint.jog-speed> halui.joint.jog-speed | <halui.machine.is-on> halui.machine.is-on | <halui.mode.auto> halui.mode.auto | <halui.mode.manual> halui.mode.manual | <halui.spindle.0.is-on> halui.spindle.0.is-on | <halui.spindle.0.start> halui.spindle.0.start | <halui.spindle.0.stop> halui.spindle.0.stop"
+	shape = "record"
+]
+
+
+
+
+"hal_input" [
+	label = "<input.0.abs-hat0x-is-neg> input.0.abs-hat0x-is-neg | <input.0.abs-hat0x-is-pos> input.0.abs-hat0x-is-pos | <input.0.abs-hat0y-is-neg> input.0.abs-hat0y-is-neg | <input.0.abs-hat0y-is-pos> input.0.abs-hat0y-is-pos | <input.0.abs-rz-position> input.0.abs-rz-position | <input.0.abs-x-position> input.0.abs-x-position | <input.0.abs-y-position> input.0.abs-y-position | <input.0.btn-base> input.0.btn-base | <input.0.btn-base4> input.0.btn-base4 | <input.0.btn-thumb> input.0.btn-thumb | <input.0.btn-thumb2> input.0.btn-thumb2 | <input.0.btn-top2> input.0.btn-top2 | <input.0.btn-trigger> input.0.btn-trigger"
+	shape = "record"
+]
+
+
+
+
+"mux2" [
+	label = "<mux2_x.in0> mux2_x.in0 | <mux2_x.in1> mux2_x.in1 | <mux2_x.out> mux2_x.out | <mux2_x.sel> mux2_x.sel | <mux2_y.in0> mux2_y.in0 | <mux2_y.in1> mux2_y.in1 | <mux2_y.out> mux2_y.out | <mux2_y.sel> mux2_y.sel | <mux2_z.in0> mux2_z.in0 | <mux2_z.in1> mux2_z.in1 | <mux2_z.out> mux2_z.out | <mux2_z.sel> mux2_z.sel"
+	shape = "record"
+]
+
+
+
+
+"mux4" [
+	label = "<mux4.0.out> mux4.0.out | <mux4.0.sel0> mux4.0.sel0 | <mux4.0.sel1> mux4.0.sel1"
+	shape = "record"
+]
+
+
+
+
+"not" [
+	label = "<not_extras0.in> not_extras0.in | <not_extras0.out> not_extras0.out"
+	shape = "record"
+]
+
+
+
+
+"or2" [
+	label = "<or2_joy0.in0> or2_joy0.in0 | <or2_joy0.in1> or2_joy0.in1 | <or2_joy0.out> or2_joy0.out | <or2_joy1.in0> or2_joy1.in0 | <or2_joy1.in1> or2_joy1.in1 | <or2_joy1.out> or2_joy1.out"
+	shape = "record"
+]
+
+
+
+
+"spindle_load" [
+	label = "<spindle_load.bar_spindle_load> spindle_load.bar_spindle_load"
+	shape = "record"
+]
+
+
+
+
+"base4-button" -> "and2":"and2_extras2.in0";
+"spindle-on" -> "and2":"and2_extras2.in1";
+"and2":"and2_extras2.out" -> "spindle-stop";
+"spindle-is-off" -> "and2":"and2_extras3.in0";
+"base4-button" -> "and2":"and2_extras3.in1";
+"and2":"and2_extras3.out" -> "spindle-start";
+"jog-speed" -> "halui":"halui.axis.jog-speed";
+"jog-x-analog" -> "halui":"halui.axis.x.analog";
+"jog-x-neg" -> "halui":"halui.axis.x.minus";
+"jog-x-pos" -> "halui":"halui.axis.x.plus";
+"jog-y-analog" -> "halui":"halui.axis.y.analog";
+"jog-z-analog" -> "halui":"halui.axis.z.analog";
+"jog-z-neg" -> "halui":"halui.axis.z.minus";
+"jog-z-pos" -> "halui":"halui.axis.z.plus";
+"jog-x-analog" -> "halui":"halui.joint.0.analog";
+"jog-x-neg" -> "halui":"halui.joint.0.minus";
+"jog-x-pos" -> "halui":"halui.joint.0.plus";
+"jog-y-analog" -> "halui":"halui.joint.1.analog";
+"jog-z-neg" -> "halui":"halui.joint.1.minus";
+"jog-z-pos" -> "halui":"halui.joint.1.plus";
+"jog-z-analog" -> "halui":"halui.joint.2.analog";
+"jog-speed" -> "halui":"halui.joint.jog-speed";
+"halui":"halui.machine.is-on" -> "machine-is-on";
+"auto" -> "halui":"halui.mode.auto";
+"manual" -> "halui":"halui.mode.manual";
+"halui":"halui.spindle.0.is-on" -> "spindle-on";
+"spindle-start" -> "halui":"halui.spindle.0.start";
+"spindle-stop" -> "halui":"halui.spindle.0.stop";
+"hal_input":"input.0.abs-hat0x-is-neg" -> "jog-z-neg";
+"hal_input":"input.0.abs-hat0x-is-pos" -> "jog-z-pos";
+"hal_input":"input.0.abs-hat0y-is-neg" -> "jog-x-neg";
+"hal_input":"input.0.abs-hat0y-is-pos" -> "jog-x-pos";
+"hal_input":"input.0.abs-rz-position" -> "jog-z-pre";
+"hal_input":"input.0.abs-x-position" -> "jog-x-pre";
+"hal_input":"input.0.abs-y-position" -> "jog-y-pre";
+"hal_input":"input.0.btn-base" -> "manual";
+"hal_input":"input.0.btn-base4" -> "base4-button";
+"hal_input":"input.0.btn-thumb" -> "medium";
+"hal_input":"input.0.btn-thumb2" -> "fast";
+"hal_input":"input.0.btn-top2" -> "auto";
+"hal_input":"input.0.btn-trigger" -> "slow";
+"jog-x-analog" -> "mux2":"mux2_x.in0";
+"jog-x-pre" -> "mux2":"mux2_x.in1";
+"mux2":"mux2_x.out" -> "jog-x-analog";
+"machine-is-on" -> "mux2":"mux2_x.sel";
+"jog-y-analog" -> "mux2":"mux2_y.in0";
+"jog-y-pre" -> "mux2":"mux2_y.in1";
+"mux2":"mux2_y.out" -> "jog-y-analog";
+"machine-is-on" -> "mux2":"mux2_y.sel";
+"jog-z-analog" -> "mux2":"mux2_z.in0";
+"jog-z-pre" -> "mux2":"mux2_z.in1";
+"mux2":"mux2_z.out" -> "jog-z-analog";
+"machine-is-on" -> "mux2":"mux2_z.sel";
+"mux4":"mux4.0.out" -> "jog-speed";
+"joy-speed-sel0" -> "mux4":"mux4.0.sel0";
+"joy-speed-sel1" -> "mux4":"mux4.0.sel1";
+"spindle-on" -> "not":"not_extras0.in";
+"not":"not_extras0.out" -> "spindle-is-off";
+"slow" -> "or2":"or2_joy0.in0";
+"fast" -> "or2":"or2_joy0.in1";
+"or2":"or2_joy0.out" -> "joy-speed-sel0";
+"medium" -> "or2":"or2_joy1.in0";
+"fast" -> "or2":"or2_joy1.in1";
+"or2":"or2_joy1.out" -> "joy-speed-sel1";
+}
+
+	\enddot
+*/
