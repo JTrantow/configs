@@ -57,7 +57,9 @@ for line in f:
         # Treat the remainder of the declaration as pairs of direction and component name.
         # The signal will become the dot label.
         # Each signal should have exactly one component source and zero or more destinations.
+        # Output will look like src->{dst0, dst1} [label="signal_name"];
 
+        # Find the source component, pin for this signal.
         for count in range(0, len(sig_declarations), 2):
                 if sig_declarations[count] == "<==":
                         # This is a source for the signal.
@@ -68,7 +70,8 @@ for line in f:
                         else:
                                 src_comp = ""
                         break
-
+        # Find the destination component, pin for this signal. (perhaps multiple destinations)
+        dst_string=None;
         for count in range(0, len(sig_declarations), 2):
                 if sig_declarations[count] ==  "==>":
                         # This is a destination for the signal.
@@ -78,11 +81,21 @@ for line in f:
                                 dst_comp = "\"" + dst_comp + "\"" + ":"
                         else:
                                 dst_comp = ""
-                        # Dot doesn't like record field names with '-' or '.'.
-                        net_list.append(src_comp + src_pin.replace('-','_').replace('.','_') + " -> " + dst_comp + dst_pin.replace('-','_').replace('.','_') + ' [label="' + signal_name + '"]')                 
-                elif sig_declarations[count] != "<==" :
-                        print("expected <== or ==>")
 
+                        if dst_string == None:
+                                dst_string =  "{ " 
+                        else:
+                                dst_string+=  ", " 
+                        dst_string += dst_comp + dst_pin.replace('-','_').replace('.','_')              
+
+                elif sig_declarations[count] != "<==" :
+                        print("WARNING: Expected <== or ==>")
+                # First destination starts the {dst0[,dstn]} list.
+
+        dst_string+= '}'                 
+        # Dot doesn't like record field names with '-' or '.'.
+        net_list.append(src_comp + src_pin.replace('-','_').replace('.','_') + " -> " + dst_string + '[label="' + signal_name + '"]')
+        
 for line in net_list:
         print(line + ";")
 
