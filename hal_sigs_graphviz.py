@@ -1,4 +1,18 @@
 #!/usr/bin/python
+#
+# This program converts files created by halcmd into graphviz graphs.
+# halcmd will report whatever is running in your configuration. 
+# The complexity of the graph can be limited by only loading .hal information you are interested in.
+#
+# You need to:
+# 1) install graphviz, using "sudo apt-get install graphviz"
+# 2) download the hal_sigs_graphviz.py attachment in a directory of your choice.
+# 3) make a shell script inside the same dir, with the following lines in it and run it:
+#       halcmd -s show pin | grep "==" > pin.out
+#       halcmd -s show sig | grep -v "^$" > sig.out
+#       python hal_sigs_graphviz.py > gv.in
+#       dot -Tpng gv.in > gv.png
+#
 
 import string
 
@@ -18,27 +32,43 @@ def print_dictionary(dict) :
                 print(key + ': ', end="")
                 print(dict[key])
 #
-# Searh the dictionary for the pin name.
-# 
-def search_dictionary(dict, full_pin_name) :
+# Search the dictionary for the pin name.
+# Returns the graphviz node and field name for the pin.
+#  
+def search_dictionary(dict, full_pin_name, debug) :
+
+        if (debug == True):
+                print('\tsd( ' + full_pin_name + ' ).')
         for key in list(dict.keys()):
                 #
                 # Start by just looking at the key.
                 #
+                if (debug == True):
+                        print('\tsd( key ' + key + ' : ', end="")
+                        print(dict[key], end="")
+                        print(' ).')
+                        print('\t' + full_pin_name[:len(key)+1] +'.' + '. vs ' + key )
                 if (key + '.') == full_pin_name[:len(key)+1] :
                         #
                         # Continue match with pin name values.
                         #
+                        if (debug == True) :
+                                print('Found the key ' + key)
+
                         for [pin_name, pin_dir] in dict[key] :
                                 if (key + '.' + pin_name) == full_pin_name :
-                                       return(key + ':' + pin_name)
+                                        if (debug == True) :
+                                                print('Found the full name ' + full_pin_name, end="")
+                                                print(' Links to "' + key + '":' + pin_name)
+                                        return('"' + key + '":' + dot_field_name(pin_name))
 
 #
 # Header for the output file.
 #
-def dot_header():
-        print('digraph hal_nets {')
-        print('\tgraph [\n\trankdir="LR"];')
+def dot_header(Title):
+        print('\n\ndigraph hal_nets {')
+        print('\tgraph [rankdir="LR"];')
+        print('\tlabel = ' + '"' + Title + '"')
         print('\tnode [fontsize = "8"];\n')
 
 def dot_footer():
@@ -52,11 +82,11 @@ def dot_field_name(c) :
 
 #
 # Prints out HTML like dot description.
-#
+# Enclosing with "" allows names to include '.'.
 def my_cluster(label_name, node_list) :
-        print('\tsubgraph cluster_' + label_name +' {')
+        print('\tsubgraph "cluster_' + label_name +'" {')
         print('\t\tlabel = "' + label_name + '"')
-        print('\t\t' + label_name + ' [ shape="box" label=<')
+        print('\t\t"' + label_name + '" [ shape="box" label=<')
         #
         # Figure out number of IN and OUT for table or tables.
         #
@@ -78,7 +108,7 @@ def my_cluster(label_name, node_list) :
                 print('\t\t\t\t<TABLE CELLBORDER="0" BORDER="1">')
                 for [pin_name, pin_dir] in node_list :
                         if pin_dir == 'IN' :
-                                print('\t\t\t\t\t<TR><TD ALIGN="LEFT" port="' + pin_name + '"> ' + pin_name + '</TD></TR>')
+                                print('\t\t\t\t\t<TR><TD ALIGN="LEFT" PORT="' + dot_field_name(pin_name) + '"> ' + pin_name + '</TD></TR>')
                 print('\t\t\t\t</TABLE>')
 
         if (in_count>0) and (out_count>0) :
@@ -89,7 +119,7 @@ def my_cluster(label_name, node_list) :
                 print('\t\t\t\t<TABLE CELLBORDER="0" BORDER="1">')
                 for [pin_name, pin_dir] in node_list :
                         if pin_dir == 'OUT' :
-                                print('\t\t\t\t\t<TR><TD ALIGN="RIGHT" port="' + pin_name + '"> ' + pin_name + '</TD></TR>')
+                                print('\t\t\t\t\t<TR><TD ALIGN="RIGHT" PORT="' + dot_field_name(pin_name) + '"> ' + pin_name + '</TD></TR>')
                 print('\t\t\t\t</TABLE>')
 
         if (in_count>0) and (out_count>0) :
@@ -97,38 +127,6 @@ def my_cluster(label_name, node_list) :
 
         print('\t\t>]\n\t}')
 
-
-if (0):
-        #
-        # Start of program.
-        #
-        f = open("pin.out", "r")
-        #
-        # Create a component hash of all the different components and pin_names.
-        #
-        component_hash={}
-        for line in f:
-                comp_name, pin_type, pin_dir, pin_value, pin_name = line.split()[:5]
-                if comp_name not in component_hash:
-                        component_hash[comp_name] = [];
-                component_hash[comp_name].append(pin_name)
-
-        #
-        # Generate the simple nodes or subgraphs.
-        #
-        dot_header()
-        for comp in list(component_hash.keys()):
-                # dot records don't like '-' or '.' in the field name.
-                comp_labels = ["<" + dot_field_name(c) + "> " + c for c in component_hash[comp]]
-                print("\"" + comp + "\"" + " [")
-                sep = " | "
-                print("\tlabel = " + "\"" + sep.join(comp_labels) + "\"")
-                print("\tshape = \"record\"")
-                print("]")
-                print("\n")
-        dot_footer()
-else:
-        print('Skip the simple record nodes.')
 #
 # Create a component hash of all the different components and pin_names and pin_dir.
 #
@@ -140,7 +138,7 @@ for line in f:
                 component_hash2[comp_name] = [];
         component_hash2[comp_name].append([pin_name, pin_dir])
 
-print('\ncomponent_hash2')
+print('\n\ncomponent_hash2')
 print_dictionary(component_hash2)
 
 if 1:
@@ -198,7 +196,7 @@ if 1:
 
                         dot_node_dictionary.update({comp: component_hash2[comp]})
 
-        print('\ndot_node_dictionary')
+        print('\n\ndot_node_dictionary')
         print_dictionary(dot_node_dictionary)
 
 if 1:
@@ -254,23 +252,19 @@ if 1:
         print(named_components_dictionary)
 else:
         named_components_dictionary = {}
-
 print('\nnamed_components_dictionary')
 print_dictionary(named_components_dictionary)
 
 #
 # Generate the HTML like graphviz node definitions.
 #
-#dot_header()
+dot_header('joypad_XXX.hal')
 for node in list(named_components_dictionary.keys()):
-        if (0):
-                my_cluster(node,named_components_dictionary[node])
-        else:
-                print('Skipping cluster output.')
+        my_cluster(node,named_components_dictionary[node])
 
 if (1) :
         #
-        # Use signal names from sig.out as labels instead of creating extra nodes. 
+        # Use signal names from sig.out as edge labels instead of creating extra nodes. 
         #
         f = open("sig.out", "r")
         net_list = []
@@ -285,48 +279,35 @@ if (1) :
                 # Each signal should have exactly one component source and zero or more destinations.
                 # Output will look like src->{dst0, dst1} [label="signal_name"];
 
-                # Find the source component, pin for this signal.
-                for count in range(0, len(sig_declarations), 2):
-                        if sig_declarations[count] == "<==":
-                                # This is a source for the signal.
-                                src_pin = sig_declarations[count + 1]                                
-                                #print('Lookup src_pin ' + src_pin )     
-
-                                src_node_pin = search_dictionary(named_components_dictionary, src_pin)                           
-                                if src_node_pin != None :
-                                        #
-                                        # Found the pin name in the dictionary.
-                                        #
-                                        #print(src_node_pin)
-                                        break;
-                # Find the destination component, pin for this signal. (perhaps multiple destinations)
-                dst_string="";
-                for count in range(0, len(sig_declarations), 2):
-                        if sig_declarations[count] ==  "==>":
-                                # This is a destination for the signal.
-                                dst_pin = sig_declarations[count + 1]
-                                
-                                #dst_comp = component(component_hash, dst_pin)
-                                #       if dst_comp != None:
-                                #                dst_comp = "\"" + dst_comp + "\"" + ":"
-                                #        else:
-                                #                dst_comp = ""
-
-                                #if dst_string == None:
-                                #                dst_string =  "{ " 
-                                #        else:
-                                #                dst_string+=  ", " 
-                                #       dst_string += dst_comp + dot_field_name(dst_pin)              
-
-                        elif sig_declarations[count] != "<==" :
-                                print("WARNING: Expected <== or ==>")
-                        # First destination starts the {dst0[,dstn]} list.
-
-                dst_string+= '}'                 
-                # Dot doesn't like record field names with '-' or '.'.
-                net_list.append(dot_field_name(src_node_pin) + " -> " + dst_string + '[label="' + signal_name + '"]')
-                
+                # Find the source pin for this signal in the dictionary.
+                if len(sig_declarations) > 0 :
+                        for count in range(0, len(sig_declarations), 2):
+                                if sig_declarations[count] == "<==":
+                                        # This is a source for the signal.
+                                        src_pin = sig_declarations[count + 1]                                
+                                        src_node_pin = search_dictionary(named_components_dictionary, src_pin, False)            
+                                        if src_node_pin != None :
+                                                #
+                                                # Found the source pin name in the dictionary.
+                                                #
+                                                break;
+                                        else :
+                                                print("WARNING source pin " + src_pin + ' not found.')
+                        # Find the destination pin for this signal. 
+                        dst_string = "";
+                        for count in range(0, len(sig_declarations), 2):
+                                if sig_declarations[count] ==  "==>":
+                                        # This is a destination for the signal.
+                                        dst_pin = sig_declarations[count + 1]
+                                        dst_node_pin = search_dictionary(named_components_dictionary, dst_pin, False)                           
+                                        if dst_node_pin != None:                        
+                                                net_list.append('\t' + src_node_pin + "\t -> \t" + dst_node_pin + '\t [label="' + signal_name + '"]')
+                                        else :
+                                                print("WARNING destination pin " + dst_pin + ' not found in dictionary.')
+                                elif sig_declarations[count] != "<==" :
+                                        print("WARNING: Expected <== or ==>")
+                else :
+                        print("WARNING empty list of signals.")
         for line in net_list:
                 print(line + ";")
-
-#dot_footer()
+dot_footer()

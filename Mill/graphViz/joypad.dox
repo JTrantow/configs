@@ -6,270 +6,549 @@
 
 	This file is meant to be processed with doxygen to produce formatted documentation for the application.
 
-   \dot
+	The graphs in this file were created by loading the appropriate joypad_xx.hal file and running the following commands:
+	 	- halcmd -s show pin | grep "==" > pin.out
+		- halcmd -s show sig | grep -v "^$" > sig.out
+		- python3 ../hal_sigs_graphviz.py > joypad.dox
 
-	digraph hal_nets {
-		graph [rankdir = "LR"];
+	The joypad is implemented by .hal files listed as source's in postgui_load.hal and components loaded in postgui_call_list.hal.
+		- source joypad_jog_speed.hal
+		- source joypad_xyz.hal (_xz for lathe)
+		- source joypad_extras.hal
+
+	\addtogroup joypad_jog_speed
+
+	\dot
+		digraph hal_nets_jog_speed {
+		graph [rankdir="LR"];
 		node [fontsize = "8"];
+		label="joypad_jog_speed.hal";
 
-		"and2" [
-			label = "<and2_extras2.in0> and2_extras2.in0 | <and2_extras2.in1> and2_extras2.in1 | <and2_extras2.out> and2_extras2.out | <and2_extras3.in0> and2_extras3.in0 | <and2_extras3.in1> and2_extras3.in1 | <and2_extras3.out> and2_extras3.out"
-			shape = "record"
-		]
-		"halui" [
-			label = "<halui.axis.jog-speed> halui.axis.jog-speed | <halui.axis.x.analog> halui.axis.x.analog | <halui.axis.x.minus> halui.axis.x.minus | <halui.axis.x.plus> halui.axis.x.plus | <halui.axis.y.analog> halui.axis.y.analog | <halui.axis.z.analog> halui.axis.z.analog | <halui.axis.z.minus> halui.axis.z.minus | <halui.axis.z.plus> halui.axis.z.plus | <halui.joint.0.analog> halui.joint.0.analog | <halui.joint.0.minus> halui.joint.0.minus | <halui.joint.0.plus> halui.joint.0.plus | <halui.joint.1.analog> halui.joint.1.analog | <halui.joint.1.minus> halui.joint.1.minus | <halui.joint.1.plus> halui.joint.1.plus | <halui.joint.2.analog> halui.joint.2.analog | <halui.joint.jog-speed> halui.joint.jog-speed | <halui.machine.is-on> halui.machine.is-on | <halui.mode.auto> halui.mode.auto | <halui.mode.manual> halui.mode.manual | <halui.spindle.0.is-on> halui.spindle.0.is-on | <halui.spindle.0.start> halui.spindle.0.start | <halui.spindle.0.stop> halui.spindle.0.stop"
-			shape = "record"
-		]
-
-
-
-
-		"hal_input" [
-			label = "<input.0.abs-hat0x-is-neg> input.0.abs-hat0x-is-neg | <input.0.abs-hat0x-is-pos> input.0.abs-hat0x-is-pos | <input.0.abs-hat0y-is-neg> input.0.abs-hat0y-is-neg | <input.0.abs-hat0y-is-pos> input.0.abs-hat0y-is-pos | <input.0.abs-rz-position> input.0.abs-rz-position | <input.0.abs-x-position> input.0.abs-x-position | <input.0.abs-y-position> input.0.abs-y-position | <input.0.btn-base> input.0.btn-base | <input.0.btn-base4> input.0.btn-base4 | <input.0.btn-thumb> input.0.btn-thumb | <input.0.btn-thumb2> input.0.btn-thumb2 | <input.0.btn-top2> input.0.btn-top2 | <input.0.btn-trigger> input.0.btn-trigger"
-			shape = "record"
-		]
-
-
-
-
-		"mux2" [
-			label = "<mux2_x.in0> mux2_x.in0 | <mux2_x.in1> mux2_x.in1 | <mux2_x.out> mux2_x.out | <mux2_x.sel> mux2_x.sel | <mux2_y.in0> mux2_y.in0 | <mux2_y.in1> mux2_y.in1 | <mux2_y.out> mux2_y.out | <mux2_y.sel> mux2_y.sel | <mux2_z.in0> mux2_z.in0 | <mux2_z.in1> mux2_z.in1 | <mux2_z.out> mux2_z.out | <mux2_z.sel> mux2_z.sel"
-			shape = "record"
-		]
-
-
-
-
-		"mux4" [
-			label = "<mux4.0.out> mux4.0.out | <mux4.0.sel0> mux4.0.sel0 | <mux4.0.sel1> mux4.0.sel1"
-			shape = "record"
-		]
-
-
-
-
-		"not" [
-			label = "<not_extras0.in> not_extras0.in | <not_extras0.out> not_extras0.out"
-			shape = "record"
-		]
-
-
-
-
-		"or2" [
-			label = "<or2_joy0.in0> or2_joy0.in0 | <or2_joy0.in1> or2_joy0.in1 | <or2_joy0.out> or2_joy0.out | <or2_joy1.in0> or2_joy1.in0 | <or2_joy1.in1> or2_joy1.in1 | <or2_joy1.out> or2_joy1.out"
-			shape = "record"
-		]
-
-
-		"base4-button" -> "and2":"and2_extras2.in0";
-		"spindle-on" -> "and2":"and2_extras2.in1";
-		"and2":"and2_extras2.out" -> "spindle-stop";
-		"spindle-is-off" -> "and2":"and2_extras3.in0";
-		"base4-button" -> "and2":"and2_extras3.in1";
-		"and2":"and2_extras3.out" -> "spindle-start";
-		"jog-speed" -> "halui":"halui.axis.jog-speed";
-		"jog-x-analog" -> "halui":"halui.axis.x.analog";
-		"jog-x-neg" -> "halui":"halui.axis.x.minus";
-		"jog-x-pos" -> "halui":"halui.axis.x.plus";
-		"jog-y-analog" -> "halui":"halui.axis.y.analog";
-		"jog-z-analog" -> "halui":"halui.axis.z.analog";
-		"jog-z-neg" -> "halui":"halui.axis.z.minus";
-		"jog-z-pos" -> "halui":"halui.axis.z.plus";
-		"jog-x-analog" -> "halui":"halui.joint.0.analog";
-		"jog-x-neg" -> "halui":"halui.joint.0.minus";
-		"jog-x-pos" -> "halui":"halui.joint.0.plus";
-		"jog-y-analog" -> "halui":"halui.joint.1.analog";
-		"jog-z-neg" -> "halui":"halui.joint.1.minus";
-		"jog-z-pos" -> "halui":"halui.joint.1.plus";
-		"jog-z-analog" -> "halui":"halui.joint.2.analog";
-		"jog-speed" -> "halui":"halui.joint.jog-speed";
-		"halui":"halui.machine.is-on" -> "machine-is-on";
-		"auto" -> "halui":"halui.mode.auto";
-		"manual" -> "halui":"halui.mode.manual";
-		"halui":"halui.spindle.0.is-on" -> "spindle-on";
-		"spindle-start" -> "halui":"halui.spindle.0.start";
-		"spindle-stop" -> "halui":"halui.spindle.0.stop";
-		"hal_input":"input.0.abs-hat0x-is-neg" -> "jog-z-neg";
-		"hal_input":"input.0.abs-hat0x-is-pos" -> "jog-z-pos";
-		"hal_input":"input.0.abs-hat0y-is-neg" -> "jog-x-neg";
-		"hal_input":"input.0.abs-hat0y-is-pos" -> "jog-x-pos";
-		"hal_input":"input.0.abs-rz-position" -> "jog-z-pre";
-		"hal_input":"input.0.abs-x-position" -> "jog-x-pre";
-		"hal_input":"input.0.abs-y-position" -> "jog-y-pre";
-		"hal_input":"input.0.btn-base" -> "manual";
-		"hal_input":"input.0.btn-base4" -> "base4-button";
-		"hal_input":"input.0.btn-thumb" -> "medium";
-		"hal_input":"input.0.btn-thumb2" -> "fast";
-		"hal_input":"input.0.btn-top2" -> "auto";
-		"hal_input":"input.0.btn-trigger" -> "slow";
-		"jog-x-analog" -> "mux2":"mux2_x.in0";
-		"jog-x-pre" -> "mux2":"mux2_x.in1";
-		"mux2":"mux2_x.out" -> "jog-x-analog";
-		"machine-is-on" -> "mux2":"mux2_x.sel";
-		"jog-y-analog" -> "mux2":"mux2_y.in0";
-		"jog-y-pre" -> "mux2":"mux2_y.in1";
-		"mux2":"mux2_y.out" -> "jog-y-analog";
-		"machine-is-on" -> "mux2":"mux2_y.sel";
-		"jog-z-analog" -> "mux2":"mux2_z.in0";
-		"jog-z-pre" -> "mux2":"mux2_z.in1";
-		"mux2":"mux2_z.out" -> "jog-z-analog";
-		"machine-is-on" -> "mux2":"mux2_z.sel";
-		"mux4":"mux4.0.out" -> "jog-speed";
-		"joy-speed-sel0" -> "mux4":"mux4.0.sel0";
-		"joy-speed-sel1" -> "mux4":"mux4.0.sel1";
-		"spindle-on" -> "not":"not_extras0.in";
-		"not":"not_extras0.out" -> "spindle-is-off";
-		"slow" -> "or2":"or2_joy0.in0";
-		"fast" -> "or2":"or2_joy0.in1";
-		"or2":"or2_joy0.out" -> "joy-speed-sel0";
-		"medium" -> "or2":"or2_joy1.in0";
-		"fast" -> "or2":"or2_joy1.in1";
-		"or2":"or2_joy1.out" -> "joy-speed-sel1";
+		subgraph "cluster_halui" {
+			label = "halui"
+			"halui" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="axis_jog_speed"> axis.jog-speed</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_jog_speed"> joint.jog-speed</TD></TR>
+					</TABLE>
+			>]
 		}
-
+		subgraph "cluster_input.0" {
+			label = "input.0"
+			"input.0" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="btn_thumb"> btn-thumb</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="btn_thumb2"> btn-thumb2</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="btn_trigger"> btn-trigger</TD></TR>
+					</TABLE>
+			>]
+		}
+		subgraph "cluster_mux4.0" {
+			label = "mux4.0"
+			"mux4.0" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="sel0"> sel0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="sel1"> sel1</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_or2_joy0" {
+			label = "or2_joy0"
+			"or2_joy0" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_or2_joy1" {
+			label = "or2_joy1"
+			"or2_joy1" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_spindle_load" {
+			label = "spindle_load"
+			"spindle_load" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="bar_spindle_load"> bar_spindle_load</TD></TR>
+					</TABLE>
+			>]
+		}
+		"input.0":btn_thumb2	 -> 	"or2_joy0":in1	 [label="fast"];
+		"input.0":btn_thumb2	 -> 	"or2_joy1":in1	 [label="fast"];
+		"mux4.0":out	 -> 	"halui":axis_jog_speed	 [label="jog-speed"];
+		"mux4.0":out	 -> 	"halui":joint_jog_speed	 [label="jog-speed"];
+		"or2_joy0":out	 -> 	"mux4.0":sel0	 [label="joy-speed-sel0"];
+		"or2_joy1":out	 -> 	"mux4.0":sel1	 [label="joy-speed-sel1"];
+		"input.0":btn_thumb	 -> 	"or2_joy1":in0	 [label="medium"];
+		"input.0":btn_trigger	 -> 	"or2_joy0":in0	 [label="slow"];
+		"input.0":btn_trigger	 -> 	"spindle_load":bar_spindle_load	 [label="spindle-load-percent"];
+	}        
 	\enddot
 */
+/*!
+    \addtogroup joypad_xyz
 
-/*
-digraph hal_nets {
-graph [
-rankdir = "LR"
-];
-node [
-fontsize = "8"
-];
+	\dot
 
+	digraph hal_nets_xyz {
+		graph [rankdir="LR"];
+		label = "joypad_xyz.hal"
+		node [fontsize = "8"];
 
-"and2" [
-	label = "<and2_extras2.in0> and2_extras2.in0 | <and2_extras2.in1> and2_extras2.in1 | <and2_extras2.out> and2_extras2.out | <and2_extras3.in0> and2_extras3.in0 | <and2_extras3.in1> and2_extras3.in1 | <and2_extras3.out> and2_extras3.out"
-	shape = "record"
-]
+		subgraph "cluster_halui" {
+			label = "halui"
+			"halui" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="axis_x_analog"> axis.x.analog</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="axis_y_analog"> axis.y.analog</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="axis_z_analog"> axis.z.analog</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_0_analog"> joint.0.analog</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_1_analog"> joint.1.analog</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_2_analog"> joint.2.analog</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="machine_is_on"> machine.is-on</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_mux2_x" {
+			label = "mux2_x"
+			"mux2_x" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="sel"> sel</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_mux2_y" {
+			label = "mux2_y"
+			"mux2_y" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="sel"> sel</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_mux2_z" {
+			label = "mux2_z"
+			"mux2_z" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="sel"> sel</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		"mux2_x":out	 -> 	"halui":axis_x_analog	 [label="jog-x-analog"];
+		"mux2_x":out	 -> 	"halui":joint_0_analog	 [label="jog-x-analog"];
+		"mux2_x":out	 -> 	"mux2_x":in0	 [label="jog-x-analog"];
+		"mux2_y":out	 -> 	"halui":axis_y_analog	 [label="jog-y-analog"];
+		"mux2_y":out	 -> 	"halui":joint_1_analog	 [label="jog-y-analog"];
+		"mux2_y":out	 -> 	"mux2_y":in0	 [label="jog-y-analog"];
+		"mux2_z":out	 -> 	"halui":axis_z_analog	 [label="jog-z-analog"];
+		"mux2_z":out	 -> 	"halui":joint_2_analog	 [label="jog-z-analog"];
+		"mux2_z":out	 -> 	"mux2_z":in0	 [label="jog-z-analog"];
+		"halui":machine_is_on	 -> 	"mux2_x":sel	 [label="machine-is-on"];
+		"halui":machine_is_on	 -> 	"mux2_y":sel	 [label="machine-is-on"];
+		"halui":machine_is_on	 -> 	"mux2_z":sel	 [label="machine-is-on"];
+	}
+	\enddot
+*/
+/*!
+    \addtogroup joypad_extras
 
+	\dot
+	digraph hal_nets_extras {
+		graph [rankdir="LR"];
+		label = "joypad_extras.hal"
+		node [fontsize = "8"];
 
+		subgraph "cluster_and2_extras2" {
+			label = "and2_extras2"
+			"and2_extras2" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_and2_extras3" {
+			label = "and2_extras3"
+			"and2_extras3" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_halui" {
+			label = "halui"
+			"halui" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="axis_x_minus"> axis.x.minus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="axis_x_plus"> axis.x.plus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="axis_z_minus"> axis.z.minus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="axis_z_plus"> axis.z.plus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_0_minus"> joint.0.minus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_0_plus"> joint.0.plus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_1_minus"> joint.1.minus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="joint_1_plus"> joint.1.plus</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="mode_auto"> mode.auto</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="mode_manual"> mode.manual</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="spindle_0_start"> spindle.0.start</TD></TR>
+						<TR><TD ALIGN="LEFT" PORT="spindle_0_stop"> spindle.0.stop</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="spindle_0_is_on"> spindle.0.is-on</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		subgraph "cluster_input.0" {
+			label = "input.0"
+			"input.0" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="abs_hat0x_is_neg"> abs-hat0x-is-neg</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="abs_hat0x_is_pos"> abs-hat0x-is-pos</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="abs_hat0y_is_neg"> abs-hat0y-is-neg</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="abs_hat0y_is_pos"> abs-hat0y-is-pos</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="btn_base"> btn-base</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="btn_base4"> btn-base4</TD></TR>
+						<TR><TD ALIGN="RIGHT" PORT="btn_top2"> btn-top2</TD></TR>
+					</TABLE>
+			>]
+		}
+		subgraph "cluster_not_extras0" {
+			label = "not_extras0"
+			"not_extras0" [ shape="box" label=<
+				<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="LEFT" PORT="in"> in</TD></TR>
+					</TABLE>
+					</TD><TD>
+					<TABLE CELLBORDER="0" BORDER="1">
+						<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+					</TABLE>
+				</TD></TR></TABLE>
+			>]
+		}
+		"input.0":btn_top2	 -> 	"halui":mode_auto	 [label="auto"];
+		"input.0":btn_base4	 -> 	"and2_extras2":in0	 [label="base4-button"];
+		"input.0":btn_base4	 -> 	"and2_extras3":in1	 [label="base4-button"];
+		"input.0":abs_hat0y_is_neg	 -> 	"halui":axis_x_minus	 [label="jog-x-neg"];
+		"input.0":abs_hat0y_is_neg	 -> 	"halui":joint_0_minus	 [label="jog-x-neg"];
+		"input.0":abs_hat0y_is_pos	 -> 	"halui":axis_x_plus	 [label="jog-x-pos"];
+		"input.0":abs_hat0y_is_pos	 -> 	"halui":joint_0_plus	 [label="jog-x-pos"];
+		"input.0":abs_hat0x_is_neg	 -> 	"halui":axis_z_minus	 [label="jog-z-neg"];
+		"input.0":abs_hat0x_is_neg	 -> 	"halui":joint_1_minus	 [label="jog-z-neg"];
+		"input.0":abs_hat0x_is_pos	 -> 	"halui":axis_z_plus	 [label="jog-z-pos"];
+		"input.0":abs_hat0x_is_pos	 -> 	"halui":joint_1_plus	 [label="jog-z-pos"];
+		"input.0":btn_base	 -> 	"halui":mode_manual	 [label="manual"];
+		"not_extras0":out	 -> 	"and2_extras3":in0	 [label="spindle-is-off"];
+		"halui":spindle_0_is_on	 -> 	"and2_extras2":in1	 [label="spindle-on"];
+		"halui":spindle_0_is_on	 -> 	"not_extras0":in	 [label="spindle-on"];
+		"and2_extras3":out	 -> 	"halui":spindle_0_start	 [label="spindle-start"];
+		"and2_extras2":out	 -> 	"halui":spindle_0_stop	 [label="spindle-stop"];
+	}        
+	\enddot
+*/
+/*!
+	\addtogroup joypad_all_3
+	
+	\dot
+		digraph hal_nets_all {
+			graph [rankdir="LR"];
+			label = "All joypad .hal"
+			node [fontsize = "8"];
 
-
-"halui" [
-	label = "<halui.axis.jog-speed> halui.axis.jog-speed | <halui.axis.x.analog> halui.axis.x.analog | <halui.axis.x.minus> halui.axis.x.minus | <halui.axis.x.plus> halui.axis.x.plus | <halui.axis.y.analog> halui.axis.y.analog | <halui.axis.z.analog> halui.axis.z.analog | <halui.axis.z.minus> halui.axis.z.minus | <halui.axis.z.plus> halui.axis.z.plus | <halui.joint.0.analog> halui.joint.0.analog | <halui.joint.0.minus> halui.joint.0.minus | <halui.joint.0.plus> halui.joint.0.plus | <halui.joint.1.analog> halui.joint.1.analog | <halui.joint.1.minus> halui.joint.1.minus | <halui.joint.1.plus> halui.joint.1.plus | <halui.joint.2.analog> halui.joint.2.analog | <halui.joint.jog-speed> halui.joint.jog-speed | <halui.machine.is-on> halui.machine.is-on | <halui.mode.auto> halui.mode.auto | <halui.mode.manual> halui.mode.manual | <halui.spindle.0.is-on> halui.spindle.0.is-on | <halui.spindle.0.start> halui.spindle.0.start | <halui.spindle.0.stop> halui.spindle.0.stop"
-	shape = "record"
-]
-
-
-
-
-"hal_input" [
-	label = "<input.0.abs-hat0x-is-neg> input.0.abs-hat0x-is-neg | <input.0.abs-hat0x-is-pos> input.0.abs-hat0x-is-pos | <input.0.abs-hat0y-is-neg> input.0.abs-hat0y-is-neg | <input.0.abs-hat0y-is-pos> input.0.abs-hat0y-is-pos | <input.0.abs-rz-position> input.0.abs-rz-position | <input.0.abs-x-position> input.0.abs-x-position | <input.0.abs-y-position> input.0.abs-y-position | <input.0.btn-base> input.0.btn-base | <input.0.btn-base4> input.0.btn-base4 | <input.0.btn-thumb> input.0.btn-thumb | <input.0.btn-thumb2> input.0.btn-thumb2 | <input.0.btn-top2> input.0.btn-top2 | <input.0.btn-trigger> input.0.btn-trigger"
-	shape = "record"
-]
-
-
-
-
-"mux2" [
-	label = "<mux2_x.in0> mux2_x.in0 | <mux2_x.in1> mux2_x.in1 | <mux2_x.out> mux2_x.out | <mux2_x.sel> mux2_x.sel | <mux2_y.in0> mux2_y.in0 | <mux2_y.in1> mux2_y.in1 | <mux2_y.out> mux2_y.out | <mux2_y.sel> mux2_y.sel | <mux2_z.in0> mux2_z.in0 | <mux2_z.in1> mux2_z.in1 | <mux2_z.out> mux2_z.out | <mux2_z.sel> mux2_z.sel"
-	shape = "record"
-]
-
-
-
-
-"mux4" [
-	label = "<mux4.0.out> mux4.0.out | <mux4.0.sel0> mux4.0.sel0 | <mux4.0.sel1> mux4.0.sel1"
-	shape = "record"
-]
-
-
-
-
-"not" [
-	label = "<not_extras0.in> not_extras0.in | <not_extras0.out> not_extras0.out"
-	shape = "record"
-]
-
-
-
-
-"or2" [
-	label = "<or2_joy0.in0> or2_joy0.in0 | <or2_joy0.in1> or2_joy0.in1 | <or2_joy0.out> or2_joy0.out | <or2_joy1.in0> or2_joy1.in0 | <or2_joy1.in1> or2_joy1.in1 | <or2_joy1.out> or2_joy1.out"
-	shape = "record"
-]
-
-
-
-
-"spindle_load" [
-	label = "<spindle_load.bar_spindle_load> spindle_load.bar_spindle_load"
-	shape = "record"
-]
-
-
-
-
-"base4-button" -> "and2":"and2_extras2.in0";
-"spindle-on" -> "and2":"and2_extras2.in1";
-"and2":"and2_extras2.out" -> "spindle-stop";
-"spindle-is-off" -> "and2":"and2_extras3.in0";
-"base4-button" -> "and2":"and2_extras3.in1";
-"and2":"and2_extras3.out" -> "spindle-start";
-"jog-speed" -> "halui":"halui.axis.jog-speed";
-"jog-x-analog" -> "halui":"halui.axis.x.analog";
-"jog-x-neg" -> "halui":"halui.axis.x.minus";
-"jog-x-pos" -> "halui":"halui.axis.x.plus";
-"jog-y-analog" -> "halui":"halui.axis.y.analog";
-"jog-z-analog" -> "halui":"halui.axis.z.analog";
-"jog-z-neg" -> "halui":"halui.axis.z.minus";
-"jog-z-pos" -> "halui":"halui.axis.z.plus";
-"jog-x-analog" -> "halui":"halui.joint.0.analog";
-"jog-x-neg" -> "halui":"halui.joint.0.minus";
-"jog-x-pos" -> "halui":"halui.joint.0.plus";
-"jog-y-analog" -> "halui":"halui.joint.1.analog";
-"jog-z-neg" -> "halui":"halui.joint.1.minus";
-"jog-z-pos" -> "halui":"halui.joint.1.plus";
-"jog-z-analog" -> "halui":"halui.joint.2.analog";
-"jog-speed" -> "halui":"halui.joint.jog-speed";
-"halui":"halui.machine.is-on" -> "machine-is-on";
-"auto" -> "halui":"halui.mode.auto";
-"manual" -> "halui":"halui.mode.manual";
-"halui":"halui.spindle.0.is-on" -> "spindle-on";
-"spindle-start" -> "halui":"halui.spindle.0.start";
-"spindle-stop" -> "halui":"halui.spindle.0.stop";
-"hal_input":"input.0.abs-hat0x-is-neg" -> "jog-z-neg";
-"hal_input":"input.0.abs-hat0x-is-pos" -> "jog-z-pos";
-"hal_input":"input.0.abs-hat0y-is-neg" -> "jog-x-neg";
-"hal_input":"input.0.abs-hat0y-is-pos" -> "jog-x-pos";
-"hal_input":"input.0.abs-rz-position" -> "jog-z-pre";
-"hal_input":"input.0.abs-x-position" -> "jog-x-pre";
-"hal_input":"input.0.abs-y-position" -> "jog-y-pre";
-"hal_input":"input.0.btn-base" -> "manual";
-"hal_input":"input.0.btn-base4" -> "base4-button";
-"hal_input":"input.0.btn-thumb" -> "medium";
-"hal_input":"input.0.btn-thumb2" -> "fast";
-"hal_input":"input.0.btn-top2" -> "auto";
-"hal_input":"input.0.btn-trigger" -> "slow";
-"jog-x-analog" -> "mux2":"mux2_x.in0";
-"jog-x-pre" -> "mux2":"mux2_x.in1";
-"mux2":"mux2_x.out" -> "jog-x-analog";
-"machine-is-on" -> "mux2":"mux2_x.sel";
-"jog-y-analog" -> "mux2":"mux2_y.in0";
-"jog-y-pre" -> "mux2":"mux2_y.in1";
-"mux2":"mux2_y.out" -> "jog-y-analog";
-"machine-is-on" -> "mux2":"mux2_y.sel";
-"jog-z-analog" -> "mux2":"mux2_z.in0";
-"jog-z-pre" -> "mux2":"mux2_z.in1";
-"mux2":"mux2_z.out" -> "jog-z-analog";
-"machine-is-on" -> "mux2":"mux2_z.sel";
-"mux4":"mux4.0.out" -> "jog-speed";
-"joy-speed-sel0" -> "mux4":"mux4.0.sel0";
-"joy-speed-sel1" -> "mux4":"mux4.0.sel1";
-"spindle-on" -> "not":"not_extras0.in";
-"not":"not_extras0.out" -> "spindle-is-off";
-"slow" -> "or2":"or2_joy0.in0";
-"fast" -> "or2":"or2_joy0.in1";
-"or2":"or2_joy0.out" -> "joy-speed-sel0";
-"medium" -> "or2":"or2_joy1.in0";
-"fast" -> "or2":"or2_joy1.in1";
-"or2":"or2_joy1.out" -> "joy-speed-sel1";
-}
-
+			subgraph "cluster_and2_extras2" {
+				label = "and2_extras2"
+				"and2_extras2" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_and2_extras3" {
+				label = "and2_extras3"
+				"and2_extras3" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_halui" {
+				label = "halui"
+				"halui" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="axis_jog_speed"> axis.jog-speed</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_x_analog"> axis.x.analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_x_minus"> axis.x.minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_x_plus"> axis.x.plus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_y_analog"> axis.y.analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_z_analog"> axis.z.analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_z_minus"> axis.z.minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="axis_z_plus"> axis.z.plus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_0_analog"> joint.0.analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_0_minus"> joint.0.minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_0_plus"> joint.0.plus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_1_analog"> joint.1.analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_1_minus"> joint.1.minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_1_plus"> joint.1.plus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_2_analog"> joint.2.analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint_jog_speed"> joint.jog-speed</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mode_auto"> mode.auto</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mode_manual"> mode.manual</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="spindle_0_start"> spindle.0.start</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="spindle_0_stop"> spindle.0.stop</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="machine_is_on"> machine.is-on</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="spindle_0_is_on"> spindle.0.is-on</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_input.0" {
+				label = "input.0"
+				"input.0" [ shape="box" label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="abs_hat0x_is_neg"> abs-hat0x-is-neg</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="abs_hat0x_is_pos"> abs-hat0x-is-pos</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="abs_hat0y_is_neg"> abs-hat0y-is-neg</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="abs_hat0y_is_pos"> abs-hat0y-is-pos</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="abs_rz_position"> abs-rz-position</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="abs_x_position"> abs-x-position</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="abs_y_position"> abs-y-position</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="btn_base"> btn-base</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="btn_base4"> btn-base4</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="btn_thumb"> btn-thumb</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="btn_thumb2"> btn-thumb2</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="btn_top2"> btn-top2</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="btn_trigger"> btn-trigger</TD></TR>
+						</TABLE>
+				>]
+			}
+			subgraph "cluster_mux2_x" {
+				label = "mux2_x"
+				"mux2_x" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="sel"> sel</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_mux2_y" {
+				label = "mux2_y"
+				"mux2_y" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="sel"> sel</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_mux2_z" {
+				label = "mux2_z"
+				"mux2_z" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="sel"> sel</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_mux4.0" {
+				label = "mux4.0"
+				"mux4.0" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="sel0"> sel0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="sel1"> sel1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_not_extras0" {
+				label = "not_extras0"
+				"not_extras0" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in"> in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_or2_joy0" {
+				label = "or2_joy0"
+				"or2_joy0" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			subgraph "cluster_or2_joy1" {
+				label = "or2_joy1"
+				"or2_joy1" [ shape="box" label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}
+			"input.0":btn_top2	 -> 	"halui":mode_auto	 [label="auto"];
+			"input.0":btn_base4	 -> 	"and2_extras2":in0	 [label="base4-button"];
+			"input.0":btn_base4	 -> 	"and2_extras3":in1	 [label="base4-button"];
+			"input.0":btn_thumb2	 -> 	"or2_joy0":in1	 [label="fast"];
+			"input.0":btn_thumb2	 -> 	"or2_joy1":in1	 [label="fast"];
+			"mux4.0":out	 -> 	"halui":axis_jog_speed	 [label="jog-speed"];
+			"mux4.0":out	 -> 	"halui":joint_jog_speed	 [label="jog-speed"];
+			"mux2_x":out	 -> 	"halui":axis_x_analog	 [label="jog-x-analog"];
+			"mux2_x":out	 -> 	"halui":joint_0_analog	 [label="jog-x-analog"];
+			"mux2_x":out	 -> 	"mux2_x":in0	 [label="jog-x-analog"];
+			"input.0":abs_hat0y_is_neg	 -> 	"halui":axis_x_minus	 [label="jog-x-neg"];
+			"input.0":abs_hat0y_is_neg	 -> 	"halui":joint_0_minus	 [label="jog-x-neg"];
+			"input.0":abs_hat0y_is_pos	 -> 	"halui":axis_x_plus	 [label="jog-x-pos"];
+			"input.0":abs_hat0y_is_pos	 -> 	"halui":joint_0_plus	 [label="jog-x-pos"];
+			"input.0":abs_x_position	 -> 	"mux2_x":in1	 [label="jog-x-pre"];
+			"mux2_y":out	 -> 	"halui":axis_y_analog	 [label="jog-y-analog"];
+			"mux2_y":out	 -> 	"halui":joint_1_analog	 [label="jog-y-analog"];
+			"mux2_y":out	 -> 	"mux2_y":in0	 [label="jog-y-analog"];
+			"input.0":abs_y_position	 -> 	"mux2_y":in1	 [label="jog-y-pre"];
+			"mux2_z":out	 -> 	"halui":axis_z_analog	 [label="jog-z-analog"];
+			"mux2_z":out	 -> 	"halui":joint_2_analog	 [label="jog-z-analog"];
+			"mux2_z":out	 -> 	"mux2_z":in0	 [label="jog-z-analog"];
+			"input.0":abs_hat0x_is_neg	 -> 	"halui":axis_z_minus	 [label="jog-z-neg"];
+			"input.0":abs_hat0x_is_neg	 -> 	"halui":joint_1_minus	 [label="jog-z-neg"];
+			"input.0":abs_hat0x_is_pos	 -> 	"halui":axis_z_plus	 [label="jog-z-pos"];
+			"input.0":abs_hat0x_is_pos	 -> 	"halui":joint_1_plus	 [label="jog-z-pos"];
+			"input.0":abs_rz_position	 -> 	"mux2_z":in1	 [label="jog-z-pre"];
+			"or2_joy0":out	 -> 	"mux4.0":sel0	 [label="joy-speed-sel0"];
+			"or2_joy1":out	 -> 	"mux4.0":sel1	 [label="joy-speed-sel1"];
+			"halui":machine_is_on	 -> 	"mux2_x":sel	 [label="machine-is-on"];
+			"halui":machine_is_on	 -> 	"mux2_y":sel	 [label="machine-is-on"];
+			"halui":machine_is_on	 -> 	"mux2_z":sel	 [label="machine-is-on"];
+			"input.0":btn_base	 -> 	"halui":mode_manual	 [label="manual"];
+			"input.0":btn_thumb	 -> 	"or2_joy1":in0	 [label="medium"];
+			"input.0":btn_trigger	 -> 	"or2_joy0":in0	 [label="slow"];
+			"not_extras0":out	 -> 	"and2_extras3":in0	 [label="spindle-is-off"];
+			"halui":spindle_0_is_on	 -> 	"and2_extras2":in1	 [label="spindle-on"];
+			"halui":spindle_0_is_on	 -> 	"not_extras0":in	 [label="spindle-on"];
+			"and2_extras3":out	 -> 	"halui":spindle_0_start	 [label="spindle-start"];
+			"and2_extras2":out	 -> 	"halui":spindle_0_stop	 [label="spindle-stop"];
+		}        
 	\enddot
 */
