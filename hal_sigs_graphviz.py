@@ -83,6 +83,8 @@ def dot_field_name(c) :
 #
 # Prints out HTML like dot description.
 # Enclosing with "" allows names to include '.'.
+# Notice I/O pins are currently grouped with the IN pins. Should break HTML into IN, OUT, I/O.
+#
 def my_cluster(label_name, node_list) :
         print('\tsubgraph "cluster_' + label_name +'" {')
         print('\t\tlabel = "' + label_name + '"')
@@ -97,8 +99,11 @@ def my_cluster(label_name, node_list) :
                         in_count=in_count+1
                 elif pin_dir == 'OUT':
                         out_count = out_count + 1
+                elif pin_dir == 'I/O' :
+                        # Count I/O pins as IN.
+                        in_count += 1
                 else :
-                        print('Undefined pin direction.')
+                        print('Undefined pin type.')
                         break;
         if (in_count > 0) and (out_count > 0) :
                 print('\t\t\t<TABLE CELLBORDER="0" BORDER="0"><TR><TD> ')        
@@ -107,7 +112,7 @@ def my_cluster(label_name, node_list) :
         if (in_count > 0):
                 print('\t\t\t\t<TABLE CELLBORDER="0" BORDER="1">')
                 for [pin_name, pin_dir] in node_list :
-                        if pin_dir == 'IN' :
+                        if (pin_dir == 'IN') or (pin_dir == 'I/O') :
                                 print('\t\t\t\t\t<TR><TD ALIGN="LEFT" PORT="' + dot_field_name(pin_name) + '"> ' + pin_name + '</TD></TR>')
                 print('\t\t\t\t</TABLE>')
 
@@ -138,176 +143,200 @@ for line in f:
                 component_hash2[comp_name] = [];
         component_hash2[comp_name].append([pin_name, pin_dir])
 
-print('\n\ncomponent_hash2')
-print_dictionary(component_hash2)
+if 0:
+        print('\n\ncomponent_hash2')
+        print_dictionary(component_hash2)
 
-if 1:
+#
+# Go through the component_hash2 and combine name levels if there is only one subtype.
+# For instance mux4 with two sublevels can be simplified to one sublevel.
+#"mux4" mux4.0.out mux4.0.sel0 mux4.0.sel1"
+#"mux4_0" mux4_0.out mux4_0.sel0 mux4_0.sel1"
+#
+dot_node_dictionary = {}
+
+for comp in list(component_hash2.keys()):
         #
-        # Go through the component_hash2 and combine name levels if there is only one subtype.
-        # For instance mux4 with two sublevels can be simplified to one sublevel.
-        #"mux4" mux4.0.out mux4.0.sel0 mux4.0.sel1"
-        #"mux4_0" mux4_0.out mux4_0.sel0 mux4_0.sel1"
+        # Look at all the pins for this component type to figure out if a level can be combined. (Combine if names have only a numeric sublevel difference.)
         #
-        dot_node_dictionary = {}
+        #       mux4 float OUT 0    mux4.0.out 
+        #       mux4 bit   IN FALSE mux4.0.sel0
+        #       mux4 bit   IN FALSE mux4.0.sel1
 
-        for comp in list(component_hash2.keys()):
-                #
-                # Look at all the pins for this component type to figure out if a level can be combined. (Combine if names have only a numeric sublevel difference.)
-                #
-                #       mux4 float OUT 0    mux4.0.out 
-                #       mux4 bit   IN FALSE mux4.0.sel0
-                #       mux4 bit   IN FALSE mux4.0.sel1
+        ignore_string = comp + "."
+        level=1
+        for [pin_name, pin_dir] in component_hash2[comp] :        
+                pin_name_list = pin_name.split('.')
+                if len(pin_name_list) > (level+1) and pin_name_list[level].isnumeric() :                
+                        #
+                        # Look at all the other pin names at this level.
+                        #
+                        level_same=True
 
-                ignore_string = comp + "."
-                level=1
-                for [pin_name, pin_dir] in component_hash2[comp] :        
-                        pin_name_list = pin_name.split('.')
-                        if len(pin_name_list) > (level+1) and pin_name_list[level].isnumeric() :                
-                                #
-                                # Look at all the other pin names at this level.
-                                #
-                                level_same=True
-
-                                for [p,d] in component_hash2[comp] :
-                                        p_name_list = p.split('.')
-                                        #print ('Compare ' + pin_name_list[level] + ' to ' + p_name_list[level])
-                                        if p_name_list[level] != pin_name_list[level]:
-                                                level_same = False
-                                                break
-                                if level_same :
-                                        #print('Level can be combined.'  + comp + ' ' + pin_name + ' ' + pin_dir)
+                        for [p,d] in component_hash2[comp] :
+                                p_name_list = p.split('.')
+                                #print ('Compare ' + pin_name_list[level] + ' to ' + p_name_list[level])
+                                if p_name_list[level] != pin_name_list[level]:
+                                        level_same = False
                                         break
-                        else:
-                                level_same = False
+                        if level_same :
+                                #print('Level can be combined.'  + comp + ' ' + pin_name + ' ' + pin_dir)
                                 break
-                if level_same :
-                        #
-                        # Combine the name and numeric as the new key.
-                        #
-                        key_name = pin_name_list[0] + "." + p_name_list[1]
-                        old_substring = p_name_list[0] + '.' + p_name_list[1]
-                        for [p,d] in component_hash2[comp] :       
-                                p = p.replace(old_substring, key_name)
-                                if key_name in dot_node_dictionary:
-                                        dot_node_dictionary[key_name].append([ p, d])                
-                                else:
-                                        dot_node_dictionary.update({key_name:[[ p, d]]})                        
-                else :
+                else:
+                        level_same = False
+                        break
+        if level_same :
+                #
+                # Combine the name and numeric as the new key.
+                #
+                key_name = pin_name_list[0] + "." + p_name_list[1]
+                old_substring = p_name_list[0] + '.' + p_name_list[1]
+                for [p,d] in component_hash2[comp] :       
+                        p = p.replace(old_substring, key_name)
+                        if key_name in dot_node_dictionary:
+                                dot_node_dictionary[key_name].append([ p, d])                
+                        else:
+                                dot_node_dictionary.update({key_name:[[ p, d]]})                        
+        else :
 
-                        dot_node_dictionary.update({comp: component_hash2[comp]})
+                dot_node_dictionary.update({comp: component_hash2[comp]})
 
+if 0:
         print('\n\ndot_node_dictionary')
         print_dictionary(dot_node_dictionary)
 
-if 1:
+#
+# The default halcmd puts all named components of the same component type in one big list.
+# Break named components into separate lists. 
+# This drops the component key name which works for my naming convention. Could easily concatenate key name
+#
+named_components_dictionary = {}
+for comp in list(dot_node_dictionary.keys()):
         #
-        # The default halcmd puts all named components of the same component type in one big list.
-        # Break named components into separate lists. 
-        # This drops the component key name which works for my naming convention. Could easily concatenate key name
+        # Figure out if different component names are used which should be broken out as individual nodes.
         #
-        named_components_dictionary = {}
-        for comp in list(dot_node_dictionary.keys()):
-                print(comp)
+        node_name=None
+        for [pin_name, pin_dir] in dot_node_dictionary[comp] :
                 #
-                # Figure out if different component names are used which should be broken out as individual nodes.
+                # Check if the key name has been replaced.
                 #
-                node_name=None
-                for [pin_name, pin_dir] in dot_node_dictionary[comp] :
+                if (comp + '.') == pin_name[:len(comp)+1] :
+                        node_name = comp;
+                        if node_name in named_components_dictionary :
+                                named_components_dictionary[node_name].append([pin_name[len(comp)+1:],pin_dir])                
+                        else:
+                                named_components_dictionary.update({node_name:[[pin_name[len(comp)+1:],pin_dir]]})                        
+                else :
                         #
-                        # Check if the key name has been replaced.
+                        # Look for simple named components. "simple" implies name of "component_name.pin".
                         #
-                        if (comp + '.') == pin_name[:len(comp)+1] :
-                                node_name = comp;
-                                if node_name in named_components_dictionary :
-                                        named_components_dictionary[node_name].append([pin_name[len(comp)+1:],pin_dir])                
-                                else:
-                                        named_components_dictionary.update({node_name:[[pin_name[len(comp)+1:],pin_dir]]})                        
-                        else :
-                                #
-                                # Look for simple named components. "simple" implies name of "component_name.pin".
-                                #
-                                pin_name_list = pin_name.split('.')
-                                if (2 == len(pin_name_list)) :
-                                        pin_name_short = pin_name_list[0]
-                                        if node_name == None :
+                        pin_name_list = pin_name.split('.')
+                        if (2 == len(pin_name_list)) :
+                                pin_name_short = pin_name_list[0]
+                                if node_name == None :
+                                        node_name = pin_name_short
+                                        print('\t' + node_name + ' - New name. type is ' + comp)                                        
+                                else :                        
+                                        if pin_name_short != node_name:
+                                                print('\t' + pin_name_short + ' - This is a new name.')
                                                 node_name = pin_name_short
-                                                print('\t' + node_name + ' - New name. type is ' + comp)                                        
-                                        else :                        
-                                                if pin_name_short != node_name:
-                                                        print('\t' + pin_name_short + ' - This is a new name.')
-                                                        node_name = pin_name_short
-                                        
-                                        print ('\t\t' + pin_name_list[1] + ' ' + pin_dir)
+                                
+                                print ('\t\t' + pin_name_list[1] + ' ' + pin_dir)
 
-                                        #
-                                        # Add to a new dictionary list.
-                                        #
-                                        if node_name in named_components_dictionary :
-                                                named_components_dictionary[node_name].append([pin_name_list[1],pin_dir])                
-                                        else:
-                                                named_components_dictionary.update({node_name:[[pin_name_list[1],pin_dir]]})                        
+                                #
+                                # Add to a new dictionary list.
+                                #
+                                if node_name in named_components_dictionary :
+                                        named_components_dictionary[node_name].append([pin_name_list[1],pin_dir])                
                                 else:
-                                        print('\t' + pin_name + ' NOT a simple name list. len() = ', len(pin_name_list))
+                                        named_components_dictionary.update({node_name:[[pin_name_list[1],pin_dir]]})                        
+                        else:
+                                print('\t' + pin_name + ' NOT a simple name list. len() = ', len(pin_name_list))
 
-        print(named_components_dictionary)
-else:
-        named_components_dictionary = {}
-print('\nnamed_components_dictionary')
-print_dictionary(named_components_dictionary)
+if 0:
+        print('\nnamed_components_dictionary')
+        print_dictionary(named_components_dictionary)
 
 #
 # Generate the HTML like graphviz node definitions.
 #
-dot_header('joypad_XXX.hal')
+dot_header('Spindle.hal')
 for node in list(named_components_dictionary.keys()):
         my_cluster(node,named_components_dictionary[node])
 
-if (1) :
+#
+# Use signal names from sig.out as edge labels instead of creating extra nodes. 
+#
+f = open("sig.out", "r")
+net_list = []
+for line in f:
+        sig_list = line.split()
+        sig_type, sig_value, signal_name = sig_list[0:3]    
+        sig_declarations = sig_list[3:]
         #
-        # Use signal names from sig.out as edge labels instead of creating extra nodes. 
+        # Treat the remainder of the declaration as pairs of direction and component name.
+        # The signal will become the dot label.
         #
-        f = open("sig.out", "r")
-        net_list = []
-        for line in f:
-                sig_list = line.split()
+        # TODO Pay more attention to IN,OUT,I/O and use dir='both' with I/O.
+        #
 
-                sig_type, sig_value, signal_name = sig_list[0:3]    
-                sig_declarations = sig_list[3:]
+        # Find the source pin for this signal in the dictionary.
+        if len(sig_declarations) > 2 :
+                for count in range(0, len(sig_declarations), 2):
+                        if (sig_declarations[count] == "<==") or (sig_declarations[count] == "<=>") :
+                                # This is a source for the signal.
+                                src_node_pin = search_dictionary(named_components_dictionary, sig_declarations[count + 1], False)            
+                                if src_node_pin != None :
+                                        #
+                                        # Found the source pin name in the dictionary.
+                                        #
+                                        break;
+                                else :
+                                        print("WARNING source pin " + sig_declarations[count + 1] + ' not found.')
+                # Find the destination pin or pins for this signal. 
+                for count in range(0, len(sig_declarations), 2):
+                        if (sig_declarations[count] ==  "==>") or (sig_declarations[count] ==  "<=>") :
+                                # This is a destination for the signal.
+                                dst_node_pin = search_dictionary(named_components_dictionary, sig_declarations[count + 1], False)                           
+                                if dst_node_pin != None:                        
+                                        net_list.append('\t' + src_node_pin + "\t -> \t" + dst_node_pin + '\t [label="' + signal_name + '"]')
+                                else :
+                                        print("WARNING destination pin " + sig_declarations[count + 1] + ' not found in dictionary.')
+                        elif sig_declarations[count] != "<==" :
+                                print("WARNING: Expected <== or ==> for ",end="")
+                                print(sig_declarations)
+        elif len(sig_declarations) == 2 :
                 #
-                # Treat the remainder of the declaration as pairs of direction and component name.
-                # The signal will become the dot label.
-                # Each signal should have exactly one component source and zero or more destinations.
-                # Output will look like src->{dst0, dst1} [label="signal_name"];
+                # Signal doesn't have both a source and destination.
+                # Create an invisible node to be a sink or source for this signal.
+                #
+                if (0):
+                        print("signal without source or destination pin.")
+                        print('sig_value: ' + signal_name + ' sig_declarations ', end="")
+                        print(sig_declarations)
+                        print('len() = ', end="")
+                        print(len(sig_declarations))
 
-                # Find the source pin for this signal in the dictionary.
-                if len(sig_declarations) > 0 :
-                        for count in range(0, len(sig_declarations), 2):
-                                if sig_declarations[count] == "<==":
-                                        # This is a source for the signal.
-                                        src_pin = sig_declarations[count + 1]                                
-                                        src_node_pin = search_dictionary(named_components_dictionary, src_pin, False)            
-                                        if src_node_pin != None :
-                                                #
-                                                # Found the source pin name in the dictionary.
-                                                #
-                                                break;
-                                        else :
-                                                print("WARNING source pin " + src_pin + ' not found.')
-                        # Find the destination pin for this signal. 
-                        dst_string = "";
-                        for count in range(0, len(sig_declarations), 2):
-                                if sig_declarations[count] ==  "==>":
-                                        # This is a destination for the signal.
-                                        dst_pin = sig_declarations[count + 1]
-                                        dst_node_pin = search_dictionary(named_components_dictionary, dst_pin, False)                           
-                                        if dst_node_pin != None:                        
-                                                net_list.append('\t' + src_node_pin + "\t -> \t" + dst_node_pin + '\t [label="' + signal_name + '"]')
-                                        else :
-                                                print("WARNING destination pin " + dst_pin + ' not found in dictionary.')
-                                elif sig_declarations[count] != "<==" :
-                                        print("WARNING: Expected <== or ==>")
+                if (sig_declarations[0] ==  "==>") or (sig_declarations[0] ==  "<=>") :
+                        # destination but no source.
+                        dst_node_pin = search_dictionary(named_components_dictionary, sig_declarations[1], False)            
+                        if dst_node_pin != None:
+                                net_list.append('\tsrc_' + dot_field_name(signal_name) + "\t -> \t" + dst_node_pin + '\t [label="' + signal_name + '"]')
+                        else :
+                                print("WARNING destination pin " + sig_declarations[count + 1] + ' not found in dictionary.')
+
+                elif (sig_declarations[0] == "<==") :
+                        # source with no destination, Create an invisible sink node.
+                        src_node_pin = search_dictionary(named_components_dictionary, sig_declarations[1], False)            
+                        if src_node_pin != None:
+                                net_list.append('\t' + src_node_pin + '\t -> \tdst_' + dot_field_name(signal_name) + '\t [label="' + signal_name + '"]')
+                        else :
+                                print("WARNING destination pin " + sig_declarations[count + 1] + ' not found in dictionary.')
                 else :
-                        print("WARNING empty list of signals.")
-        for line in net_list:
-                print(line + ";")
+                        print('WARNING: Should be ==>, <=>, or <""')
+                
+        else :
+                print("WARNING: Not enough sig_declarations.")
+for line in net_list:
+        print(line + ";")
 dot_footer()
