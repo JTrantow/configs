@@ -27,8 +27,8 @@ net spindle-index-enable <= [MESA](CARD0).encoder.03.index-enable
 # GS2 VFD 
 #
 net spindle-vel-cmd-rpm <= spindle-vfd.speed-command
-net spindle-enable      <= spindle-vfd.spindle-on 
-net spindle-cw          <= spindle-vfd.spindle-fwd
+net spindle-enable      => spindle-vfd.spindle-on 
+net spindle-cw          => spindle-vfd.spindle-fwd
 net spindle-at-speed    <= spindle-vfd.at-speed
 net spindle-rpm         <= spindle-vfd.motor-RPM
 net spindle-load-percent <= spindle-vfd.load-percentage

@@ -15,17 +15,12 @@ addf and2_extras3 servo-thread
 addf not_extras0   servo-thread
 
 #
-# Extra HAL to connect joypad buttons for jog xz plus/minus at the chosen jog speed.
+# Extra HAL to connect joypad buttons for jog xy plus/minus at the chosen jog speed.
 #
-#net jog-x-pos <= input.0.abs-hat0x-is-pos => halui.axis.x.plus  halui.joint.0.plus
-#net jog-x-neg <= input.0.abs-hat0x-is-neg => halui.axis.x.minus halui.joint.0.minus
-#net jog-y-pos <= input.0.abs-hat0y-is-pos => halui.axis.y.plus  halui.joint.1.plus
-#net jog-y-neg <= input.0.abs-hat0y-is-neg => halui.axis.y.minus halui.joint.1.minus
-# Following four lines uses the lathe keyboard convention or right/left being Z and up/down being X.
 net jog-x-pos <= input.0.abs-hat0y-is-pos => halui.axis.x.plus  halui.joint.0.plus
 net jog-x-neg <= input.0.abs-hat0y-is-neg => halui.axis.x.minus halui.joint.0.minus
-net jog-z-pos <= input.0.abs-hat0x-is-pos => halui.axis.z.plus  halui.joint.1.plus
-net jog-z-neg <= input.0.abs-hat0x-is-neg => halui.axis.z.minus halui.joint.1.minus
+net jog-y-pos <= input.0.abs-hat0x-is-pos => halui.axis.y.plus  halui.joint.1.plus
+net jog-y-neg <= input.0.abs-hat0x-is-neg => halui.axis.y.minus halui.joint.1.minus
 
 #
 # Instead of jogging with Dpad, Could use Dpad/hat0y for feed speed override???
