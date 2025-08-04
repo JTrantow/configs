@@ -50,21 +50,7 @@ setp debounce.0.delay 20
 # IO Pin 015 (P2-12): gpio.015 max-home-y2-raw
 # IO Pin 016 (P2-13): gpio.016 max-home-x
 
-setp [HMOT](CARD0).gpio.000.is_output true
-setp [HMOT](CARD0).gpio.007.is_output true
-
-net OUTPUT_2           =>  [HMOT](CARD0).gpio.000.out
-net G540-fault-raw     <=  [HMOT](CARD0).gpio.003.in => debounce.0.2.in
-net G540-fault         <=  debounce.0.2.out
-
-net OUTPUT_1           =>  [HMOT](CARD0).gpio.007.out
-
-net max-home-z         <=  [HMOT](CARD0).gpio.014.in
-net max-home-y2-raw    <=  [HMOT](CARD0).gpio.015.in => debounce.0.1.in
-net max-home-x         <=  [HMOT](CARD0).gpio.016.in
-
-net max-home-y         <=  debounce.0.0.out
-net max-home-y2        <=  debounce.0.1.out
+source mesa7i92io_home.hal
 
 #
 # Mesa 7i92T P1 Connector to 7i75 configured as a G540.
@@ -92,7 +78,7 @@ net max-home-y2        <=  debounce.0.1.out
 # IO1 gpio.026 plasma-on             IO0 gpio.025 length-in
 
 # GND                                GND
-# IO7 gpio.024 laser-enable          IO6 gpio.023 GS2-fault
+# IO7 gpio.024 laser-enable          IO6 gpio.023 VFD-fault
 # GND                                GND
 # IO5 gpio.022 laser-air-relay       IO4 gpio.021 StepGen.5.Direction
 # GND                                GND
@@ -134,7 +120,15 @@ net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
 net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
 net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
 
-net GS2-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
+net VFD-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
 #stepgen.05.dir          =>  [HMOT](CARD0).gpio.021.out
 #stepgen.05.step         =>  [HMOT](CARD0).gpio.019.out
 net max-home-y-raw       <=  [HMOT](CARD0).gpio.017.in => debounce.0.0.in
+
+
+
+#
+# Control the air compressor and cross-hair laser with relays. This belongs in a different file.
+#
+net laser-air-relay  <= iocontrol.0.coolant-flood
+net laser-cross-hair <= iocontrol.0.coolant-mist
