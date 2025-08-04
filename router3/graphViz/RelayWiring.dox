@@ -1,0 +1,82 @@
+/*!
+    \file RelayWiring.dox
+    \addtogroup RelayWiring
+
+    \brief This file illustrates the wiring for the four 120 VAC power sockets.
+    
+    \dot
+       digraph structs {
+            concentrate=true
+            rankdir="LR"
+            label="Router Power Switching Relay Connections."
+
+            subgraph relay_module {
+                label="Power 4 ch relay"
+                cluster = true;
+
+                r0 [label="GND" shape=box];
+                r1 [label="power" shape=box];
+                
+                subgraph i {
+                    label="inputs";
+                    cluster=false;
+                    relay_in [shape="box" label=<
+                        <TABLE CELLBORDER="0" BORDER="0">
+                            <TR><TD ALIGN="LEFT" port="IN1"> IN1</TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="IN2"> IN2</TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="IN3"> IN3</TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="IN4"> IN4</TD></TR> 
+                        </TABLE>
+                    >]
+                }
+                subgraph o {
+                    label="outputs";
+                    cluster=false;
+                    relay_out [shape="box" label=<
+                        <TABLE CELLBORDER="0" BORDER="0">
+                            <TR><TD ALIGN="LEFT" port="K1sig"> K1 signal  </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K1no" > K1 NO      </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K2sig"> K2 signal  </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K2no" > K2 NO      </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K3sig"> K3 signal  </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K3no" > K3 NO      </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K4sig"> K4 signal  </TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="K4no" > K4 NO      </TD></TR> 
+                        </TABLE>
+                    >]
+                }
+            }
+            
+            r2 [label="120VAC power" shape=box];
+
+            
+            n01 [shape="rarrow" label="AC1 laser power"];
+            n02 [shape="rarrow" label="AC2 air compressor"];
+            n03 [shape="rarrow" label="AC3 dust collector"];
+            n04 [shape="rarrow" label="AC4 reserved"];
+            n05 [shape="rarrow" label="VCC (5V)"];
+            n06 [shape="rarrow" label="GND"];
+
+            n11 [shape="circle" label="laser-power"];
+            n12 [shape="circle" label="air-compressor"];
+            n13 [shape="circle" label="dust collector"];
+            n14 [shape="circle" label="reserved"];
+            
+            n01:e -> relay_in:IN1;
+            n02:e -> relay_in:IN2;
+            n03:e -> relay_in:IN3;
+            n04:e -> relay_in:IN4;
+            n05:e -> r1;
+            n06:e -> r0;
+            
+            relay_out:K1no -> n11;
+            relay_out:K2no -> n12;
+            relay_out:K3no -> n13;
+            relay_out:K4no -> n14;
+
+
+            {rank=source n01 n02 n03 n04 n05 n06};
+            {rank=sink  n11 n12 n13 n14};
+       }
+    \enddot
+*/
