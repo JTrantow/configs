@@ -5,14 +5,11 @@
 
    The basic operation of the spindle control is to convert the spindle speed-out-abs [RPM] into the spindle-pwm signal.
     While the basic operation can be implemented with just the spindle and pwmgen components, several refinements are made:
-        - Spindle quadrature encoder with index to measure the spindle position. (Only used for threading)
+        - Spindle quadrature encoder with index to measure the spindle position and velocity.     
+        - To improve the accuracy of the spindle speed, a PID loop uses the velocity command and the measured velocity from the encoder to adjust the pwm.
         - To detect when the spindle is ready, a near component compares the velocity command and measured encoder velocity.
         - To limit the deceleration a limit2 component is used. To avoid sudden decels when spindle is turned off, the spindle-enable is achieved by a near zero comparison. 
         - During an estop, the limit2 will load the new (zero) value immediately resulting in a fast as possible spindle stop.
-
-
-    Having problems (eratic signal and quadrature errors) with encoder velocity probably caused by home brew encoder. 
-    Use lincurve fit until new encoder is installed. (This will only be scaled correctly for the current belt setup.)
 
     \dot
         digraph structs {
@@ -44,6 +41,39 @@
                     </TABLE>
                 >
                 ]
+            }
+
+            subgraph cluster_pid_s{
+                label="pid.s"
+                pid_s [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i1">enable</TD></TR>
+                                   <TR><TD ALIGN="LEFT" port="i2">index-enable</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                        
+                        <TR>
+                            <TD COLSPAN="2">
+                            <TABLE CELLBORDER="0" BORDER="0">
+                                <TR >
+                                    <TD port="f0">feedback</TD>
+                                </TR>
+                            </TABLE>
+                            </TD>
+                        </TR>
+                    
+                    </TABLE>
+                >]
             }
 
             subgraph cluster_pwmgen{
@@ -111,6 +141,26 @@
                 >]
             }
 
+            subgraph cluster_lowpass {
+                label="lowpass.0"
+                lowpass [shape="box" label=<
+                    <TABLE>
+                        <TR> 
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                   <TR><TD ALIGN="LEFT" port="in">in</TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD>
+                                <TABLE CELLBORDER="0" BORDER="0">
+                                    <TR><TD ALIGN="RIGHT" port="out">out</TD></TR> 
+                                </TABLE>
+                            </TD>
+                        </TR> 
+                    </TABLE>
+                >
+                ]
+            }
             subgraph cluster_near{
                 label="near-spindle"
                 nearspindle [shape="box" label=<
@@ -193,129 +243,52 @@
                 ]
             }
 
-            subgraph cluster_lincurve {
-                label="lincurve-spindle"
-                lincurve [shape="box" label=<
-                    <TABLE>
-                        <TR> 
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                   <TR><TD ALIGN="LEFT" port="in">in</TD></TR>
-                                </TABLE>
-                            </TD>
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                    <TR><TD ALIGN="RIGHT" port="out">out</TD></TR> 
-                                </TABLE>
-                            </TD>
-                        </TR> 
-                    </TABLE>
-                >
-                ]
-            }
-            subgraph cluster_lowpass {
-                label="lowpass.0"
-                lowpass [shape="box" label=<
-                    <TABLE>
-                        <TR> 
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                   <TR><TD ALIGN="LEFT" port="in">in</TD></TR>
-                                </TABLE>
-                            </TD>
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                    <TR><TD ALIGN="RIGHT" port="out">out</TD></TR> 
-                                </TABLE>
-                            </TD>
-                        </TR> 
-                    </TABLE>
-                >
-                ]
-            }
-
             z0 [label="0.0"];
 
             gpiosignal_spindle_enable [shape="point" style="invis"];
             gpiosignal_spindle_cw [shape="point" style="invis"];
             estopout [shape="point" style="invis"];
-            gmoccapysignal_rpm [shape="point" style="invis"];
-            lowpass:out   -> gmoccapysignal_rpm  [label="encoder-rpm-filtered" ];
 
 
-            spindle_0:o0 -> limit2:in:w   [label="spindle-cmd"  ];
+            spindle_0:o0 -> limit2:in   [label="spindle-cmd"  fontsize = "12"];
+            limit2:out   -> pid_s:i0    [label="spindle-ramped-cmd"  fontsize = "12"];
+            
+            spindle_0:o3 -> pid_s:i2;
 
-            encoder:o0 -> spindle_0:i0   [label="encoder-position"      fontcolor="blue" color="blue"];
-            encoder:o1 -> spindle_0:i1   [label="encoder-velocity"      fontcolor="blue" color="blue"];
-            encoder:o3    -> lowpass:in         [label="encoder-velocity-rpm"  fontcolor="blue" color="blue"];
+            pid_s:o0 -> pwmgen:i0        [label="spindle-output"     fontsize = "12"];
 
-            limit2:out:o1 -> lincurve:i1 [label="spindle-ramped-cmd"];
-            lincurve:i1    -> pwmgen:i0 [label="spindle-output"];
+            encoder:o0 -> spindle_0:i0   [label="encoder-position"     fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o1 -> spindle_0:i1   [label="encoder-velocity"     fontsize = "12" fontcolor="blue" color="blue"];
+            encoder:o1 -> pid_s:f0       [color="blue"];
+            encoder:o2 -> pid_s:i2       [label="spindle-index-enable"  fontsize = "12"];
 
-            spindle_0:o0    -> nearspindle:in1:w [label="spindle-cmd"  ];
-            nearspindle:out:se -> spindle_0:i2:w [label="spindle-at-speed" ];
+
+            encoder:o3    -> lowpass:in         [label="encoder-velocity-rpm"   fontsize = "12" fontcolor="blue" color="blue"];
+            lowpass:out   -> nearspindle:in2:w  [label="encoder-rpm-filtered" fontsize = "12"];
+
+
+
+            spindle_0:o0    -> nearspindle:in1:w [label="spindle-cmd"  fontsize = "12"];
+            nearspindle:out      -> spindle_0:i2 [label="spindle-at-speed" fontsize = "12"];
 
             z0 -> nearzero:in1;
-            limit2:out -> nearzero:in2 [label="spindle-ramped-cmd" ];
-            nearzero:out -> enablenot:in [label="spindle-stop-not" ];
+            limit2:out -> nearzero:in2 [label="spindle-ramped-cmd" fontsize = "12"];
+            nearzero:out -> enablenot:in [label="spindle-stop-not" fontsize = "12"];
+            enablenot:out -> pid_s:i1 ;
             enablenot:out -> pwmgen:i1 ;
-            enablenot:out -> gpiosignal_spindle_enable [label="spindle-enable" ];
+            enablenot:out -> gpiosignal_spindle_enable [label="spindle-enable" fontsize = "12"];
 
-            spindle_0:o2  -> gpiosignal_spindle_cw [label="spindle-cw" ];
+            spindle_0:o2  -> gpiosignal_spindle_cw [label="spindle-cw" fontsize = "12"];
 
-            estopout -> estopnot:in  [label="estop-out" ];
-            estopnot:out -> limit2:load:s [label="estop-out-not" ];
+            estopout -> estopnot:in  [label="estop-out" fontsize = "12"];
+            estopnot:out -> limit2:load:s [label="estop-out-not" fontsize = "12"];
 
-            {rank=sink; gpiosignal_spindle_cw gpiosignal_spindle_enable, gmoccapysignal_rpm}
+            {rank=sink; gpiosignal_spindle_cw gpiosignal_spindle_enable}
 
         }
     \enddot
 */
 /*
-    Remove PID until new encoder is installed.
-
-                subgraph cluster_pid_s{
-                label="pid.s"
-                pid_s [shape="box" label=<
-                    <TABLE>
-                        <TR> 
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                   <TR><TD ALIGN="LEFT" port="i0">command</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i1">enable</TD></TR>
-                                   <TR><TD ALIGN="LEFT" port="i2">index-enable</TD></TR>
-                                </TABLE>
-                            </TD>
-                            <TD>
-                                <TABLE CELLBORDER="0" BORDER="0">
-                                    <TR><TD ALIGN="RIGHT" port="o0">output</TD></TR> 
-                                </TABLE>
-                            </TD>
-                        </TR> 
-                        
-                        <TR>
-                            <TD COLSPAN="2">
-                            <TABLE CELLBORDER="0" BORDER="0">
-                                <TR >
-                                    <TD port="f0">feedback</TD>
-                                </TR>
-                            </TABLE>
-                            </TD>
-                        </TR>
-                    
-                    </TABLE>
-                >]
-            }
-
-
-            limit2:out   -> pid_s:i0    [label="spindle-ramped-cmd"  ];
-            spindle_0:o3 -> pid_s:i2;
-            pid_s:o0 -> pwmgen:i0        [label="spindle-output"     ];
-            encoder:o1 -> pid_s:f0       [color="blue"];
-            encoder:o2 -> pid_s:i2       [label="spindle-index-enable"  ];
-            enablenot:out -> pid_s:i1 ;
-
-
 
 
 

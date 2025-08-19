@@ -43,8 +43,8 @@
                     MinarekVFD[shape="box" label=<
                                     <TABLE CELLBORDER="0" BORDER="0">
                                         <TR><TD ALIGN="LEFT" port="D"> D Direction</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="S3"> S3 5VDC</TD></TR> 
-                                        <TR><TD ALIGN="LEFT" port="S2"> S2 Wiper (0-5V)</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S3"> S3 VCC</TD></TR> 
+                                        <TR><TD ALIGN="LEFT" port="S2"> S2 Wiper</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="S1"> S1 GND</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="E1"> E1 Common</TD></TR> 
                                         <TR><TD ALIGN="LEFT" port="E2"> E2 Enable</TD></TR> 

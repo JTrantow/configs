@@ -28,9 +28,7 @@ net estop-out <= estop-latch.0.ok-out => iocontrol.0.emc-enable-in
 #
 #   Connect various inputs to the estop latch fault_in pins 
 #
-net estop-button    => estop-latch.0.fault-in
+net estop-ext    => estop-latch.0.fault-in
 
-
-
-
-
+net estop-out       => parport.0.pin-14-out
+net estop-ext	    <= parport.0.pin-10-in
