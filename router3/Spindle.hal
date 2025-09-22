@@ -2,14 +2,14 @@
 #  Spindle.hal
 #*******************
 #
-# load the user space component for the VFD.
+# load the user space component for the Automation Direct GS2 VFD's
 # Need to add a 200 ohm resistor before using --braking-resistor --decel-seconds 30 options.
 #
 loadusr -Wn spindle-vfd gs2_vfd --bits 8 --device /dev/ttyS0   --name spindle-vfd --parity none --rate 38400 --stopbits 2            --accel-seconds 5.0
 #loadusr -Wn CommanderSK mb2hal config=CommanderSK.ini
 
 #
-# VFD 
+# GS2 VFD 
 #
 net spindle-vel-cmd-rpm   <= spindle-vfd.speed-command
 net spindle-enable        <= spindle-vfd.spindle-on 

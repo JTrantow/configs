@@ -5,7 +5,7 @@
     \brief This file illustrates the wiring for the four 120 VAC power sockets.
     
     \dot
-       digraph structs {
+       digraph structs_relayWiring {
             concentrate=true
             rankdir="LR"
             label="Router Power Switching Relay Connections."
@@ -53,14 +53,14 @@
             n01 [shape="rarrow" label="AC1 laser power"];
             n02 [shape="rarrow" label="AC2 air compressor"];
             n03 [shape="rarrow" label="AC3 dust collector"];
-            n04 [shape="rarrow" label="AC4 reserved"];
+            n04 [shape="rarrow" label="AC4 water pump"];
             n05 [shape="rarrow" label="VCC (5V)"];
             n06 [shape="rarrow" label="GND"];
 
-            n11 [shape="circle" label="laser-power"];
-            n12 [shape="circle" label="air-compressor"];
+            n11 [shape="circle" label="laser enable"];
+            n12 [shape="circle" label="air compressor"];
             n13 [shape="circle" label="dust collector"];
-            n14 [shape="circle" label="reserved"];
+            n14 [shape="circle" label="water pump"];
             
             n01:e -> relay_in:IN1;
             n02:e -> relay_in:IN2;
@@ -73,7 +73,6 @@
             relay_out:K2no -> n12;
             relay_out:K3no -> n13;
             relay_out:K4no -> n14;
-
 
             {rank=source n01 n02 n03 n04 n05 n06};
             {rank=sink  n11 n12 n13 n14};
