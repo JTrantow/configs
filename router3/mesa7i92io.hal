@@ -11,7 +11,7 @@
 #   Additional signals for Laser control:
 #       Laser enable.
 #       Air Compressor relay
-#       Laser PWM. (automatically connected by PWM to G540 VFD PWM pin.)
+#       Laser PWM. 
 #
 #   Additional signas for Plasma control:
 #       Plasma enable.
@@ -27,19 +27,43 @@ loadrt debounce cfg=3
 addf debounce.0 servo-thread
 setp debounce.0.delay 20
 
+setp    [HMOT](CARD0).pwmgen.pwm_frequency 1000
+
+#
+# pwm generator 00 is used for spindle speed modulation.
+# TODO: THIS IS NOT WORKING??? No signal on P2-14.
+#
+setp [HMOT](CARD0).pwmgen.00.scale         10000
+setp [HMOT](CARD0).pwmgen.00.output-type     1
+setp [HMOT](CARD0).pwmgen.00.offset-mode false
+#setp [HMOT](CARD0).pwmgen.00.invert_output true
+
+net spindle-vel-cmd-rpm  => [HMOT](CARD0).pwmgen.00.value 
+net spindle-enable       => [HMOT](CARD0).pwmgen.00.enable
+
+#
+# pwm generator 01 is used for laser power modulation.
+#
+setp [HMOT](CARD0).pwmgen.01.scale         1.0
+setp [HMOT](CARD0).pwmgen.01.output-type     1
+setp [HMOT](CARD0).pwmgen.01.offset-mode false
+#setp [HMOT](CARD0).pwmgen.01.invert_output true
+
+net laser-power         => [HMOT](CARD0).pwmgen.01.value 
+net laser-enable        => [HMOT](CARD0).pwmgen.01.enable
+
 #
 # Mesa 7i92T P2 Connector to G540.
 # 
-# OUTPUT_1 and OUTPUT_2 are still available.
-#
-# IO Pin 000 (P2-01): gpio.000 OUTPUT_2
-# IO Pin 001 (P2-14): pwmgen.00.Out0
+# IO Pin 000 (P2-01): gpio.000 spindle-ccw
+# IO Pin 001 (P2-14): pwmgen.00.Out0  Spindle PWM output.
 # IO Pin 002 (P2-02): stepgen.00. step
 # IO Pin 003 (P2-15): gpio.003 G540 fault.
 # IO Pin 004 (P2-03): StepGen #0, pin Direction (Output)
 # IO Pin 005 (P2-16): StepGen #4, pin Step (Output)
+
 # IO Pin 006 (P2-04): StepGen #1, pin Step (Output)
-# IO Pin 007 (P2-17): gpio.007 OUTPUT_1
+# IO Pin 007 (P2-17): gpio.007 water pump
 # IO Pin 008 (P2-05): StepGen #1, pin Direction (Output)
 # IO Pin 009 (P2-06): StepGen #2, pin Step (Output)
 # IO Pin 010 (P2-07): StepGen #2, pin Direction (Output)
@@ -50,7 +74,23 @@ setp debounce.0.delay 20
 # IO Pin 015 (P2-12): gpio.015 max-home-y2-raw
 # IO Pin 016 (P2-13): gpio.016 max-home-x
 
-source mesa7i92io_home.hal
+setp [HMOT](CARD0).gpio.000.is_output true
+setp [HMOT](CARD0).gpio.007.is_output true
+
+net spindle-ccw        =>  [HMOT](CARD0).gpio.000.out
+
+#net water-pump         =>  [HMOT](CARD0).gpio.007.out
+net machine-is-on         =>  [HMOT](CARD0).gpio.007.out
+
+net G540-fault-raw     <=  [HMOT](CARD0).gpio.003.in => debounce.0.2.in
+net G540-fault         <=  debounce.0.2.out
+
+net max-home-z         <=  [HMOT](CARD0).gpio.014.in
+net max-home-y2-raw    <=  [HMOT](CARD0).gpio.015.in => debounce.0.1.in
+net max-home-x         <=  [HMOT](CARD0).gpio.016.in
+
+net max-home-y         <=  debounce.0.0.out
+net max-home-y2        <=  debounce.0.1.out
 
 #
 # Mesa 7i92T P1 Connector to 7i75 configured as a G540.
@@ -66,59 +106,65 @@ source mesa7i92io_home.hal
 # GND                                GND
 # 5V                                 5V
 # GND                                GND
-# NC                                 IO16 gpio.033
+# NC                                 IO16 gpio.033 spindle-cw
 
 # GND                                GND
-# IO7 gpio.032                       IO6 gpio.031 
+# IO7 gpio.032 plasma-arc-ok         IO6 gpio.031 spindle-at-speed
 # GND                                GND
-# IO5 gpio.030 encoder.01.A          IO4 gpio.029
+# IO5 gpio.030 encoder.01.A          IO4 gpio.029 spindle-enable
 # GND                                GND
 # IO3 gpio.028 torch-breakaway       IO2 gpio.027 probe-in
 # GND                                GND
 # IO1 gpio.026 plasma-on             IO0 gpio.025 length-in
 
 # GND                                GND
-# IO7 gpio.024 laser-enable          IO6 gpio.023 VFD-fault
+# IO7 gpio.024 AC1 laser             IO6 gpio.023 VFD-fault
 # GND                                GND
-# IO5 gpio.022 laser-air-relay       IO4 gpio.021 StepGen.5.Direction
+# IO5 gpio.022 AC2 air-compressor    IO4 gpio.021 StepGen.5.Direction
 # GND                                GND
-# IO3 gpio.020 laser-cross-hair      IO2 gpio.019 StepGen.5.Step
+# IO3 gpio.020 AC3 dust-collector    IO2 gpio.019 StepGen.5.Step
 # GND                                GND
 # IO1 gpio.018 pwmgen.01.Out0        IO0 gpio.017 max-home-y-raw
 
-setp [HMOT](CARD0).gpio.026.is_output true
-setp [HMOT](CARD0).gpio.024.is_output true
-setp [HMOT](CARD0).gpio.022.is_output true
 setp [HMOT](CARD0).gpio.020.is_output true
+setp [HMOT](CARD0).gpio.022.is_output true
+setp [HMOT](CARD0).gpio.024.is_output true
+setp [HMOT](CARD0).gpio.026.is_output true
+setp [HMOT](CARD0).gpio.029.is_output true
+setp [HMOT](CARD0).gpio.033.is_output true
 #
 # Relay board uses reverse logic. Pull low when you want to turn it on.
 #
-setp [HMOT](CARD0).gpio.024.invert_output true
-setp [HMOT](CARD0).gpio.022.invert_output true
 setp [HMOT](CARD0).gpio.020.invert_output true
+setp [HMOT](CARD0).gpio.022.invert_output true
+setp [HMOT](CARD0).gpio.024.invert_output true
+setp [HMOT](CARD0).gpio.026.invert_output true
+setp [HMOT](CARD0).gpio.029.invert_output true
+setp [HMOT](CARD0).gpio.033.invert_output true
 
 #
 # Reserve pins for stepgen.05 and encoder.01.A and 
-# still have 3 available gpio (io33, io31, io29) on P1.
 #
-net io33                 <=  [HMOT](CARD0).gpio.033.in 
+net spindle-cw           <=  [HMOT](CARD0).gpio.033.out
 
 net plasma-arc-ok        <=  [HMOT](CARD0).gpio.032.in 
 #encoder.01.A            <=  [HMOT](CARD0).gpio.030.in 
 net torch-breakaway      <=  [HMOT](CARD0).gpio.028.in 
 net plasma-on            =>  [HMOT](CARD0).gpio.026.out
 
-net io31                 <=  [HMOT](CARD0).gpio.031.in 
-net io29                 <=  [HMOT](CARD0).gpio.029.in 
+net spindle-at-speed     <=  [HMOT](CARD0).gpio.031.in
+net spindle-enable       =>  [HMOT](CARD0).gpio.029.out 
 net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
 
 #
-# Three relays are used to control power to laser, air assist, cross-hair led power. (New module does not have independent control of cross hair.)
+# Four relays are used to control power to outlets for air compressor, dust collector, laser power supply, and water pump.
 #
-net spindle-enable       =>  [HMOT](CARD0).gpio.024.out
-net laser-air-relay      <=  [HMOT](CARD0).gpio.022.out 
-net laser-cross-hair     =>  [HMOT](CARD0).gpio.020.out
+net laser-enable         =>  [HMOT](CARD0).gpio.024.out
+net air-compressor       <=  [HMOT](CARD0).gpio.022.out 
+net dust-collector       =>  [HMOT](CARD0).gpio.020.out
+# gpio.018 pwmgen.01.Out0 laser pwm output
+
 
 net VFD-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True for open connection which is a fault.
 #stepgen.05.dir          =>  [HMOT](CARD0).gpio.021.out
@@ -126,9 +172,6 @@ net VFD-fault            <=  [HMOT](CARD0).gpio.023.in # Short phone wire. True 
 net max-home-y-raw       <=  [HMOT](CARD0).gpio.017.in => debounce.0.0.in
 
 
-
-#
-# Control the air compressor and cross-hair laser with relays. This belongs in a different file.
-#
-net laser-air-relay  <= iocontrol.0.coolant-flood
-net laser-cross-hair <= iocontrol.0.coolant-mist
+net air-compressor      <= iocontrol.0.coolant-flood
+net dust-collector      <= iocontrol.0.coolant-mist
+#net water-pump          <= iocontrol.0.lube

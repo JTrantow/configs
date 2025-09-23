@@ -9,7 +9,7 @@ loadrt hostmot2
 #
 # Using double G540 firmware. 7i92_G540d.bin.
 #   2 encoders for arc voltage and initial ohmic contact.
-#   2 pwmgens P2 not used, P1 used for laser PWM.
+#   2 pwmgens P2 (pwmgen.00), P1 (pwmgen.01) used for laser PWM.
 #   6 stepgens. 4 for xyyz, 1 gets assigned to G540 charge pump, 1 for rotary axis.
 #
 loadrt hm2_eth board_ip="10.10.10.10" config="num_encoders=2 num_pwmgens=2 num_stepgens=6" 
@@ -44,7 +44,7 @@ setp   pid.x.error-previous-target true
 # This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
 setp   pid.x.maxerror 0.012700
 
-net x-index-enable  =>  pid.x.index-enable
+#net x-index-enable  =>  pid.x.index-enable
 net x-enable        =>  pid.x.enable
 net x-pos-cmd       =>  pid.x.command
 net x-pos-fb        =>  pid.x.feedback
@@ -65,12 +65,12 @@ setp   [HMOT](CARD0).stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net x-pos-cmd    <= joint.0.motor-pos-cmd
-net x-vel-cmd    <= joint.0.vel-cmd
 net x-output     => [HMOT](CARD0).stepgen.00.velocity-cmd
 net x-pos-fb     <= [HMOT](CARD0).stepgen.00.position-fb
 net x-pos-fb     => joint.0.motor-pos-fb
 net x-enable     <= joint.0.amp-enable-out
 net x-enable     => [HMOT](CARD0).stepgen.00.enable
+net G540-fault   => joint.0.amp-fault-in
 
 # ---setup home / limit switch signals---
 
@@ -93,7 +93,7 @@ setp   pid.y.error-previous-target true
 # This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
 setp   pid.y.maxerror 0.012700
 
-net y-index-enable  =>  pid.y.index-enable
+#net y-index-enable  =>  pid.y.index-enable
 net y-enable        =>  pid.y.enable
 net y-pos-cmd       =>  pid.y.command
 net y-pos-fb        =>  pid.y.feedback
@@ -114,12 +114,12 @@ setp   [HMOT](CARD0).stepgen.01.maxvel           [JOINT_1]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net y-pos-cmd    <= joint.1.motor-pos-cmd
-net y-vel-cmd    <= joint.1.vel-cmd
 net y-output     => [HMOT](CARD0).stepgen.01.velocity-cmd
 net y-pos-fb     <= [HMOT](CARD0).stepgen.01.position-fb
 net y-pos-fb     => joint.1.motor-pos-fb
 net y-enable     <= joint.1.amp-enable-out
 net y-enable     => [HMOT](CARD0).stepgen.01.enable
+net G540-fault   => joint.1.amp-fault-in
 
 # ---setup home / limit switch signals---
 
@@ -142,7 +142,7 @@ setp   pid.y2.error-previous-target true
 # This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
 setp   pid.y2.maxerror 0.012700
 
-net y2-index-enable  =>  pid.y2.index-enable
+#net y2-index-enable  =>  pid.y2.index-enable
 net y2-enable        =>  pid.y2.enable
 net y2-pos-cmd       =>  pid.y2.command
 net y2-pos-fb        =>  pid.y2.feedback
@@ -163,12 +163,12 @@ setp   [HMOT](CARD0).stepgen.03.maxvel           [JOINT_2]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net y2-pos-cmd    <= joint.2.motor-pos-cmd
-net y2-vel-cmd    <= joint.2.vel-cmd
 net y2-output     => [HMOT](CARD0).stepgen.03.velocity-cmd
 net y2-pos-fb     <= [HMOT](CARD0).stepgen.03.position-fb
 net y2-pos-fb     => joint.2.motor-pos-fb
 net y2-enable     <= joint.2.amp-enable-out
 net y2-enable     => [HMOT](CARD0).stepgen.03.enable
+net G540-fault    => joint.2.amp-fault-in
 
 # ---setup home / limit switch signals---
 
@@ -191,7 +191,7 @@ setp   pid.z.error-previous-target true
 # This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
 setp   pid.z.maxerror 0.012700
 
-net z-index-enable  =>  pid.z.index-enable
+#net z-index-enable  =>  pid.z.index-enable
 net z-enable        =>  pid.z.enable
 net z-pos-cmd       =>  pid.z.command
 net z-pos-fb        =>  pid.z.feedback
@@ -212,70 +212,25 @@ setp   [HMOT](CARD0).stepgen.02.maxvel           [JOINT_3]STEPGEN_MAXVEL
 # ---closedloop stepper signals---
 
 net z-pos-cmd    <= joint.3.motor-pos-cmd
-net z-vel-cmd    <= joint.3.vel-cmd
 net z-output     => [HMOT](CARD0).stepgen.02.velocity-cmd
 net z-pos-fb     <= [HMOT](CARD0).stepgen.02.position-fb
 net z-pos-fb     => joint.3.motor-pos-fb
 net z-enable     <= joint.3.amp-enable-out
 net z-enable     => [HMOT](CARD0).stepgen.02.enable
+net G540-fault   => joint.3.amp-fault-in
 
 # ---setup home / limit switch signals---
 
 net max-home-z     =>  joint.3.home-sw-in joint.3.pos-lim-sw-in
 
 
-#
-#   G540 fault stops all joints connected to it.
-#
-net G540-fault => joint.0.amp-fault-in joint.1.amp-fault-in joint.2.amp-fault-in joint.3.amp-fault-in 
-
-#
-# No need for estop latches.
-#
-net estop-out <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
-
-#******************************
-# connect miscellaneous signals
-#******************************
-
-#  ---HALUI signals---
-
-net axis-select-x  halui.axis.x.select
-net jog-x-pos      halui.axis.x.plus
-net jog-x-neg      halui.axis.x.minus
-net jog-x-analog   halui.axis.x.analog
-net x-is-homed     halui.joint.0.is-homed
-net axis-select-y  halui.axis.y.select
-net jog-y-pos      halui.axis.y.plus
-net jog-y-neg      halui.axis.y.minus
-net jog-y-analog   halui.axis.y.analog
-net y-is-homed     halui.joint.1.is-homed
-net y2-is-homed    halui.joint.2.is-homed
-net axis-select-z  halui.axis.z.select
-net jog-z-pos      halui.axis.z.plus
-net jog-z-neg      halui.axis.z.minus
-net jog-z-analog   halui.axis.z.analog
-net z-is-homed     halui.joint.3.is-homed
-net jog-selected-pos      halui.axis.selected.plus
-net jog-selected-neg      halui.axis.selected.minus
-#net machine-is-on         halui.machine.is-on
-net jog-speed             halui.axis.jog-speed
-net MDI-mode              halui.mode.is-mdi
-
-
-#  ---motion control signals---
-
-net in-position               <=  motion.in-position
-net machine-is-enabled        <=  motion.motion-enabled
-
-#  ---digital in / out signals---
-
 #  ---manual tool change signals---
 
-net tool-change-request    <= iocontrol.0.tool-change
-net tool-change-confirmed  => iocontrol.0.tool-changed
-net tool-number            <= iocontrol.0.tool-prep-number
+#net tool-change-request    <= iocontrol.0.tool-change
+#net tool-change-confirmed  => iocontrol.0.tool-changed
+#net tool-number            <= iocontrol.0.tool-prep-number
 
 #  ---ignore tool prepare requests---
-net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
+#net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
+net estop <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in 

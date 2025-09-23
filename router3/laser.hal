@@ -1,19 +1,7 @@
 #
 # This file sets up the laser HAL components for cutting and engraving.
 #
-setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
 
-#setp [HMOT](CARD0).pwmgen.00.scale         100
-#setp [HMOT](CARD0).pwmgen.00.output-type     1
-#setp [HMOT](CARD0).pwmgen.00.offset-mode false
-#setp [HMOT](CARD0).pwmgen.00.dither       true
-#set  [HMOT](CARD0).pwmgen.00.enable      false
-#set  [HMOT](CARD0).pwmgen.00.value         0.0
-
-setp [HMOT](CARD0).pwmgen.01.scale         1.0
-setp [HMOT](CARD0).pwmgen.01.output-type     1
-setp [HMOT](CARD0).pwmgen.01.offset-mode false
-#setp [HMOT](CARD0).pwmgen.01.dither       true
 
 #
 # Laser power (12V or 24V) on/off is controlled via a relay controlled by laser-enable signal.
@@ -28,25 +16,11 @@ setp [HMOT](CARD0).pwmgen.01.offset-mode false
 # Gave up on multiple spindles. Use two configs instead.
 #
 #
-net spindle-enable      => [HMOT](CARD0).pwmgen.01.enable 
-
+net laser-enable        <=  spindle.0.on        => [HMOT](CARD0).pwmgen.01.enable
 #          
 # Laser power is modulated by the M67/M68 gcode.
-# M67 E0 Q50 followed by a G1 move will put 50% PWM to the laser.
+# M67 E0 Q0.50 followed by a G1 move will put 50% PWM to the laser.
 # pwmgen from P1 connector. PWM output is on 7i75 IO18.
 #
-net laser-pwm           <= motion.analog-out-00        => [HMOT](CARD0).pwmgen.01.value 
+net laser-power        <= motion.analog-out-00  => [HMOT](CARD0).pwmgen.01.value 
 
-#
-# Control the air compressor and cross-hair laser with relays.
-#
-net laser-air-relay  <= iocontrol.0.coolant-flood
-net laser-cross-hair <= iocontrol.0.coolant-mist
-
-# ---setup spindle control signals---
-net spindle-enable             <=  spindle.0.on
-
-#
-# Enable linuxcncrsh for lightburn control over TCP.
-#
-#loadusr linuxcncrsh --port 5007 --name EMCNETSVR --ini emc.ini
