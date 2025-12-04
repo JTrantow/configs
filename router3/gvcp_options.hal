@@ -4,7 +4,10 @@
 # **** Setup of spindle speed display using gladevcp ****
 
 net spindle-vel-cmd-rpm-abs    =>    gladevcp.spindle-speed
-net spindle-at-speed        =>    gladevcp.spindle-at-speed-led
+#net spindle-at-speed        =>    gladevcp.spindle-at-speed-led
+setp gladevcp.spindle-at-speed-led true
+
+
 # **** Setup GLADE MDI buttons ****
 net machine-is-on          =>    gladevcp.button-box-active
 # **** MDI Command 0 - zero-x-axis is specified in the machine named INI file under [HALUI] heading ****

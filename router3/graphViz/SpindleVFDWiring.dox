@@ -3,6 +3,11 @@
     \addtogroup SpindleVFDWiring
 
     \brief This file illustrates the wiring for the Commander SK using the Gecko G540 and Mesa boards for my router spindle.
+
+    Notes:
+        -# Commander SK Parameter 11 Start/Stop logic must be set to 0 for Enable/FWD/REV functionality.
+        -# Commander SK Parameter 35 Digital Output must be set to At.SP for at-speed functionality.
+        -# Motor parameters must be set for the spindle. RPM, voltage, amps, etc.
     
     \dot
     digraph structs99 {
@@ -83,7 +88,7 @@
                             <TR><TD ALIGN="LEFT" port="B4"> B4 Digital Input - Enable/Reset</TD></TR> 
                             <TR><TD ALIGN="LEFT" port="B5"> B5 Digital Input - Run Forward</TD></TR> 
                             <TR><TD ALIGN="LEFT" port="B6"> B6 Digital Input - Run Reverse</TD></TR> 
-                            <TR><TD ALIGN="LEFT" port="B7"> B7 Digital Input</TD></TR> 
+                            <TR><TD ALIGN="LEFT" port="B7"> B7 Digital Input - local/A1, remote/A2</TD></TR> 
                         </TABLE>
                     >]
                 }
@@ -133,15 +138,18 @@
             n04 [shape="rarrow" label="(pwmgen.01.out0)"];
             n05 [shape="larrow" label="spindle-at-speed"];
             n06 [shape="larrow" label="VFD-fault"];
-            n07 [shape="rarrow" label="gpio-gnd"];
+            n07 [shape="larrow" label="gpio-gnd"];
 
             DB25:o14        -> terminals:p8;
             terminals:p7    -> VFD_T:T1 [label="(orange/white)" dir=back];
-            terminals:p8    -> VFD_T:T4 [label="(blue)"];
+            terminals:p8    -> VFD_T:T2 [label="(blue)"];
             terminals:p9    -> VFD_T:T3 [label="(orange)" dir=back];
             
+            VFD_T:T1:w -> VFD_T:T6:e
+            
+            
             VFD_T:T5 ->   n06 [label="VFD-fault (green/white)" ]
-            VFD_T:T6:e -> n07 [dir=both]
+            VFD_T:T6:e -> n07 [label="(green)" dir=both]
             
             VFD_B:B2            -> relay_out:K1sig [label="+24V (orange)"];
             relay_out:K1sig     -> relay_out:K2sig
@@ -151,17 +159,20 @@
             n01:e -> relay_in:IN1 [label="enable"];
             n02:e -> relay_in:IN2 [label="cw"];
             n03:e -> relay_in:IN3 [label="ccw"];
-            VFD_B:B3-> relay_in:IN4 [label="at-speed"]
+            
             
             relay_out:K1no -> VFD_B:B4 [label="enable (blue)"];
             relay_out:K2no -> VFD_B:B5  [label="cw (blue/white)"];
             relay_out:K3no -> VFD_B:B6  [label="ccw (green)"];
-            relay_out:K4no -> n05 [label="at-speed"];
+            
+            
+            VFD_B:B3  ->      n05 [label="at-speed"];
 
             n04:e -> DB25:o14 [label=""];
                         
-            {rank=source n01 n02 n03 n04 n05 n06 n07};
-       }     
+            {rank=source n01 n02 n03 n04};
+            {rank=sink n05 n07};
+ }     
     \enddot
 */
 /*

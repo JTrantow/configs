@@ -50,14 +50,14 @@
             r2 [label="120VAC power" shape=box];
 
             
-            n01 [shape="rarrow" label="AC1 laser power"];
-            n02 [shape="rarrow" label="AC2 air compressor"];
-            n03 [shape="rarrow" label="AC3 dust collector"];
-            n04 [shape="rarrow" label="AC4 water pump"];
+            n01 [shape="rarrow" label="laser-enable"];
+            n02 [shape="rarrow" label="air-compressor"];
+            n03 [shape="rarrow" label="dust-collector"];
+            n04 [shape="rarrow" label="machine-is-on (water pump)"];
             n05 [shape="rarrow" label="VCC (5V)"];
             n06 [shape="rarrow" label="GND"];
 
-            n11 [shape="circle" label="laser enable"];
+            n11 [shape="circle" label="laser power"];
             n12 [shape="circle" label="air compressor"];
             n13 [shape="circle" label="dust collector"];
             n14 [shape="circle" label="water pump"];

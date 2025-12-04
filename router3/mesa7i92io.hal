@@ -11,7 +11,7 @@
 #   Additional signals for Laser control:
 #       Laser enable.
 #       Air Compressor relay
-#       Laser PWM. 
+#       Laser PWM. (automatically connected by PWM to G540 VFD PWM pin???????)
 #
 #   Additional signas for Plasma control:
 #       Plasma enable.
@@ -109,22 +109,22 @@ net max-home-y2        <=  debounce.0.1.out
 # NC                                 IO16 gpio.033 spindle-cw
 
 # GND                                GND
-# IO7 gpio.032 plasma-arc-ok         IO6 gpio.031 spindle-at-speed
+# IO15 gpio.032 plasma-arc-ok        IO14 gpio.031 spindle-at-speed
 # GND                                GND
-# IO5 gpio.030 encoder.01.A          IO4 gpio.029 spindle-enable
+# IO13 gpio.030 encoder.01.A         IO12 gpio.029 spindle-enable
 # GND                                GND
-# IO3 gpio.028 torch-breakaway       IO2 gpio.027 probe-in
+# IO11 gpio.028 torch-breakaway      IO10 gpio.027 probe-in
 # GND                                GND
-# IO1 gpio.026 plasma-on             IO0 gpio.025 length-in
+# IO9  gpio.026 plasma-on            IO8  gpio.025 length-in
 
 # GND                                GND
-# IO7 gpio.024 AC1 laser             IO6 gpio.023 VFD-fault
+# IO7  gpio.024 AC1 laser            IO6  gpio.023 VFD-fault
 # GND                                GND
-# IO5 gpio.022 AC2 air-compressor    IO4 gpio.021 StepGen.5.Direction
+# IO5  gpio.022 AC2 air-compressor   IO4  gpio.021 StepGen.5.Direction
 # GND                                GND
-# IO3 gpio.020 AC3 dust-collector    IO2 gpio.019 StepGen.5.Step
+# IO3  gpio.020 AC3 dust-collector   IO2  gpio.019 StepGen.5.Step
 # GND                                GND
-# IO1 gpio.018 pwmgen.01.Out0        IO0 gpio.017 max-home-y-raw
+# IO1  gpio.018 pwmgen.01.Out0       IO0  gpio.017 max-home-y-raw
 
 setp [HMOT](CARD0).gpio.020.is_output true
 setp [HMOT](CARD0).gpio.022.is_output true
@@ -152,7 +152,8 @@ net plasma-arc-ok        <=  [HMOT](CARD0).gpio.032.in
 net torch-breakaway      <=  [HMOT](CARD0).gpio.028.in 
 net plasma-on            =>  [HMOT](CARD0).gpio.026.out
 
-net spindle-at-speed     <=  [HMOT](CARD0).gpio.031.in
+#net spindle-at-speed     <=  [HMOT](CARD0).gpio.031.in
+
 net spindle-enable       =>  [HMOT](CARD0).gpio.029.out 
 net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
