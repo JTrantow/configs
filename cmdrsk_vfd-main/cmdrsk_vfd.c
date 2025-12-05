@@ -1,4 +1,4 @@
- /*
+/*
   cmdrsk_vfd.c
   userspace HAL program to control an Emerson/Control Techniques
   Commander SK VFD via RS485 control
@@ -44,9 +44,6 @@
 #ifndef ULAPI
 #error This is intended as a userspace component only.
 #endif
-
-#define DEBUG
-
 
 #ifdef DEBUG
 #define DBG(fmt, ...)					\
@@ -391,9 +388,6 @@ int write_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
     uint16_t control_reg, curr_param;
 
     *(haldata->freq_cmd) = *(haldata->speed_command);
-
-
-    printf("write_data: freq_cmd %f speed_command=%f.\n", *(haldata->freq_cmd), *(haldata->speed_command));
     /*
         Only write an update if the freq_cmd value has changed.
     */
@@ -402,10 +396,7 @@ int write_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
         int freq_reg = abs(*(haldata->freq_cmd) * 10.0);
         SETPARAM(PR_PRECISION_REF_COARSE, freq_reg);
         usleep(10000);
-printf("write_data: last_freq_cmd %f freq_cmd=%f freq_reg=%d.\n", last_freq_cmd, *(haldata->freq_cmd), freq_reg);
-
-#if (1)
-        // set the precision reference as the speed reference
+#if (0)        // set the precision reference as the speed reference
         SETPARAM(PR_REFERENCE_SELECTOR, SEL_REFERENCE_PRECISION);
         usleep(10000);
 #endif        
@@ -598,24 +589,14 @@ int read_initial(modbus_t *ctx, haldata_t *haldata, param_pointer p)
     haldata->motor_rated_rpm = rated_rpm / 1.0;
     
     *(haldata->upper_limit_hz) = max_freq/10.0;
-    //*(haldata->max_rpm) = *(haldata->upper_limit_hz) * haldata->motor_rated_rpm / haldata->motor_rated_hz;
-
     *(haldata->lower_limit_hz) = min_freq/10.0;
-    //*(haldata->min_rpm) = *(haldata->lower_limit_hz) * haldata->motor_rated_rpm / haldata->motor_rated_hz;
 
-    printf("read_initial(PR_MAX_SET_SPEED, %d).\n", max_freq);
-    printf("read_initial(PR_MIN_SET_SPEED, %d).\n", min_freq);
-    printf("read_initial(PR_RATED_FREQUENCY, %d).\n", rated_freq);
-    //printf("read_initial(PR_RATED_RPM, %d).\n", rated_rpm);
-
-    printf("motor_rated_hz = %f.\n", haldata->motor_rated_hz);
-    //printf("motor_rated_rpm = %f.\n", haldata->motor_rated_rpm);
-    
-    //printf("min_rpm = %f.\n", *(haldata->min_rpm));
-    //printf("max_rpm = %f.\n", *(haldata->max_rpm));
-
-    printf("lower_limit_hz = %f.\n", *(haldata->lower_limit_hz));
-    printf("upper_limit_hz = %f.\n", *(haldata->upper_limit_hz));
+    DBG("read_initial(PR_MAX_SET_SPEED, %d).\n", max_freq);
+    DBG("read_initial(PR_MIN_SET_SPEED, %d).\n", min_freq);
+    DBG("read_initial(PR_RATED_FREQUENCY, %d).\n", rated_freq);
+    DBG("motor_rated_hz = %f.\n", haldata->motor_rated_hz);
+    DBG("lower_limit_hz = %f.\n", *(haldata->lower_limit_hz));
+    DBG("upper_limit_hz = %f.\n", *(haldata->upper_limit_hz));
 
     if (p->report_device) {
         GETPARAM(PR_SW_VERSION, &sw_version);
@@ -871,7 +852,6 @@ int main(int argc, char **argv)
     hal_ready(p->hal_comp_id);
 
     fprintf(stderr, "%s: HAL should be ready\n", p->progname);
-    printf("%s: HAL should be ready (printf).\n", p->progname);
 	
     DBG("using libmodbus version %s\n", LIBMODBUS_VERSION_STRING);
 	
