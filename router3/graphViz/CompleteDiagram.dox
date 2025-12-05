@@ -1,0 +1,821 @@
+/*!
+    \file CompleteDiagram.dox
+    \addtogroup CompleteDiagram
+    \brief This file contains the doxygen complete diagram.
+
+    \dot
+		digraph hal_complete {
+			graph [rankdir="LR"];
+			label = "Complete Diagram"
+			node [fontsize = "8"];
+
+			subgraph "component_and2_extras0" {
+				label = "and2_extras0"
+				cluster = true;
+				"and2_extras0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="and2_extras0.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="and2_extras0.in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="and2_extras0.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_and2_extras0
+			subgraph "component_and2_extras1" {
+				label = "and2_extras1"
+				cluster = true;
+				"and2_extras1" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="and2_extras1.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="and2_extras1.in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="and2_extras1.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_and2_extras1
+			subgraph "component_cmdrsk_vfd" {
+				label = "cmdrsk_vfd"
+				cluster = true;
+				"cmdrsk_vfd" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="cmdrsk_vfd.speed-command"> speed-command</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="cmdrsk_vfd.spindle-fwd"> spindle-fwd</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="cmdrsk_vfd.spindle-on"> spindle-on</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="cmdrsk_vfd.spindle-rev"> spindle-rev</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="cmdrsk_vfd.at-speed"> at-speed</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="cmdrsk_vfd.current-load-percentage"> current-load-percentage</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="cmdrsk_vfd.frequency-out"> frequency-out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_cmdrsk_vfd
+			subgraph "component_debounce.0" {
+				label = "debounce.0"
+				cluster = true;
+			subgraph "subcomponent_0" {
+				label = "0"
+				cluster = true;
+				"debounce.0.0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="debounce.0.0.in"> in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="debounce.0.0.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_debounce.0.0
+			subgraph "subcomponent_1" {
+				label = "1"
+				cluster = true;
+				"debounce.0.1" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="debounce.0.1.in"> in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="debounce.0.1.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_debounce.0.1
+			subgraph "subcomponent_2" {
+				label = "2"
+				cluster = true;
+				"debounce.0.2" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="debounce.0.2.in"> in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="debounce.0.2.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_debounce.0.2
+				"debounce.0" [ shape="none" margin=0 label=<
+				>]
+			}      #  end sub/component_debounce.0
+			subgraph "component_gmoccapy" {
+				label = "gmoccapy"
+				cluster = true;
+				"gmoccapy" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="gmoccapy.spindle_at_speed_led"> spindle_at_speed_led</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="gmoccapy.spindle_feedback_bar"> spindle_feedback_bar</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="gmoccapy.toolchange-change"> toolchange-change</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="gmoccapy.toolchange-number"> toolchange-number</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="gmoccapy.toolchange-changed"> toolchange-changed</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_gmoccapy
+			subgraph "component_halui" {
+				label = "halui"
+				cluster = true;
+			subgraph "subcomponent_axis" {
+				label = "axis"
+				cluster = true;
+			subgraph "subcomponent_x" {
+				label = "x"
+				cluster = true;
+				"halui.axis.x" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.x.analog"> analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.x.minus"> minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.x.plus"> plus</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.axis.x
+			subgraph "subcomponent_y" {
+				label = "y"
+				cluster = true;
+				"halui.axis.y" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.y.analog"> analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.y.minus"> minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.y.plus"> plus</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.axis.y
+				"halui.axis" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.jog-speed"> jog-speed</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.axis.z.analog"> z.analog</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.axis
+			subgraph "subcomponent_joint" {
+				label = "joint"
+				cluster = true;
+			subgraph "subcomponent_0" {
+				label = "0"
+				cluster = true;
+				"halui.joint.0" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.0.analog"> analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.0.minus"> minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.0.plus"> plus</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.joint.0
+			subgraph "subcomponent_1" {
+				label = "1"
+				cluster = true;
+				"halui.joint.1" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.1.analog"> analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.1.minus"> minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.1.plus"> plus</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.joint.1
+			subgraph "subcomponent_2" {
+				label = "2"
+				cluster = true;
+				"halui.joint.2" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.2.analog"> analog</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.2.minus"> minus</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.2.plus"> plus</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.joint.2
+				"halui.joint" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.joint.jog-speed"> jog-speed</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.joint
+			subgraph "subcomponent_mode" {
+				label = "mode"
+				cluster = true;
+				"halui.mode" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.mode.auto"> auto</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.mode.manual"> manual</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui.mode
+			subgraph "subcomponent_program" {
+				label = "program"
+				cluster = true;
+				"halui.program" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="halui.program.pause"> pause</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.program.resume"> resume</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="halui.program.run"> run</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="halui.program.is-paused"> is-paused</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="halui.program.is-running"> is-running</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_halui.program
+				"halui" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="halui.machine.is-on"> machine.is-on</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_halui
+			subgraph "component_hm2_7i92.0" {
+				label = "hm2_7i92.0"
+				cluster = true;
+			subgraph "subcomponent_gpio" {
+				label = "gpio"
+				cluster = true;
+				"hm2_7i92.0.gpio" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.007.out"> 007.out</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.020.out"> 020.out</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.022.out"> 022.out</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.024.out"> 024.out</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.026.out"> 026.out</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.003.in"> 003.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.014.in"> 014.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.015.in"> 015.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.016.in"> 016.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.017.in"> 017.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.023.in"> 023.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.025.in"> 025.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.027.in"> 027.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.028.in"> 028.in</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.032.in"> 032.in</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_hm2_7i92.0.gpio
+			subgraph "subcomponent_pwmgen.01" {
+				label = "pwmgen.01"
+				cluster = true;
+				"hm2_7i92.0.pwmgen.01" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.pwmgen.01.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.pwmgen.01.value"> value</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_hm2_7i92.0.pwmgen.01
+			subgraph "subcomponent_stepgen" {
+				label = "stepgen"
+				cluster = true;
+			subgraph "subcomponent_00" {
+				label = "00"
+				cluster = true;
+				"hm2_7i92.0.stepgen.00" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.00.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.00.velocity-cmd"> velocity-cmd</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.stepgen.00.position-fb"> position-fb</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_hm2_7i92.0.stepgen.00
+			subgraph "subcomponent_01" {
+				label = "01"
+				cluster = true;
+				"hm2_7i92.0.stepgen.01" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.01.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.01.velocity-cmd"> velocity-cmd</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.stepgen.01.position-fb"> position-fb</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_hm2_7i92.0.stepgen.01
+			subgraph "subcomponent_02" {
+				label = "02"
+				cluster = true;
+				"hm2_7i92.0.stepgen.02" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.02.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.02.velocity-cmd"> velocity-cmd</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.stepgen.02.position-fb"> position-fb</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_hm2_7i92.0.stepgen.02
+			subgraph "subcomponent_03" {
+				label = "03"
+				cluster = true;
+				"hm2_7i92.0.stepgen.03" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.03.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.stepgen.03.velocity-cmd"> velocity-cmd</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.stepgen.03.position-fb"> position-fb</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_hm2_7i92.0.stepgen.03
+				"hm2_7i92.0.stepgen" [ shape="none" margin=0 label=<
+				>]
+			}      #  end sub/component_hm2_7i92.0.stepgen
+				"hm2_7i92.0" [ shape="none" margin=0 label=<
+				>]
+			}      #  end sub/component_hm2_7i92.0
+			subgraph "component_input.0" {
+				label = "input.0"
+				cluster = true;
+				"input.0" [ shape="none" margin=0 label=<
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-hat0x-is-neg"> abs-hat0x-is-neg</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-hat0x-is-pos"> abs-hat0x-is-pos</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-hat0y-is-neg"> abs-hat0y-is-neg</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-hat0y-is-pos"> abs-hat0y-is-pos</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-rz-position"> abs-rz-position</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-x-position"> abs-x-position</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.abs-y-position"> abs-y-position</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-base"> btn-base</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-base2"> btn-base2</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-base4"> btn-base4</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-thumb"> btn-thumb</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-thumb2"> btn-thumb2</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-top2"> btn-top2</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="input.0.btn-trigger"> btn-trigger</TD></TR>
+						</TABLE>
+				>]
+			}      #  end sub/component_input.0
+			subgraph "component_iocontrol.0" {
+				label = "iocontrol.0"
+				cluster = true;
+				"iocontrol.0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="iocontrol.0.emc-enable-in"> emc-enable-in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="iocontrol.0.coolant-flood"> coolant-flood</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="iocontrol.0.coolant-mist"> coolant-mist</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="iocontrol.0.user-enable-out"> user-enable-out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_iocontrol.0
+			subgraph "component_joint" {
+				label = "joint"
+				cluster = true;
+			subgraph "subcomponent_0" {
+				label = "0"
+				cluster = true;
+				"joint.0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="joint.0.amp-fault-in"> amp-fault-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.0.home-sw-in"> home-sw-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.0.motor-pos-fb"> motor-pos-fb</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.0.pos-lim-sw-in"> pos-lim-sw-in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="joint.0.amp-enable-out"> amp-enable-out</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="joint.0.motor-pos-cmd"> motor-pos-cmd</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_joint.0
+			subgraph "subcomponent_1" {
+				label = "1"
+				cluster = true;
+				"joint.1" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="joint.1.amp-fault-in"> amp-fault-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.1.home-sw-in"> home-sw-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.1.motor-pos-fb"> motor-pos-fb</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.1.pos-lim-sw-in"> pos-lim-sw-in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="joint.1.amp-enable-out"> amp-enable-out</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="joint.1.motor-pos-cmd"> motor-pos-cmd</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_joint.1
+			subgraph "subcomponent_2" {
+				label = "2"
+				cluster = true;
+				"joint.2" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="joint.2.amp-fault-in"> amp-fault-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.2.home-sw-in"> home-sw-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.2.motor-pos-fb"> motor-pos-fb</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.2.pos-lim-sw-in"> pos-lim-sw-in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="joint.2.amp-enable-out"> amp-enable-out</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="joint.2.motor-pos-cmd"> motor-pos-cmd</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_joint.2
+			subgraph "subcomponent_3" {
+				label = "3"
+				cluster = true;
+				"joint.3" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="joint.3.amp-fault-in"> amp-fault-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.3.home-sw-in"> home-sw-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.3.motor-pos-fb"> motor-pos-fb</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="joint.3.pos-lim-sw-in"> pos-lim-sw-in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="joint.3.amp-enable-out"> amp-enable-out</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="joint.3.motor-pos-cmd"> motor-pos-cmd</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_joint.3
+				"joint" [ shape="none" margin=0 label=<
+				>]
+			}      #  end sub/component_joint
+			subgraph "component_spindle.0" {
+				label = "spindle.0"
+				cluster = true;
+				"spindle.0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="spindle.0.amp-fault-in"> amp-fault-in</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="spindle.0.at-speed"> at-speed</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="spindle.0.forward"> forward</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="spindle.0.on"> on</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="spindle.0.reverse"> reverse</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="spindle.0.speed-out-abs"> speed-out-abs</TD></TR>
+							<TR><TD ALIGN="RIGHT" PORT="spindle.0.speed-out-rps-abs"> speed-out-rps-abs</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_spindle.0
+			subgraph "component_mux2_x" {
+				label = "mux2_x"
+				cluster = true;
+				"mux2_x" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="mux2_x.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux2_x.in1"> in1</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux2_x.sel"> sel</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="mux2_x.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_mux2_x
+			subgraph "component_mux2_y" {
+				label = "mux2_y"
+				cluster = true;
+				"mux2_y" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="mux2_y.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux2_y.in1"> in1</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux2_y.sel"> sel</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="mux2_y.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_mux2_y
+			subgraph "component_mux2_z" {
+				label = "mux2_z"
+				cluster = true;
+				"mux2_z" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="mux2_z.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux2_z.in1"> in1</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux2_z.sel"> sel</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="mux2_z.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_mux2_z
+			subgraph "component_mux4.0" {
+				label = "mux4.0"
+				cluster = true;
+				"mux4.0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="mux4.0.sel0"> sel0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="mux4.0.sel1"> sel1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="mux4.0.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_mux4.0
+			subgraph "component_or2_joy0" {
+				label = "or2_joy0"
+				cluster = true;
+				"or2_joy0" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="or2_joy0.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="or2_joy0.in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="or2_joy0.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_or2_joy0
+			subgraph "component_or2_joy1" {
+				label = "or2_joy1"
+				cluster = true;
+				"or2_joy1" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="or2_joy1.in0"> in0</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="or2_joy1.in1"> in1</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="or2_joy1.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_or2_joy1
+			subgraph "component_pid" {
+				label = "pid"
+				cluster = true;
+			subgraph "subcomponent_x" {
+				label = "x"
+				cluster = true;
+				"pid.x" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="pid.x.command"> command</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.x.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.x.feedback"> feedback</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="pid.x.output"> output</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_pid.x
+			subgraph "subcomponent_y" {
+				label = "y"
+				cluster = true;
+				"pid.y" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="pid.y.command"> command</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.y.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.y.feedback"> feedback</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="pid.y.output"> output</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_pid.y
+			subgraph "subcomponent_y2" {
+				label = "y2"
+				cluster = true;
+				"pid.y2" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="pid.y2.command"> command</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.y2.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.y2.feedback"> feedback</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="pid.y2.output"> output</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_pid.y2
+			subgraph "subcomponent_z" {
+				label = "z"
+				cluster = true;
+				"pid.z" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="pid.z.command"> command</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.z.enable"> enable</TD></TR>
+							<TR><TD ALIGN="LEFT" PORT="pid.z.feedback"> feedback</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="pid.z.output"> output</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_pid.z
+				"pid" [ shape="none" margin=0 label=<
+				>]
+			}      #  end sub/component_pid
+			subgraph "component_scale_rpm" {
+				label = "scale_rpm"
+				cluster = true;
+				"scale_rpm" [ shape="none" margin=0 label=<
+					<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="LEFT" PORT="scale_rpm.in"> in</TD></TR>
+						</TABLE>
+						</TD><TD>
+						<TABLE CELLBORDER="0" BORDER="1">
+							<TR><TD ALIGN="RIGHT" PORT="scale_rpm.out"> out</TD></TR>
+						</TABLE>
+					</TD></TR></TABLE>
+				>]
+			}      #  end sub/component_scale_rpm
+
+			# ============== Create edges from sig.out===================
+			"debounce.0.2":"debounce.0.2.out" -> "joint.0":"joint.0.amp-fault-in" [label="G540-fault"]
+			"debounce.0.2":"debounce.0.2.out" -> "joint.1":"joint.1.amp-fault-in" [label="G540-fault"]
+			"debounce.0.2":"debounce.0.2.out" -> "joint.2":"joint.2.amp-fault-in" [label="G540-fault"]
+			"debounce.0.2":"debounce.0.2.out" -> "joint.3":"joint.3.amp-fault-in" [label="G540-fault"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.003.in" -> "debounce.0.2":"debounce.0.2.in" [label="G540-fault-raw"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.023.in" -> "spindle.0":"spindle.0.amp-fault-in" [label="VFD-fault"]
+			"halui.program":"halui.program.is-running" -> "and2_extras0":"and2_extras0.in0" [label="a0in0"]
+			"and2_extras0":"and2_extras0.out" -> "halui.program":"halui.program.pause" [label="a0out"]
+			"halui.program":"halui.program.is-paused" -> "and2_extras1":"and2_extras1.in1" [label="a1in1"]
+			"and2_extras1":"and2_extras1.out" -> "halui.program":"halui.program.resume" [label="a1out"]
+			"input.0":"input.0.btn-base2" -> "and2_extras0":"and2_extras0.in1" [label="ain"]
+			"input.0":"input.0.btn-base2" -> "and2_extras1":"and2_extras1.in0" [label="ain"]
+			"iocontrol.0":"iocontrol.0.coolant-flood" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.022.out" [label="air-compressor"]
+			"input.0":"input.0.btn-top2" -> "halui.mode":"halui.mode.auto" [label="auto"]
+			"iocontrol.0":"iocontrol.0.coolant-mist" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.020.out" [label="dust-collector"]
+			"iocontrol.0":"iocontrol.0.user-enable-out" -> "iocontrol.0":"iocontrol.0.emc-enable-in" [label="estop"]
+			"input.0":"input.0.btn-thumb2" -> "or2_joy0":"or2_joy0.in1" [label="fast"]
+			"input.0":"input.0.btn-thumb2" -> "or2_joy1":"or2_joy1.in1" [label="fast"]
+			"mux4.0":"mux4.0.out" -> "halui.axis":"halui.axis.jog-speed" [label="jog-speed"]
+			"mux4.0":"mux4.0.out" -> "halui.joint":"halui.joint.jog-speed" [label="jog-speed"]
+			"mux2_x":"mux2_x.out" -> "halui.axis.x":"halui.axis.x.analog" [label="jog-x-analog"]
+			"mux2_x":"mux2_x.out" -> "halui.joint.0":"halui.joint.0.analog" [label="jog-x-analog"]
+			"mux2_x":"mux2_x.out" -> "mux2_x":"mux2_x.in0" [label="jog-x-analog"]
+			"input.0":"input.0.abs-hat0x-is-neg" -> "halui.axis.x":"halui.axis.x.minus" [label="jog-x-neg"]
+			"input.0":"input.0.abs-hat0x-is-neg" -> "halui.joint.0":"halui.joint.0.minus" [label="jog-x-neg"]
+			"input.0":"input.0.abs-hat0x-is-pos" -> "halui.axis.x":"halui.axis.x.plus" [label="jog-x-pos"]
+			"input.0":"input.0.abs-hat0x-is-pos" -> "halui.joint.0":"halui.joint.0.plus" [label="jog-x-pos"]
+			"input.0":"input.0.abs-x-position" -> "mux2_x":"mux2_x.in1" [label="jog-x-pre"]
+			"mux2_y":"mux2_y.out" -> "halui.axis.y":"halui.axis.y.analog" [label="jog-y-analog"]
+			"mux2_y":"mux2_y.out" -> "halui.joint.1":"halui.joint.1.analog" [label="jog-y-analog"]
+			"mux2_y":"mux2_y.out" -> "mux2_y":"mux2_y.in0" [label="jog-y-analog"]
+			"input.0":"input.0.abs-hat0y-is-neg" -> "halui.axis.y":"halui.axis.y.minus" [label="jog-y-neg"]
+			"input.0":"input.0.abs-hat0y-is-neg" -> "halui.joint.1":"halui.joint.1.minus" [label="jog-y-neg"]
+			"input.0":"input.0.abs-hat0y-is-neg" -> "halui.joint.2":"halui.joint.2.minus" [label="jog-y-neg"]
+			"input.0":"input.0.abs-hat0y-is-pos" -> "halui.axis.y":"halui.axis.y.plus" [label="jog-y-pos"]
+			"input.0":"input.0.abs-hat0y-is-pos" -> "halui.joint.1":"halui.joint.1.plus" [label="jog-y-pos"]
+			"input.0":"input.0.abs-hat0y-is-pos" -> "halui.joint.2":"halui.joint.2.plus" [label="jog-y-pos"]
+			"input.0":"input.0.abs-y-position" -> "mux2_y":"mux2_y.in1" [label="jog-y-pre"]
+			"mux2_z":"mux2_z.out" -> "halui.axis":"halui.axis.z.analog" [label="jog-z-analog"]
+			"mux2_z":"mux2_z.out" -> "halui.joint.2":"halui.joint.2.analog" [label="jog-z-analog"]
+			"mux2_z":"mux2_z.out" -> "mux2_z":"mux2_z.in0" [label="jog-z-analog"]
+			"input.0":"input.0.abs-rz-position" -> "mux2_z":"mux2_z.in1" [label="jog-z-pre"]
+			"or2_joy0":"or2_joy0.out" -> "mux4.0":"mux4.0.sel0" [label="joy-speed-sel0"]
+			"or2_joy1":"or2_joy1.out" -> "mux4.0":"mux4.0.sel1" [label="joy-speed-sel1"]
+			"laser-enable":e -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.024.out" [label="laser-enable"]
+			"laser-enable":e -> "hm2_7i92.0.pwmgen.01":"hm2_7i92.0.pwmgen.01.enable" [label="laser-enable"]
+			"laser-power":e -> "hm2_7i92.0.pwmgen.01":"hm2_7i92.0.pwmgen.01.value" [label="laser-power"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.025.in" -> "length-in":w [label="length-in"]
+			"halui":"halui.machine.is-on" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.007.out" [label="machine-is-on"]
+			"halui":"halui.machine.is-on" -> "mux2_x":"mux2_x.sel" [label="machine-is-on"]
+			"halui":"halui.machine.is-on" -> "mux2_y":"mux2_y.sel" [label="machine-is-on"]
+			"halui":"halui.machine.is-on" -> "mux2_z":"mux2_z.sel" [label="machine-is-on"]
+			"input.0":"input.0.btn-base" -> "halui.mode":"halui.mode.manual" [label="manual"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.016.in" -> "joint.0":"joint.0.home-sw-in" [label="max-home-x"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.016.in" -> "joint.0":"joint.0.pos-lim-sw-in" [label="max-home-x"]
+			"debounce.0.0":"debounce.0.0.out" -> "joint.1":"joint.1.home-sw-in" [label="max-home-y"]
+			"debounce.0.0":"debounce.0.0.out" -> "joint.1":"joint.1.pos-lim-sw-in" [label="max-home-y"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.017.in" -> "debounce.0.0":"debounce.0.0.in" [label="max-home-y-raw"]
+			"debounce.0.1":"debounce.0.1.out" -> "joint.2":"joint.2.home-sw-in" [label="max-home-y2"]
+			"debounce.0.1":"debounce.0.1.out" -> "joint.2":"joint.2.pos-lim-sw-in" [label="max-home-y2"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.015.in" -> "debounce.0.1":"debounce.0.1.in" [label="max-home-y2-raw"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.014.in" -> "joint.3":"joint.3.home-sw-in" [label="max-home-z"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.014.in" -> "joint.3":"joint.3.pos-lim-sw-in" [label="max-home-z"]
+			"input.0":"input.0.btn-thumb" -> "or2_joy1":"or2_joy1.in0" [label="medium"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.032.in" -> "plasma-arc-ok":w [label="plasma-arc-ok"]
+			"plasma-on":e -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.026.out" [label="plasma-on"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.027.in" -> "probe-in":w [label="probe-in"]
+			"input.0":"input.0.btn-trigger" -> "or2_joy0":"or2_joy0.in0" [label="slow"]
+			"cmdrsk_vfd":"cmdrsk_vfd.at-speed" -> "gmoccapy":"gmoccapy.spindle_at_speed_led" [label="spindle-at-speed"]
+			"cmdrsk_vfd":"cmdrsk_vfd.at-speed" -> "spindle.0":"spindle.0.at-speed" [label="spindle-at-speed"]
+			"spindle.0":"spindle.0.reverse" -> "cmdrsk_vfd":"cmdrsk_vfd.spindle-rev" [label="spindle-ccw"]
+			"spindle.0":"spindle.0.forward" -> "cmdrsk_vfd":"cmdrsk_vfd.spindle-fwd" [label="spindle-cw"]
+			"spindle.0":"spindle.0.on" -> "cmdrsk_vfd":"cmdrsk_vfd.spindle-on" [label="spindle-enable"]
+			"spindle.0":"spindle.0.speed-out-rps-abs" -> "cmdrsk_vfd":"cmdrsk_vfd.speed-command" [label="spindle-frequency-cmd-abs"]
+			"cmdrsk_vfd":"cmdrsk_vfd.frequency-out" -> "scale_rpm":"scale_rpm.in" [label="spindle-frequency-out"]
+			"cmdrsk_vfd":"cmdrsk_vfd.current-load-percentage" -> "spindle-load-percent":w [label="spindle-load-percent"]
+			"scale_rpm":"scale_rpm.out" -> "gmoccapy":"gmoccapy.spindle_feedback_bar" [label="spindle-rpm"]
+			"spindle.0":"spindle.0.speed-out-abs" -> "spindle-vel-cmd-rpm-abs":w [label="spindle-vel-cmd-rpm-abs"]
+			"input.0":"input.0.btn-base4" -> "halui.program":"halui.program.run" [label="start"]
+			"gmoccapy":"gmoccapy.toolchange-changed" -> "tool-change-confirmed":w [label="tool-change-confirmed"]
+			"tool-change-request":e -> "gmoccapy":"gmoccapy.toolchange-change" [label="tool-change-request"]
+			"tool-number":e -> "gmoccapy":"gmoccapy.toolchange-number" [label="tool-number"]
+			"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.028.in" -> "torch-breakaway":w [label="torch-breakaway"]
+			"joint.0":"joint.0.amp-enable-out" -> "hm2_7i92.0.stepgen.00":"hm2_7i92.0.stepgen.00.enable" [label="x-enable"]
+			"joint.0":"joint.0.amp-enable-out" -> "pid.x":"pid.x.enable" [label="x-enable"]
+			"pid.x":"pid.x.output" -> "hm2_7i92.0.stepgen.00":"hm2_7i92.0.stepgen.00.velocity-cmd" [label="x-output"]
+			"joint.0":"joint.0.motor-pos-cmd" -> "pid.x":"pid.x.command" [label="x-pos-cmd"]
+			"hm2_7i92.0.stepgen.00":"hm2_7i92.0.stepgen.00.position-fb" -> "joint.0":"joint.0.motor-pos-fb" [label="x-pos-fb"]
+			"hm2_7i92.0.stepgen.00":"hm2_7i92.0.stepgen.00.position-fb" -> "pid.x":"pid.x.feedback" [label="x-pos-fb"]
+			"joint.1":"joint.1.amp-enable-out" -> "hm2_7i92.0.stepgen.01":"hm2_7i92.0.stepgen.01.enable" [label="y-enable"]
+			"joint.1":"joint.1.amp-enable-out" -> "pid.y":"pid.y.enable" [label="y-enable"]
+			"pid.y":"pid.y.output" -> "hm2_7i92.0.stepgen.01":"hm2_7i92.0.stepgen.01.velocity-cmd" [label="y-output"]
+			"joint.1":"joint.1.motor-pos-cmd" -> "pid.y":"pid.y.command" [label="y-pos-cmd"]
+			"hm2_7i92.0.stepgen.01":"hm2_7i92.0.stepgen.01.position-fb" -> "joint.1":"joint.1.motor-pos-fb" [label="y-pos-fb"]
+			"hm2_7i92.0.stepgen.01":"hm2_7i92.0.stepgen.01.position-fb" -> "pid.y":"pid.y.feedback" [label="y-pos-fb"]
+			"joint.2":"joint.2.amp-enable-out" -> "hm2_7i92.0.stepgen.03":"hm2_7i92.0.stepgen.03.enable" [label="y2-enable"]
+			"joint.2":"joint.2.amp-enable-out" -> "pid.y2":"pid.y2.enable" [label="y2-enable"]
+			"pid.y2":"pid.y2.output" -> "hm2_7i92.0.stepgen.03":"hm2_7i92.0.stepgen.03.velocity-cmd" [label="y2-output"]
+			"joint.2":"joint.2.motor-pos-cmd" -> "pid.y2":"pid.y2.command" [label="y2-pos-cmd"]
+			"hm2_7i92.0.stepgen.03":"hm2_7i92.0.stepgen.03.position-fb" -> "joint.2":"joint.2.motor-pos-fb" [label="y2-pos-fb"]
+			"hm2_7i92.0.stepgen.03":"hm2_7i92.0.stepgen.03.position-fb" -> "pid.y2":"pid.y2.feedback" [label="y2-pos-fb"]
+			"joint.3":"joint.3.amp-enable-out" -> "hm2_7i92.0.stepgen.02":"hm2_7i92.0.stepgen.02.enable" [label="z-enable"]
+			"joint.3":"joint.3.amp-enable-out" -> "pid.z":"pid.z.enable" [label="z-enable"]
+			"pid.z":"pid.z.output" -> "hm2_7i92.0.stepgen.02":"hm2_7i92.0.stepgen.02.velocity-cmd" [label="z-output"]
+			"joint.3":"joint.3.motor-pos-cmd" -> "pid.z":"pid.z.command" [label="z-pos-cmd"]
+			"hm2_7i92.0.stepgen.02":"hm2_7i92.0.stepgen.02.position-fb" -> "joint.3":"joint.3.motor-pos-fb" [label="z-pos-fb"]
+			"hm2_7i92.0.stepgen.02":"hm2_7i92.0.stepgen.02.position-fb" -> "pid.z":"pid.z.feedback" [label="z-pos-fb"]
+			#============== Signals that don't have both source and destination pins. ===========
+			subgraph sub_source {
+				"laser-enable"	 [shape=rarrow]
+				"laser-power"	 [shape=rarrow]
+				"plasma-on"	 [shape=rarrow]
+				"tool-change-request"	 [shape=rarrow]
+				"tool-number"	 [shape=rarrow]
+			}
+			{rank=source "laser-enable" "laser-power" "plasma-on" "tool-change-request" "tool-number" }
+
+			subgraph sub_sink {
+				"length-in"	 [shape=rarrow]
+				"plasma-arc-ok"	 [shape=rarrow]
+				"probe-in"	 [shape=rarrow]
+				"spindle-load-percent"	 [shape=rarrow]
+				"spindle-vel-cmd-rpm-abs"	 [shape=rarrow]
+				"tool-change-confirmed"	 [shape=rarrow]
+				"torch-breakaway"	 [shape=rarrow]
+			}
+			{rank=sink "length-in" "plasma-arc-ok" "probe-in" "spindle-load-percent" "spindle-vel-cmd-rpm-abs" "tool-change-confirmed" "torch-breakaway" }
+
+
+		}	#footer
+
+    \enddot
+*/

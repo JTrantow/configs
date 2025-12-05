@@ -1,0 +1,139 @@
+/*!
+    \file gpio.dox
+    \addtogroup gpio
+    \brief This file contains the doxygen description and diagram illustrating the MESA gpio component.
+
+    \dot
+       digraph gpiodoc99 {
+	graph [rankdir="LR"];
+	label = "GPIO"
+	node [fontsize = "8"];
+
+	subgraph "component_debounce.0" {
+		label = "debounce.0"
+		cluster = true;
+	subgraph "subcomponent_0" {
+		label = "0"
+		cluster = true;
+		"debounce.0.0" [ shape="none" margin=0 label=<
+			<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="LEFT" PORT="debounce.0.0.in"> in</TD></TR>
+				</TABLE>
+				</TD><TD>
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="RIGHT" PORT="debounce.0.0.out"> out</TD></TR>
+				</TABLE>
+			</TD></TR></TABLE>
+		>]
+	}      #  end sub/component_debounce.0.0
+	subgraph "subcomponent_1" {
+		label = "1"
+		cluster = true;
+		"debounce.0.1" [ shape="none" margin=0 label=<
+			<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="LEFT" PORT="debounce.0.1.in"> in</TD></TR>
+				</TABLE>
+				</TD><TD>
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="RIGHT" PORT="debounce.0.1.out"> out</TD></TR>
+				</TABLE>
+			</TD></TR></TABLE>
+		>]
+	}      #  end sub/component_debounce.0.1
+	subgraph "subcomponent_2" {
+		label = "2"
+		cluster = true;
+		"debounce.0.2" [ shape="none" margin=0 label=<
+			<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="LEFT" PORT="debounce.0.2.in"> in</TD></TR>
+				</TABLE>
+				</TD><TD>
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="RIGHT" PORT="debounce.0.2.out"> out</TD></TR>
+				</TABLE>
+			</TD></TR></TABLE>
+		>]
+	}      #  end sub/component_debounce.0.2
+		"debounce.0" [ shape="none" margin=0 label=<
+		>]
+	}      #  end sub/component_debounce.0
+	subgraph "component_hm2_7i92.0.gpio" {
+		label = "hm2_7i92.0.gpio"
+		cluster = true;
+		"hm2_7i92.0.gpio" [ shape="none" margin=0 label=<
+			<TABLE CELLBORDER="0" BORDER="0"><TR><TD> 
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.000.out"> 000.out</TD></TR>
+					<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.007.out"> 007.out</TD></TR>
+					<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.020.out"> 020.out</TD></TR>
+					<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.022.out"> 022.out</TD></TR>
+					<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.024.out"> 024.out</TD></TR>
+					<TR><TD ALIGN="LEFT" PORT="hm2_7i92.0.gpio.026.out"> 026.out</TD></TR>
+				</TABLE>
+				</TD><TD>
+				<TABLE CELLBORDER="0" BORDER="1">
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.003.in"> 003.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.014.in"> 014.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.015.in"> 015.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.016.in"> 016.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.017.in"> 017.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.023.in"> 023.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.025.in"> 025.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.027.in"> 027.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.028.in"> 028.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.029.in"> 029.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.031.in"> 031.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.032.in"> 032.in</TD></TR>
+					<TR><TD ALIGN="RIGHT" PORT="hm2_7i92.0.gpio.033.in"> 033.in</TD></TR>
+				</TABLE>
+			</TD></TR></TABLE>
+		>]
+	}      #  end sub/component_hm2_7i92.0.gpio
+	"debounce.0.2":"debounce.0.2.out" -> "G540-fault" [label="G540-fault"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.003.in" -> "debounce.0.2":"debounce.0.2.in" [label="G540-fault-raw"]
+	"machine-is-on" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.007.out" [label="machine-is-on"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.023.in" -> "VFD-fault" [label="VFD-fault"]
+	"air-compressor" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.022.out" [label="air-compressor"]
+	"dust-collector" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.020.out" [label="dust-collector"]
+	"laser-enable" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.024.out" [label="laser-enable"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.025.in" -> "length-in" [label="length-in"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.016.in" -> "max-home-x" [label="max-home-x"]
+	"debounce.0.0":"debounce.0.0.out" -> "max-home-y" [label="max-home-y"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.017.in" -> "debounce.0.0":"debounce.0.0.in" [label="max-home-y-raw"]
+	"debounce.0.1":"debounce.0.1.out" -> "max-home-y2" [label="max-home-y2"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.015.in" -> "debounce.0.1":"debounce.0.1.in" [label="max-home-y2-raw"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.014.in" -> "max-home-z" [label="max-home-z"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.032.in" -> "plasma-arc-ok" [label="plasma-arc-ok"]
+	"plasma-on" -> "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.026.out" [label="plasma-on"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.027.in" -> "probe-in" [label="probe-in"]
+	"hm2_7i92.0.gpio":"hm2_7i92.0.gpio.028.in" -> "torch-breakaway" [label="torch-breakaway"]
+
+	subgraph sub_source {
+		"machine-is-on"	 [shape=rarrow]
+		"air-compressor"	 [shape=rarrow]
+		"dust-collector"	 [shape=rarrow]
+		"laser-enable"	 [shape=rarrow]
+		"plasma-on"	 [shape=rarrow]
+	}
+	{rank=source "machine-is-on" "air-compressor" "dust-collector" "laser-enable" "plasma-on" }
+
+	subgraph sub_sink {
+		"G540-fault"	     [shape=rarrow]
+		"VFD-fault"	         [shape=rarrow]
+		"length-in"	     [shape=rarrow]
+		"max-home-x"	 [shape=rarrow]
+		"max-home-y"	 [shape=rarrow]
+		"max-home-y2"	 [shape=rarrow]
+		"max-home-z"	 [shape=rarrow]
+		"plasma-arc-ok"	 [shape=rarrow]
+		"probe-in"	     [shape=rarrow]
+		"torch-breakaway"	 [shape=rarrow]
+	}
+	{rank=sink "G540-fault" "VFD-fault" "length-in" "max-home-x" "max-home-y" "max-home-y2" "max-home-z" "plasma-arc-ok" "probe-in" "torch-breakaway" }
+
+	}	
+    \enddot
+*/
