@@ -31,15 +31,12 @@ setp    [HMOT](CARD0).pwmgen.pwm_frequency 1000
 
 #
 # pwm generator 00 is used for spindle speed modulation.
-# TODO: THIS IS NOT WORKING??? No signal on P2-14.
+# TODO: G540 PWM IS NOT WORKING??? No signal on P2-14.
 #
 setp [HMOT](CARD0).pwmgen.00.scale         10000
 setp [HMOT](CARD0).pwmgen.00.output-type     1
 setp [HMOT](CARD0).pwmgen.00.offset-mode false
 #setp [HMOT](CARD0).pwmgen.00.invert_output true
-
-net spindle-vel-cmd-rpm  => [HMOT](CARD0).pwmgen.00.value 
-net spindle-enable       => [HMOT](CARD0).pwmgen.00.enable
 
 #
 # pwm generator 01 is used for laser power modulation.
@@ -55,7 +52,7 @@ net laser-enable        => [HMOT](CARD0).pwmgen.01.enable
 #
 # Mesa 7i92T P2 Connector to G540.
 # 
-# IO Pin 000 (P2-01): gpio.000 spindle-ccw
+# IO Pin 000 (P2-01): gpio.000 
 # IO Pin 001 (P2-14): pwmgen.00.Out0  Spindle PWM output.
 # IO Pin 002 (P2-02): stepgen.00. step
 # IO Pin 003 (P2-15): gpio.003 G540 fault.
@@ -63,7 +60,7 @@ net laser-enable        => [HMOT](CARD0).pwmgen.01.enable
 # IO Pin 005 (P2-16): StepGen #4, pin Step (Output)
 
 # IO Pin 006 (P2-04): StepGen #1, pin Step (Output)
-# IO Pin 007 (P2-17): gpio.007 water pump
+# IO Pin 007 (P2-17): gpio.007 machine-is-on/water-pump
 # IO Pin 008 (P2-05): StepGen #1, pin Direction (Output)
 # IO Pin 009 (P2-06): StepGen #2, pin Step (Output)
 # IO Pin 010 (P2-07): StepGen #2, pin Direction (Output)
@@ -76,8 +73,6 @@ net laser-enable        => [HMOT](CARD0).pwmgen.01.enable
 
 setp [HMOT](CARD0).gpio.000.is_output true
 setp [HMOT](CARD0).gpio.007.is_output true
-
-net spindle-ccw        =>  [HMOT](CARD0).gpio.000.out
 
 #net water-pump         =>  [HMOT](CARD0).gpio.007.out
 net machine-is-on         =>  [HMOT](CARD0).gpio.007.out
@@ -106,12 +101,12 @@ net max-home-y2        <=  debounce.0.1.out
 # GND                                GND
 # 5V                                 5V
 # GND                                GND
-# NC                                 IO16 gpio.033 spindle-cw
+# NC                                 IO16 gpio.033 
 
 # GND                                GND
-# IO15 gpio.032 plasma-arc-ok        IO14 gpio.031 spindle-at-speed
+# IO15 gpio.032 plasma-arc-ok        IO14 gpio.031 
 # GND                                GND
-# IO13 gpio.030 encoder.01.A         IO12 gpio.029 spindle-enable
+# IO13 gpio.030 encoder.01.A         IO12 gpio.029 
 # GND                                GND
 # IO11 gpio.028 torch-breakaway      IO10 gpio.027 probe-in
 # GND                                GND
@@ -130,8 +125,6 @@ setp [HMOT](CARD0).gpio.020.is_output true
 setp [HMOT](CARD0).gpio.022.is_output true
 setp [HMOT](CARD0).gpio.024.is_output true
 setp [HMOT](CARD0).gpio.026.is_output true
-setp [HMOT](CARD0).gpio.029.is_output true
-setp [HMOT](CARD0).gpio.033.is_output true
 #
 # Relay board uses reverse logic. Pull low when you want to turn it on.
 #
@@ -139,22 +132,16 @@ setp [HMOT](CARD0).gpio.020.invert_output true
 setp [HMOT](CARD0).gpio.022.invert_output true
 setp [HMOT](CARD0).gpio.024.invert_output true
 setp [HMOT](CARD0).gpio.026.invert_output true
-setp [HMOT](CARD0).gpio.029.invert_output true
-setp [HMOT](CARD0).gpio.033.invert_output true
 
 #
 # Reserve pins for stepgen.05 and encoder.01.A and 
 #
-net spindle-cw           <=  [HMOT](CARD0).gpio.033.out
 
 net plasma-arc-ok        <=  [HMOT](CARD0).gpio.032.in 
 #encoder.01.A            <=  [HMOT](CARD0).gpio.030.in 
 net torch-breakaway      <=  [HMOT](CARD0).gpio.028.in 
 net plasma-on            =>  [HMOT](CARD0).gpio.026.out
 
-#net spindle-at-speed     <=  [HMOT](CARD0).gpio.031.in
-
-net spindle-enable       =>  [HMOT](CARD0).gpio.029.out 
 net probe-in             <=  [HMOT](CARD0).gpio.027.in # Spiral corded.
 net length-in            <=  [HMOT](CARD0).gpio.025.in # Long phone wire. 
 
