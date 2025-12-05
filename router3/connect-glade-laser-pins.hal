@@ -1,5 +1,0 @@
-#
-# Set up glade panel pins. 
-#
-#net spindle-load-percent     => spindle_load.bar_spindle_load
-net laser-pwm                => laser_power.bar_laser_power

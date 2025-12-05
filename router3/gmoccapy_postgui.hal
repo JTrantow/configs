@@ -3,3 +3,6 @@
 net tool-change-request    => gmoccapy.toolchange-change
 net tool-change-confirmed  <= gmoccapy.toolchange-changed
 net tool-number            => gmoccapy.toolchange-number
+
+net spindle-at-speed       => gmoccapy.spindle_at_speed_led
+net spindle-rpm            => gmoccapy.spindle_feedback_bar

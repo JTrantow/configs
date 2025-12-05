@@ -10,7 +10,7 @@
 #
 #   Additional signals for Laser control:
 #       Laser enable.
-#       Air Compressor relay
+#       Air Compressor relayp
 #       Laser PWM. (automatically connected by PWM to G540 VFD PWM pin???????)
 #
 #   Additional signas for Plasma control:
@@ -118,11 +118,11 @@ net max-home-y2        <=  debounce.0.1.out
 # IO9  gpio.026 plasma-on            IO8  gpio.025 length-in
 
 # GND                                GND
-# IO7  gpio.024 AC1 laser            IO6  gpio.023 VFD-fault
+# IO7  gpio.024 laser-enable         IO6  gpio.023 VFD-fault
 # GND                                GND
-# IO5  gpio.022 AC2 air-compressor   IO4  gpio.021 StepGen.5.Direction
+# IO5  gpio.022 air-compressor       IO4  gpio.021 StepGen.5.Direction
 # GND                                GND
-# IO3  gpio.020 AC3 dust-collector   IO2  gpio.019 StepGen.5.Step
+# IO3  gpio.020 dust-collector       IO2  gpio.019 StepGen.5.Step
 # GND                                GND
 # IO1  gpio.018 pwmgen.01.Out0       IO0  gpio.017 max-home-y-raw
 

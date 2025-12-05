@@ -5,8 +5,10 @@
     \brief This file illustrates the wiring for the Commander SK using the Gecko G540 and Mesa boards for my router spindle.
 
     Notes:
+        -# Commander SK Parameter 5 Drive Configuration must be set to 5 for Precision reference (the one we want for modbus control).
         -# Commander SK Parameter 11 Start/Stop logic must be set to 0 for Enable/FWD/REV functionality.
-        -# Commander SK Parameter 35 Digital Output must be set to At.SP for at-speed functionality.
+        -# Commander SK Parameter 35 Digital Output must be set to At.SP(1) for at-speed functionality on B3.
+        -# Commander SK Parameter 43 Serial Comms baud rate 19.2 or 38.4 must match driver settings.
         -# Motor parameters must be set for the spindle. RPM, voltage, amps, etc.
     
     \dot
