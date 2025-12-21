@@ -379,6 +379,10 @@ void usage(int argc, char **argv) {
         
 /*
     Write the frequency and control commands.
+    PR_PRECISION_REF_COARSE
+    PR_CONTROL_WORD_ENABLE
+    PR_REFERENCE_SELECTOR (Only needs to get set once.)
+
 */
 int write_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
 {
@@ -391,12 +395,12 @@ int write_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
     /*
         Only write an update if the freq_cmd value has changed.
     */
-    if (*(haldata->freq_cmd) != last_freq_cmd) {
+    if (*(haldata->freq_cmd) != last_freq_cmd) {        
         // set the coarse speed ref
         int freq_reg = abs(*(haldata->freq_cmd) * 10.0);
         SETPARAM(PR_PRECISION_REF_COARSE, freq_reg);
         usleep(10000);
-#if (0)        // set the precision reference as the speed reference
+#if (1)        // set the precision reference as the speed reference
         SETPARAM(PR_REFERENCE_SELECTOR, SEL_REFERENCE_PRECISION);
         usleep(10000);
 #endif        
