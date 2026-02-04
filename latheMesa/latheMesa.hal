@@ -70,18 +70,21 @@ net x-index-enable  <=> joint.0.index-enable  <=>  [MESA](CARD0).encoder.00.inde
 # Enable the following TWO lines to use the encoder to close the velocity control loop.
 # Use both the encoder position and velocity.
 # This should be the optimal configuration.
-net x-pos-fb         <= [MESA](CARD0).encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
-net x-vel-fb         <= [MESA](CARD0).encoder.00.velocity  => pid.x.feedback-deriv
+#net x-pos-fb         <= [MESA](CARD0).encoder.00.position  => pid.x.feedback        => joint.0.motor-pos-fb
+#net x-vel-fb         <= [MESA](CARD0).encoder.00.velocity  => pid.x.feedback-deriv
 #
 # Enable BOTH the following TWO lines to use stepgen position to close the control loop.
 # Add a new signal from encoder position so it can be used independent of pid fb signal. This allows encoder to be used as DRO without closing the control loop.
 # Do not use the encoder x-vel-fb is you are using the stepgen position for x-pos-fb.
 #
 #setp   pid.x.Pgain     1000.0
-#setp   pid.x.Igain     0.0
-#setp   pid.x.deadband  [JOINT_0]DEADBAND
-#net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback  => joint.0.motor-pos-fb
-#net x-pos-encoder    <= [MESA](CARD0).encoder.00.position  
+setp   pid.x.Pgain     0.0
+setp   pid.x.Igain     0.0
+setp   pid.x.deadband  [JOINT_0]DEADBAND
+setp   pid.x.FF1       [JOINT_0]FF1
+setp   pid.x.FF2       [JOINT_0]FF2
+net x-pos-fb         <= [MESA](CARD0).stepgen.00.position-fb  => pid.x.feedback  => joint.0.motor-pos-fb
+net x-pos-encoder    <= [MESA](CARD0).encoder.00.position  
 
 # ---Encoder feedback signals/setup---
 
