@@ -1,0 +1,105 @@
+#*******************
+#  VFD.hal
+#*******************
+#
+# This file connects the Commander SK using RS485.
+# The VFD parameters must be set to correctly for modbus control.
+#
+
+#
+# Compile and load the user space component from https://github.com/tangentaudio/cmdrsk_vfd.
+# --report-device --debug --modbus-debug
+#
+loadusr cmdrsk_vfd --ini cmdrsk.ini 
+loadrt scale names=scale_rpm 
+loadrt pid names=pid.s
+
+addf scale_rpm          servo-thread
+addf pid.s.do-pid-calcs servo-thread
+
+setp scale_rpm.gain 30.0   # scale frequency (Hz) to motor RPM (4 pole motor)
+setp scale_rpm.offset 0.0   
+
+#
+# Use PWM input/output in units of VFD frequency. 
+# This makes sense since the VFD min/max limitations are in hz.
+# Set [SPINDLE_0]MAX_OUTPUT to same value as VFD maximum frequency.
+# Use the pid.s.FF0 to input the correct gain to scale spindle commands to
+# VFD frequency to produce the motor rpm to go through gearing to yield the corrent spindle RPM.
+#
+setp   pid.s.Pgain     [SPINDLE_0]P
+setp   pid.s.Igain     [SPINDLE_0]I
+setp   pid.s.Dgain     [SPINDLE_0]D
+setp   pid.s.bias      [SPINDLE_0]BIAS
+#
+# This with the GUI calibration to dial in the FF0 gain for a give gear/belt combination.
+# If you don't have a spindle encoder or the instantaneous motor speed from the VFD or don't 
+# change gears frequently you can simply use calibration when you change gears.
+#
+setp   pid.s.FF0       [SPINDLE_0]FF0
+setp   pid.s.FF1       [SPINDLE_0]FF1
+setp   pid.s.FF2       [SPINDLE_0]FF2
+setp   pid.s.deadband  [SPINDLE_0]DEADBAND
+setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
+setp   pid.s.error-previous-target true
+setp   pid.s.maxerror 0.012700
+
+#
+# May need to lowpass filter or force limits on the inputs.
+#
+#loadrt invert names = invert_gr_detect
+#loadrt mult2 names = mult2_gr
+# addf mult2_gr          servo-thread
+# addf pid.s.do-pid-calcs servo-thread
+#net encoder-velocity-rpm  => invert_gr_detect.in
+#net encoder_rpm_abs <= invert_gr_detect.out => mult2_gr.in0
+#net spindle_vel_cmd_rpm_abs => mult2_gr.in1
+#net gr_lookup <= mult2_gr.out => lincurve.in
+#net gearratio <= lincurve.out => pid.s.FF0;
+
+net spindle-enable              =>  pid.s.enable
+net spindle-frequency-cmd-abs   =>  pid.s.command
+net spindle-frequency-geared    <=  pid.s.output
+net spindle-frequency-out       =>  pid.s.feedback
+
+#
+# Read these values from the VFD. 
+#
+net spindle-at-speed            <= cmdrsk_vfd.at-speed
+net spindle-load-percent        <= cmdrsk_vfd.current-load-percentage
+net spindle-frequency-out       <= cmdrsk_vfd.frequency-out 
+
+#
+# Write these values to the VFD.
+#
+net spindle-frequency-geared    => cmdrsk_vfd.speed-command
+net spindle-enable              => cmdrsk_vfd.spindle-on 
+net spindle-cw                  => cmdrsk_vfd.spindle-fwd
+net spindle-ccw                 => cmdrsk_vfd.spindle-rev
+
+# 
+# Connect vfd signals to the spindle.0 component.
+#
+net spindle-frequency-cmd-abs  <=  spindle.0.speed-out-rps-abs 
+net spindle-enable             <=  spindle.0.on
+net spindle-cw                 <=  spindle.0.forward
+net spindle-ccw                <=  spindle.0.reverse
+net spindle-at-speed           =>  spindle.0.at-speed
+
+#
+# Connect the fault signal from the VFD.
+#
+net VFD-fault                   =>  spindle.0.amp-fault-in
+
+#
+# gmoccapy wants real time rpm.
+#
+net spindle-frequency-out       => scale_rpm.in
+net spindle-rpm                 <= scale_rpm.out
+
+#
+# RPM needed by gladevcp display.
+# SHOULD THIS BE THE MEASURED RPM OR COMMANDED?
+# IS THIS EVEN USED?
+#
+#net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
