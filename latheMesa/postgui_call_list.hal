@@ -4,7 +4,14 @@
 
 source spindle_postgui.hal
 
+#
+# Logitech Joypad
+#
 source joypad_jog_speed.hal
 source joypad_xz.hal
 source joypad_extras.hal
 
+#
+# GMOCCAPY Message connections.
+#
+source gmoccapy_messages.hal

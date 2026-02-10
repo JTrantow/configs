@@ -1,0 +1,15 @@
+#
+# Connect the fault signals to the gmoccapy messages defined in the .ini.
+# (shows up after estop, not sure how to get the message before the estop is acknowledged)
+#
+
+net estop-driver        => gmoccapy.messages.estop-driver
+net estop-overtravel    => gmoccapy.messages.estop-overtravel
+net estop-VFD           => gmoccapy.messages.estop-VFD
+
+#net estop-x-encoder     => gmoccapy.messages.estop-x-encoder
+#net estop-y-encoder     => gmoccapy.messages.estop-y-encoder
+#net estop-z-encoder     => gmoccapy.messages.estop-z-encoder
+#net estop-s-encoder     => gmoccapy.messages.estop-s-encoder
+
+net VFD-max-motor-rpm   => gmoccapy.messages.VFD-max-motor-rpm

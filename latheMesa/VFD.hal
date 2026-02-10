@@ -21,36 +21,29 @@ setp scale_rpm.gain 30.0   # scale frequency (Hz) to motor RPM (4 pole motor)
 setp scale_rpm.offset 0.0   
 
 #
-# Use PWM input/output in units of VFD frequency. 
+# Use spindle.0 command using units of VFD frequency. 
 # This makes sense since the VFD min/max limitations are in hz.
-# Set [SPINDLE_0]MAX_OUTPUT to same value as VFD maximum frequency.
+# Set [SPINDLE_0]MAX_OUTPUT to same value as VFD maximum frequency?
 # Use the pid.s.FF0 to input the correct gain to scale spindle commands to
-# VFD frequency to produce the motor rpm to go through gearing to yield the corrent spindle RPM.
+# VFD frequency to produce the motor RPM through gearing to yield the corrent spindle RPM.
+# 
+# We could use the PID feedback, but simply using FF0 works great on my mill and lathe.
+# With analog PWM you want PID.
 #
 setp   pid.s.Pgain     [SPINDLE_0]P
 setp   pid.s.Igain     [SPINDLE_0]I
 setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
 #
-# This with the GUI calibration to dial in the FF0 gain for a give gear/belt combination.
+# Use GUI calibration to dial in the FF0 gain for a given gear/belt combination.
 # If you don't have a spindle encoder or the instantaneous motor speed from the VFD or don't 
-# change gears frequently you can simply use calibration when you change gears.
+# change gears frequently you can simply use calibration whenever you change gears.
 #
 setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
 setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
-setp   pid.s.maxerror 0.012700
 
 #
 # May need to lowpass filter or force limits on the inputs.
 #
-#loadrt invert names = invert_gr_detect
-#loadrt mult2 names = mult2_gr
-# addf mult2_gr          servo-thread
-# addf pid.s.do-pid-calcs servo-thread
 #net encoder-velocity-rpm  => invert_gr_detect.in
 #net encoder_rpm_abs <= invert_gr_detect.out => mult2_gr.in0
 #net spindle_vel_cmd_rpm_abs => mult2_gr.in1
@@ -58,9 +51,10 @@ setp   pid.s.maxerror 0.012700
 #net gearratio <= lincurve.out => pid.s.FF0;
 
 net spindle-enable              =>  pid.s.enable
+net spindle-index-enable        =>  pid.s.index-enable
 net spindle-frequency-cmd-abs   =>  pid.s.command
-net spindle-frequency-geared    <=  pid.s.output
 net spindle-frequency-out       =>  pid.s.feedback
+net spindle-frequency-geared    <=  pid.s.output
 
 #
 # Read these values from the VFD. 
@@ -85,6 +79,7 @@ net spindle-enable             <=  spindle.0.on
 net spindle-cw                 <=  spindle.0.forward
 net spindle-ccw                <=  spindle.0.reverse
 net spindle-at-speed           =>  spindle.0.at-speed
+net spindle-index-enable       <=  spindle.0.index-enable
 
 #
 # Connect the fault signal from the VFD.
