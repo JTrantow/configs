@@ -11,3 +11,5 @@ net estop-x-encoder     => gmoccapy.messages.estop-x-encoder
 net estop-y-encoder     => gmoccapy.messages.estop-y-encoder
 net estop-z-encoder     => gmoccapy.messages.estop-z-encoder
 net estop-s-encoder     => gmoccapy.messages.estop-s-encoder
+
+net VFD-max-motor-rpm   => gmoccapy.messages.VFD-max-motor-rpm

@@ -1,5 +1,5 @@
 #*******************
-#  SPINDLE
+#  MILL SPINDLE VFD
 #*******************
 
 #
@@ -7,8 +7,40 @@
 # Need 200 ohm resistor (not 80 ohm) before using --braking-resistor --decel-seconds 30 options.
 #
 loadusr -Wn spindle-vfd gs2_vfd --bits 8 --device /dev/ttyUSB0 --name spindle-vfd --parity none --rate 38400 --stopbits 2 --target 1 --accel-seconds 5.0 --decel-seconds 3.0 --braking-resistor 
+#
+# Add a pid to use FF0 to apply gear ratio.
+#
+loadrt pid names=pid.s
+addf pid.s.do-pid-calcs servo-thread
 
+#
+# Convert VFD motor rpm back into estimated spindle speed estimate with (1/FF0)*motor_speed.
+#
+loadrt invert names=inv_FF0
+loadrt mult2 names=mult2_spindle
+loadrt comp names=comp_spindle
+
+addf inv_FF0        servo-thread
+addf mult2_spindle  servo-thread
+addf comp_spindle   servo-thread
+
+setp inv_FF0.in [SPINDLE_0]FF0
+net inverse-FF0 <=  inv_FF0.out => mult2_spindle.in0
+net motor-rpm =>    mult2_spindle.in1
+net spindle-rpm <=  mult2_spindle.out
+
+#
+# Compare VFD motor speed command in RPM to the maximum RPM (GS2 P0.04 Motor Maximum RPM).
+#
+setp comp_spindle.in0   [SPINDLE_0]MAXIMUM_MOTOR_RPM
+net spindle-command-geared  => comp_spindle.in1
+net VFD-max-motor-rpm       <= comp_spindle.out
+
+#
+#   Encoder can be installed for rigid tapping. Most the time it is not in place.
+#
 # --- Spindle Encoder signals/setup---
+#
 setp    [MESA](CARD0).encoder.03.counter-mode 0
 setp    [MESA](CARD0).encoder.03.filter 1
 setp    [MESA](CARD0).encoder.03.index-invert 1
@@ -26,11 +58,18 @@ net spindle-index-enable <= [MESA](CARD0).encoder.03.index-enable
 #
 # GS2 VFD 
 #
-net spindle-vel-cmd-rpm <= spindle-vfd.speed-command
+# P0.00 Motor Nameplate Voltage 240
+# P0.01 Motor Nameplate Amps 4
+# P0.02 Motor Base Frequency 60
+# P0.03 Motor Base RPM 1725
+# P0.04 Motor Maximum RPM 1800
+#
+net spindle-command-geared    <= spindle-vfd.speed-command
+
 net spindle-enable      => spindle-vfd.spindle-on 
 net spindle-cw          => spindle-vfd.spindle-fwd
 net spindle-at-speed    <= spindle-vfd.at-speed
-net spindle-rpm         <= spindle-vfd.motor-RPM
+net motor-rpm           <= spindle-vfd.motor-RPM
 net spindle-load-percent <= spindle-vfd.load-percentage
 #
 # Complete list from documentation for gs2-vfd.
@@ -79,16 +118,44 @@ net spindle-load-percent <= spindle-vfd.load-percentage
 #<name>.speed-out-rps OUT FLOAT Desired spindle speed in rotations per second
 #<name>.speed-out-rps-abs OUT FLOAT Desired spindle speed in rotations per second, always positive regardless of spindle direction.
 
-#net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
-#net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
-net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
-#net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
+net spindle-command-rpm         <=  spindle.0.speed-out
 
-net spindle-enable             <=  spindle.0.on
-net spindle-cw                 <=  spindle.0.forward
+net spindle-enable              <=  spindle.0.on
+net spindle-cw                  <=  spindle.0.forward
 #net spindle-ccw                <=  spindle.0.reverse
 #net spindle-brake              <=  spindle.0.brake
-net spindle-revs               =>  spindle.0.revs
-net spindle-at-speed           =>  spindle.0.at-speed
-net spindle-vel-fb-rps         =>  spindle.0.speed-in
-net spindle-index-enable      <=>  spindle.0.index-enable
+net spindle-revs                =>  spindle.0.revs
+net spindle-at-speed            =>  spindle.0.at-speed
+net spindle-vel-fb-rps          =>  spindle.0.speed-in
+net spindle-index-enable        =>  spindle.0.index-enable
+
+#
+# This makes sense since the VFD min/max limitations are in hz.
+# Set [SPINDLE_0]MAX_OUTPUT to same VFD maximum motor RPM.
+# Use the pid.s.FF0 to input the correct gain to scale spindle.0 command to
+# VFD motor RPM which goes through the mechanical gearing yielding the corrent spindle RPM.
+# 
+# We could use the PID feedback, but simply using FF0 works great on my mill and lathe.
+# With analog PWM you may want PID.
+#
+setp   pid.s.Pgain     [SPINDLE_0]P
+setp   pid.s.Igain     [SPINDLE_0]I
+setp   pid.s.Dgain     [SPINDLE_0]D
+#
+# Use GUI calibration to dial in the FF0 gain for each gear/belt combination.
+# Set desired spindle speed with a M3 Sxxx command and use the calibration screen to modify FF0 until you get desired RPM.
+# If you can set VFD display to show frequency, it's a helpful check. (should be 60 hz at desired speed)
+# If you don't have a spindle encoder or the instantaneous motor speed from the VFD or don't 
+# change gears frequently you can simply change the FF0 using the calibration tool whenever you change gears.
+#
+# Notice [SPINDLE_0]MAX_OUTPUT is used to limit the maximum rpm sent to the VFD. 
+# Without this, the VFD will reject commands > max motor speed and the motor will NOT respond.
+#
+setp   pid.s.FF0       [SPINDLE_0]FF0
+setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
+
+net spindle-enable              =>  pid.s.enable
+net spindle-index-enable        =>  pid.s.index-enable
+net spindle-command-rpm         =>  pid.s.command
+#net spindle-rpm                =>  pid.s.feedback
+net spindle-command-geared      <=  pid.s.output
