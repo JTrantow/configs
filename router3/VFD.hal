@@ -1,0 +1,54 @@
+#*******************
+#  VFD.hal
+#*******************
+#
+# This file connects the Commander SK using RS485.
+# The VFD parameters must be set to correctly for modbus control.
+#
+
+#
+# Compile and load the user space component from https://github.com/tangentaudio/cmdrsk_vfd.
+# --report-device --debug --modbus-debug
+loadusr cmdrsk_vfd --ini cmdrsk.ini 
+loadrt scale names=scale_rpm 
+addf scale_rpm servo-thread
+
+setp scale_rpm.gain 60.0   # scale frequency (Hz) to RPM
+setp scale_rpm.offset 0.0   
+#
+# Read these values from the VFD. 
+#
+net spindle-at-speed            <= cmdrsk_vfd.at-speed
+net spindle-load-percent        <= cmdrsk_vfd.current-load-percentage
+net spindle-frequency-out       <= cmdrsk_vfd.frequency-out 
+
+#
+# gmoccapy wants real time rpm.
+#
+net spindle-frequency-out       => scale_rpm.in
+net spindle-rpm                 <= scale_rpm.out
+#
+
+# Write these values to the VFD.
+#
+net spindle-frequency-cmd-abs   => cmdrsk_vfd.speed-command
+net spindle-enable              => cmdrsk_vfd.spindle-on 
+net spindle-cw                  => cmdrsk_vfd.spindle-fwd
+net spindle-ccw                 => cmdrsk_vfd.spindle-rev
+
+
+# 
+# Connect vfd signals to the spindle.0 component.
+#
+net spindle-frequency-cmd-abs  <=  spindle.0.speed-out-rps-abs 
+net spindle-enable             <=  spindle.0.on
+net spindle-cw                 <=  spindle.0.forward
+net spindle-ccw                <=  spindle.0.reverse
+net spindle-at-speed           =>  spindle.0.at-speed
+
+net VFD-fault                   =>  spindle.0.amp-fault-in
+
+#
+# RPM needed by gladevcp display.
+#
+net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs

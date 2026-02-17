@@ -4,9 +4,9 @@
     \brief This file contains the doxygen description and diagram illustrating the MESA gpio component.
 
     \dot
-       digraph gpiodoc99 {
+digraph gpiodoc99 {
 	graph [rankdir="LR"];
-	label = "GPIO"
+	label = "GPIO new"
 	node [fontsize = "8"];
 
 	subgraph "component_debounce.0" {

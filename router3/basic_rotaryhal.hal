@@ -1,0 +1,236 @@
+#
+# basic_motion.hal
+#
+# This file sets up the basic motion of my router machine.
+# 
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_spindles=1
+loadrt hostmot2
+#
+# Using double G540 firmware. 7i92_G540d.bin.
+#   2 encoders for arc voltage and initial ohmic contact.
+#   2 pwmgens P2 (pwmgen.00), P1 (pwmgen.01) used for laser PWM.
+#   6 stepgens. 4 for xyyz, 1 gets assigned to G540 charge pump, 1 for rotary axis.
+#
+loadrt hm2_eth board_ip="10.10.10.10" config="num_encoders=2 num_pwmgens=2 num_stepgens=6" 
+setp   [HMOT](CARD0).watchdog.timeout_ns 5000000
+loadrt pid names=pid.x,pid.y,pid.y2,pid.z
+
+addf [HMOT](CARD0).read       servo-thread
+addf motion-command-handler   servo-thread
+addf motion-controller        servo-thread
+addf pid.x.do-pid-calcs       servo-thread
+addf pid.y.do-pid-calcs       servo-thread
+addf pid.y2.do-pid-calcs      servo-thread
+addf pid.z.do-pid-calcs       servo-thread
+addf [HMOT](CARD0).write      servo-thread
+setp [HMOT](CARD0).dpll.01.timer-us -50
+setp [HMOT](CARD0).stepgen.timer-number 1
+
+#*******************
+#  AXIS X JOINT 0
+#*******************
+
+setp   pid.x.Pgain     [GENERIC_JOINT]P
+setp   pid.x.Igain     0.0
+setp   pid.x.Dgain     0.0
+setp   pid.x.bias      0.0
+setp   pid.x.FF0       0.0
+setp   pid.x.FF1       [GENERIC_JOINT]FF1
+setp   pid.x.FF2       0.0
+setp   pid.x.deadband  [GENERIC_JOINT]DEADBAND
+setp   pid.x.maxoutput [GENERIC_JOINT]MAX_OUTPUT
+setp   pid.x.error-previous-target true
+# This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
+setp   pid.x.maxerror 0.012700
+
+#net x-index-enable  =>  pid.x.index-enable
+net x-enable        =>  pid.x.enable
+net x-pos-cmd       =>  pid.x.command
+net x-pos-fb        =>  pid.x.feedback
+net x-output        <=  pid.x.output
+
+# Step Gen signals/setup
+
+setp   [HMOT](CARD0).stepgen.00.dirsetup        [GENERIC_JOINT]DIRSETUP
+setp   [HMOT](CARD0).stepgen.00.dirhold         [GENERIC_JOINT]DIRHOLD
+setp   [HMOT](CARD0).stepgen.00.steplen         [GENERIC_JOINT]STEPLEN
+setp   [HMOT](CARD0).stepgen.00.stepspace       [GENERIC_JOINT]STEPSPACE
+setp   [HMOT](CARD0).stepgen.00.position-scale  [JOINT_0]STEP_SCALE
+setp   [HMOT](CARD0).stepgen.00.step_type        0
+setp   [HMOT](CARD0).stepgen.00.control-type     1
+setp   [HMOT](CARD0).stepgen.00.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
+setp   [HMOT](CARD0).stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
+
+# ---closedloop stepper signals---
+
+net x-pos-cmd    <= joint.0.motor-pos-cmd
+net x-output     => [HMOT](CARD0).stepgen.00.velocity-cmd
+net x-pos-fb     <= [HMOT](CARD0).stepgen.00.position-fb
+net x-pos-fb     => joint.0.motor-pos-fb
+net x-enable     <= joint.0.amp-enable-out
+net x-enable     => [HMOT](CARD0).stepgen.00.enable
+net G540-fault   => joint.0.amp-fault-in
+
+# ---setup home / limit switch signals---
+
+net max-home-x     =>  joint.0.home-sw-in joint.0.pos-lim-sw-in
+
+#*******************
+#  AXIS Y JOINT 1
+#*******************
+
+setp   pid.y.Pgain     [GENERIC_JOINT]P
+setp   pid.y.Igain     0.0
+setp   pid.y.Dgain     0.0
+setp   pid.y.bias      0.0
+setp   pid.y.FF0       0.0
+setp   pid.y.FF1       [GENERIC_JOINT]FF1
+setp   pid.y.FF2       0.0
+setp   pid.y.deadband  [GENERIC_JOINT]DEADBAND
+setp   pid.y.maxoutput [GENERIC_JOINT]MAX_OUTPUT
+setp   pid.y.error-previous-target true
+# This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
+setp   pid.y.maxerror 0.012700
+
+#net y-index-enable  =>  pid.y.index-enable
+net y-enable        =>  pid.y.enable
+net y-pos-cmd       =>  pid.y.command
+net y-pos-fb        =>  pid.y.feedback
+net y-output        <=  pid.y.output
+
+# Step Gen signals/setup
+
+setp   [HMOT](CARD0).stepgen.01.dirsetup        [GENERIC_JOINT]DIRSETUP
+setp   [HMOT](CARD0).stepgen.01.dirhold         [GENERIC_JOINT]DIRHOLD
+setp   [HMOT](CARD0).stepgen.01.steplen         [GENERIC_JOINT]STEPLEN
+setp   [HMOT](CARD0).stepgen.01.stepspace       [GENERIC_JOINT]STEPSPACE
+setp   [HMOT](CARD0).stepgen.01.position-scale  [JOINT_1]STEP_SCALE
+setp   [HMOT](CARD0).stepgen.01.step_type        0
+setp   [HMOT](CARD0).stepgen.01.control-type     1
+setp   [HMOT](CARD0).stepgen.01.maxaccel         [JOINT_1]STEPGEN_MAXACCEL
+setp   [HMOT](CARD0).stepgen.01.maxvel           [JOINT_1]STEPGEN_MAXVEL
+
+# ---closedloop stepper signals---
+
+net y-pos-cmd    <= joint.1.motor-pos-cmd
+net y-output     => [HMOT](CARD0).stepgen.01.velocity-cmd
+net y-pos-fb     <= [HMOT](CARD0).stepgen.01.position-fb
+net y-pos-fb     => joint.1.motor-pos-fb
+net y-enable     <= joint.1.amp-enable-out
+net y-enable     => [HMOT](CARD0).stepgen.01.enable
+net G540-fault   => joint.1.amp-fault-in
+
+# ---setup home / limit switch signals---
+
+net max-home-y     =>  joint.1.home-sw-in joint.1.pos-lim-sw-in
+
+#*******************
+#  Tandem AXIS Y2 JOINT 2
+#*******************
+
+setp   pid.y2.Pgain     [GENERIC_JOINT]P
+setp   pid.y2.Igain     0.0
+setp   pid.y2.Dgain     0.0
+setp   pid.y2.bias      0.0
+setp   pid.y2.FF0       0.0
+setp   pid.y2.FF1       [GENERIC_JOINT]FF1
+setp   pid.y2.FF2       0.0
+setp   pid.y2.deadband  [GENERIC_JOINT]DEADBAND
+setp   pid.y2.maxoutput [GENERIC_JOINT]MAX_OUTPUT
+setp   pid.y2.error-previous-target true
+# This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
+setp   pid.y2.maxerror 0.012700
+
+#net y2-index-enable  =>  pid.y2.index-enable
+net y2-enable        =>  pid.y2.enable
+net y2-pos-cmd       =>  pid.y2.command
+net y2-pos-fb        =>  pid.y2.feedback
+net y2-output        <=  pid.y2.output
+
+# Step Gen signals/setup for tandem axis
+
+setp   [HMOT](CARD0).stepgen.03.dirsetup        [GENERIC_JOINT]DIRSETUP
+setp   [HMOT](CARD0).stepgen.03.dirhold         [GENERIC_JOINT]DIRHOLD
+setp   [HMOT](CARD0).stepgen.03.steplen         [GENERIC_JOINT]STEPLEN
+setp   [HMOT](CARD0).stepgen.03.stepspace       [GENERIC_JOINT]STEPSPACE
+setp   [HMOT](CARD0).stepgen.03.position-scale  [JOINT_2]STEP_SCALE
+setp   [HMOT](CARD0).stepgen.03.step_type        0
+setp   [HMOT](CARD0).stepgen.03.control-type     1
+setp   [HMOT](CARD0).stepgen.03.maxaccel         [JOINT_2]STEPGEN_MAXACCEL
+setp   [HMOT](CARD0).stepgen.03.maxvel           [JOINT_2]STEPGEN_MAXVEL
+
+# ---closedloop stepper signals---
+
+net y2-pos-cmd    <= joint.2.motor-pos-cmd
+net y2-output     => [HMOT](CARD0).stepgen.03.velocity-cmd
+net y2-pos-fb     <= [HMOT](CARD0).stepgen.03.position-fb
+net y2-pos-fb     => joint.2.motor-pos-fb
+net y2-enable     <= joint.2.amp-enable-out
+net y2-enable     => [HMOT](CARD0).stepgen.03.enable
+net G540-fault    => joint.2.amp-fault-in
+
+# ---setup home / limit switch signals---
+
+net max-home-y2     =>  joint.2.home-sw-in joint.2.pos-lim-sw-in
+
+#*******************
+#  AXIS Z JOINT 3
+#*******************
+
+setp   pid.z.Pgain     [GENERIC_JOINT]P
+setp   pid.z.Igain     0.0
+setp   pid.z.Dgain     0.0
+setp   pid.z.bias      0.0
+setp   pid.z.FF0       0.0
+setp   pid.z.FF1       [GENERIC_JOINT]FF1
+setp   pid.z.FF2       0.0
+setp   pid.z.deadband  [GENERIC_JOINT]DEADBAND
+setp   pid.z.maxoutput [GENERIC_JOINT]MAX_OUTPUT
+setp   pid.z.error-previous-target true
+# This setting is to limit bogus stepgen velocity corrections caused by position feedback sample time jitter.
+setp   pid.z.maxerror 0.012700
+
+#net z-index-enable  =>  pid.z.index-enable
+net z-enable        =>  pid.z.enable
+net z-pos-cmd       =>  pid.z.command
+net z-pos-fb        =>  pid.z.feedback
+net z-output        <=  pid.z.output
+
+# Step Gen signals/setup
+
+setp   [HMOT](CARD0).stepgen.02.dirsetup        [GENERIC_JOINT]DIRSETUP
+setp   [HMOT](CARD0).stepgen.02.dirhold         [GENERIC_JOINT]DIRHOLD
+setp   [HMOT](CARD0).stepgen.02.steplen         [GENERIC_JOINT]STEPLEN
+setp   [HMOT](CARD0).stepgen.02.stepspace       [GENERIC_JOINT]STEPSPACE
+setp   [HMOT](CARD0).stepgen.02.position-scale  [JOINT_3]STEP_SCALE
+setp   [HMOT](CARD0).stepgen.02.step_type        0
+setp   [HMOT](CARD0).stepgen.02.control-type     1
+setp   [HMOT](CARD0).stepgen.02.maxaccel         [JOINT_3]STEPGEN_MAXACCEL
+setp   [HMOT](CARD0).stepgen.02.maxvel           [JOINT_3]STEPGEN_MAXVEL
+
+# ---closedloop stepper signals---
+
+net z-pos-cmd    <= joint.3.motor-pos-cmd
+net z-output     => [HMOT](CARD0).stepgen.02.velocity-cmd
+net z-pos-fb     <= [HMOT](CARD0).stepgen.02.position-fb
+net z-pos-fb     => joint.3.motor-pos-fb
+net z-enable     <= joint.3.amp-enable-out
+net z-enable     => [HMOT](CARD0).stepgen.02.enable
+net G540-fault   => joint.3.amp-fault-in
+
+# ---setup home / limit switch signals---
+
+net max-home-z     =>  joint.3.home-sw-in joint.3.pos-lim-sw-in
+
+
+#  ---manual tool change signals---
+
+#net tool-change-request    <= iocontrol.0.tool-change
+#net tool-change-confirmed  => iocontrol.0.tool-changed
+#net tool-number            <= iocontrol.0.tool-prep-number
+
+#  ---ignore tool prepare requests---
+#net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
+
+net estop <= iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in 

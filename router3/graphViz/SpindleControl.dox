@@ -12,7 +12,6 @@
             label = "SpindleControl"
             node [fontsize = "8"];
 
-
             subgraph "component_cmdrsk_vfd" {
                 label = "cmdrsk_vfd"
                 cluster = true;
@@ -83,6 +82,7 @@
                 >]
             }      #  end sub/component_hm2_7i92.0.gpio
             }      #  end sub/component_hm2_7i92.0
+            
             subgraph "component_spindle.0" {
                 label = "spindle.0"
                 cluster = true;
@@ -121,8 +121,8 @@
 
             # ============== Create edges from sig.out===================
             "hm2_7i92.0.gpio":"hm2_7i92.0.gpio.023.in" -> "spindle.0":"spindle.0.amp-fault-in" [label="VFD-fault"]
-            "cmdrsk_vfd":"cmdrsk_vfd.at-speed" -> "gmoccapy":"gmoccapy.spindle_at_speed_led" [label="spindle-at-speed"]
-            "cmdrsk_vfd":"cmdrsk_vfd.at-speed" -> "spindle.0":"spindle.0.at-speed" [label="spindle-at-speed"]
+            "cmdrsk_vfd":"cmdrsk_vfd.at-speed:e" -> "gmoccapy":"gmoccapy.spindle_at_speed_led" [label="spindle-at-speed"]
+            "cmdrsk_vfd":"cmdrsk_vfd.at-speed:e" -> "spindle.0":"spindle.0.at-speed" [label="spindle-at-speed"]
             "spindle.0":"spindle.0.reverse" -> "cmdrsk_vfd":"cmdrsk_vfd.spindle-rev" [label="spindle-ccw"]
             "spindle.0":"spindle.0.forward" -> "cmdrsk_vfd":"cmdrsk_vfd.spindle-fwd" [label="spindle-cw"]
             "spindle.0":"spindle.0.on" -> "cmdrsk_vfd":"cmdrsk_vfd.spindle-on" [label="spindle-enable"]
@@ -130,13 +130,14 @@
             "cmdrsk_vfd":"cmdrsk_vfd.frequency-out" -> "scale_rpm":"scale_rpm.in" [label="spindle-frequency-out"]
             "cmdrsk_vfd":"cmdrsk_vfd.current-load-percentage" -> "spindle-load-percent":w [label="spindle-load-percent"]
             "scale_rpm":"scale_rpm.out" -> "gmoccapy":"gmoccapy.spindle_feedback_bar" [label="spindle-rpm"]
+            "spindle.0":"spindle.0.speed-out-abs" -> "spindle-vel-cmd-rpm-abs":w [label="spindle-vel-cmd-rpm-abs"]
             #============== Signals that don't have both source and destination pins. ===========
 
             subgraph sub_sink {
                 "spindle-load-percent"	 [shape=rarrow]
-            
+                "spindle-vel-cmd-rpm-abs"	 [shape=rarrow]
             }
-            {rank=sink  "spindle-load-percent" }
+            {rank=sink  "spindle-load-percent" "spindle-vel-cmd-rpm-abs"  }
 
 
         }	#footer
