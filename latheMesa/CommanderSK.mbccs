@@ -1,0 +1,51 @@
+<!--
+  Use following line to compile this file:
+  mesambccc -o CommanderSK.mbccb CommanderSK.mbccs
+
+  CommanderSK only supports R_REGISTERS, W_REGISTERS, W_REGISTERS and function 23.
+  Function 23 doesn't seem to be supported by hm2_modbus???
+  Use command address of (menu*100 + param -1) 
+-->
+
+<mesamodbus baudrate="38400" parity="N" interval="1000" stopbits="2">
+  <devices>
+    <device name="vfd" address="0x01"/>
+  </devices>
+  <initlist> 
+    <!-- Ideally, write 5 to ref-select and 1 to control-word-enable once during init.
+         Read the vfd rated values once and use them later.
+    -->         
+  </initlist>
+
+  <commands>
+    
+    <!-- These reads only need to be done once, but I need the values???? -->
+    
+    <command device="vfd" address= "105" function="R_REGISTERS" name="max-set-speed"    haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "106" function="R_REGISTERS" name="min-set-speed"    haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "505" function="R_REGISTERS" name="rated-frequency"  haltype="HAL_FLOAT" modbustype="U_AB" count="1" scale="0"/>
+    <command device="vfd" address= "506" function="R_REGISTERS" name="rated-amps"       haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "507" function="R_REGISTERS" name="rated-rpm"        haltype="HAL_FLOAT" modbustype="U_AB" count="1" scale="0"/>
+
+    <!-- These are read continuously.
+         It would be nice if I could add scaling factors.
+    -->
+    <command device="vfd" address="1039"   function="R_REGISTERS" name="status-word"      haltype="HAL_U32"   modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "500"   function="R_REGISTERS" name="motor-frequency"  haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "419"   function="R_REGISTERS" name="percent-load"     haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "503"   function="R_REGISTERS" name="motor-speed"      haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>    
+
+    <command device="vfd" address= "113"   function="R_REGISTERS" name="r-select"       haltype="HAL_U32" modbustype="U_AB" count="1"/>    
+
+    <!-- WRITE these registers (move ref-select (5) and control-word-enable(1) to init when figured out.) -->
+
+    <command device="vfd" address= "113" function="W_REGISTERS" name="ref-select"       haltype="HAL_U32" modbustype="U_AB" count="1"/>
+    <command device="vfd" address= "117" function="W_REGISTERS" name="ref-coarse"       haltype="HAL_U32" modbustype="U_AB" count="1"/>    
+
+    <command device="vfd" function="W_REGISTERS" address="641" haltype="HAL_U32">    
+      <pin name="control-word" modbustype="U_AB"/>
+      <pin name="control-word-enable" modbustype="U_AB"/> 
+    </command>
+
+  </commands>
+</mesamodbus>

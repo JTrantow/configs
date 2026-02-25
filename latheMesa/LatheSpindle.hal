@@ -1,25 +1,143 @@
 #*******************
+#  LatheSpindle.hal
+#*******************
+#
+# This file 
+# The VFD parameters must be set to correctly in the Commander SK for modbus control.
+# The VFD provides an at-speed signal.
+# An encoder monitors the spindle position and velocity.
+#
+
+
+#
+# Encoder outputs signed RPM. gmoccapy wants abs.
+#
+loadrt pid names=pid.s
+loadrt lowpass names=lowpass_motor_rpm,lowpass_spindle_rpm
+loadrt scale names=scale_motor_rpm
+loadrt abs names=abs_motor_rpm,abs_spindle_rpm
+loadrt invert names=invert_gr
+loadrt mult2 names=mult2_gr
+#
+# There are lot of ways to go from estimated gear ratio to scaling the spindle command to motor frequency needed by the VFD.
+# I chose to use the lincurve. 
+#
+loadrt lincurve names=lincurve_rpm personality=4
+
+addf pid.s.do-pid-calcs servo-thread
+addf lowpass_motor_rpm  servo-thread
+addf scale_motor_rpm    servo-thread
+addf abs_motor_rpm      servo-thread
+addf invert_gr          servo-thread
+addf mult2_gr           servo-thread
+addf lincurve_rpm       servo-thread
+
+addf lowpass_spindle_rpm servo-thread
+addf abs_spindle_rpm     servo-thread
+
+setp lowpass_spindle_rpm.gain [SPINDLE_0]LOWPASS_GAIN
+setp lowpass_motor_rpm.gain   [SPINDLE_0]LOWPASS_GAIN
+setp scale_motor_rpm.gain     30.0
+
+#
+# Use a personality of 2*number_of_gearing_ratios.
+# In my lathe case, I have three different gear possibilities.
+# For the spindle speed to match the command, I need gains of 8.55, 3.18, and 1.6 to get agreement. These are my lincurve yval.
+# Next, I ran the lathe at each of the three pulleys and used HalShow to see gr value. In my case these were 0.80, 1.60, 4.27.
+# Use the midpoints of these values for the xval.
+#
+setp lincurve_rpm.x-val-00 1.2
+setp lincurve_rpm.x-val-01 1.2001
+setp lincurve_rpm.x-val-02 2.93
+setp lincurve_rpm.x-val-03 2.9301
+
+setp lincurve_rpm.y-val-00 1.6
+setp lincurve_rpm.y-val-01 3.18
+setp lincurve_rpm.y-val-02 3.18
+setp lincurve_rpm.y-val-03 8.55
+
+#
+# Use spindle.0 command using units of VFD frequency. 
+# This makes sense since the VFD min/max limitations are in hz.
+# Set [SPINDLE_0]MAX_OUTPUT to same value as VFD maximum frequency?
+# Use the pid.s.FF0 to input the correct gain to scale spindle commands to
+# VFD frequency to produce the motor RPM through gearing to yield the corrent spindle RPM.
+# 
+# We could use the PID feedback, but simply using FF0 works great on my mill and lathe.
+# With analog PWM you want PID.
+#
+setp   pid.s.Pgain     [SPINDLE_0]P
+setp   pid.s.Igain     [SPINDLE_0]I
+setp   pid.s.Dgain     [SPINDLE_0]D
+#
+# Use GUI calibration to dial in the FF0 gain for a given gear/belt combination.
+# If you don't have a spindle encoder or the instantaneous motor speed from the VFD or don't 
+# change gears frequently you can simply use calibration whenever you change gears.
+#
+setp   pid.s.FF0       [SPINDLE_0]FF0
+setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
+
+#
+# Use signed lowpass versions of spindle RPM from encoder and VFD motor RPM to determine gear ratio.
+#
+net encoder-vel-low         => invert_gr.in
+net inv-spindle-rpm         <= invert_gr.out        => mult2_gr.in0
+
+net spindle-frequency-out   => scale_motor_rpm.in
+net motor-rpm               <= scale_motor_rpm.out  => mult2_gr.in1
+net gr-lookup-x             <= mult2_gr.out         => lincurve_rpm.in
+#
+# Use lincurve to select the current pulley ratio to convert spindle rpm command into a motor frequency command.
+#
+net gearratio <= lincurve_rpm.out => pid.s.FF0;
+
+net spindle-enable              =>  pid.s.enable
+net spindle-index-enable        =>  pid.s.index-enable
+net spindle-frequency-cmd-abs   =>  pid.s.command
+
+net spindle-frequency-geared    <=  pid.s.output
+
+
+# 
+# Connect vfd signals to the spindle.0 component.
+#
+net spindle-frequency-cmd-abs  <=  spindle.0.speed-out-rps-abs 
+net spindle-enable             <=  spindle.0.on
+net spindle-cw                 <=  spindle.0.forward
+net spindle-at-speed           =>  spindle.0.at-speed
+net spindle-index-enable       <=  spindle.0.index-enable
+
+#
+# Connect the fault signal from the VFD.
+#
+net VFD-fault                   =>  spindle.0.amp-fault-in
+
+
+
+
+#*******************
 #  SPINDLE (encoder)
 #*******************
 #
 # Implement spindle encoder.
-# 
+# Using a 100PPR encoder (400 quadrature pulses) and a lathe max spindle speed of 2500 RPM, the pulse rate is 1E6 requiring sample rate of >= 2e6.
 
 # ---Encoder feedback signals/setup---
 
-setp    [MESA](CARD0).encoder.muxed-sample-frequency 350000
+#setp    [MESA](CARD0).encoder.muxed-sample-frequency 4000000
+setp    [MESA](CARD0).encoder.00.counter-mode 0
+setp    [MESA](CARD0).encoder.00.filter true
+setp    [MESA](CARD0).encoder.00.index-invert 0
+setp    [MESA](CARD0).encoder.00.index-mask 0
+setp    [MESA](CARD0).encoder.00.index-mask-invert 0
+setp    [MESA](CARD0).encoder.00.scale  [SPINDLE_0]ENCODER_SCALE
 
-setp    [MESA](CARD0).encoder.02.counter-mode 0
-setp    [MESA](CARD0).encoder.02.filter true
-setp    [MESA](CARD0).encoder.02.index-invert 0
-setp    [MESA](CARD0).encoder.02.index-mask 0
-setp    [MESA](CARD0).encoder.02.index-mask-invert 0
-setp    [MESA](CARD0).encoder.02.scale  [SPINDLE_0]ENCODER_SCALE
-
-net encoder-position         <=   [MESA](CARD0).encoder.02.position
-net encoder-velocity         <=   [MESA](CARD0).encoder.02.velocity
-net encoder-velocity-rpm     <=   [MESA](CARD0).encoder.02.velocity-rpm
-net spindle-index-enable     <=>  [MESA](CARD0).encoder.02.index-enable
+net encoder-position         <=   [MESA](CARD0).encoder.00.position
+net encoder-velocity         <=   [MESA](CARD0).encoder.00.velocity
+net spindle-index-enable     <=>  [MESA](CARD0).encoder.00.index-enable
+net encoder-velocity-rpm     <=   [MESA](CARD0).encoder.00.velocity-rpm     => lowpass_spindle_rpm.in
+net encoder-vel-low          <=   lowpass_spindle_rpm.out                   => abs_spindle_rpm.in
+net spindle-rpm              <=   abs_spindle_rpm.out
 
 #
 # ---setup spindle control signals---
@@ -28,4 +146,3 @@ net encoder-position            =>  spindle.0.revs
 net encoder-velocity            =>  spindle.0.speed-in
 net spindle-at-speed            =>  spindle.0.at-speed
 
-net spindle-index-enable        <=> spindle.0.index-enable

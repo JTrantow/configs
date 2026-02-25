@@ -1,0 +1,83 @@
+#
+# Convrt signals for the vfd modbus.
+#
+
+#
+# Use a mux to build up control word based on enable and forward bits.
+#
+loadrt mux4 names=mux_control_word
+addf mux_control_word servo-thread
+
+loadrt conv_float_u32 names=conv_control_word,conv_freq
+addf conv_control_word servo-thread
+addf conv_freq         servo-thread
+
+loadrt mult2 names=mult2_freq
+addf mult2_freq        servo-thread
+#
+# Unpack the control word to get the at-speed bit.
+# This gets multiple bit values with one register read and converts to bit types.
+#
+loadrt bitslice names=status_slice personality=6
+addf status_slice servo-thread
+
+
+#################################################
+# Write these values to the VFD.
+#
+
+#
+# Work with U32
+#
+net spindle-frequency-geared    => mult2_freq.in0
+setp mult2_freq.in1 10.0
+net freq10                      <= mult2_freq.out   => conv_freq.in
+net freq10_U32                  <= conv_freq.out    => hm2_modbus.0.vfd.ref-coarse-00
+
+#
+# Work with HAL_FLOAT???
+#
+# setp hm2_modbus.0.vfd.ref-coarse-00.scale 10.0
+# net spindle-frequency-geared    => hm2_modbus.0.vfd.ref-coarse-00
+
+setp hm2_modbus.0.vfd.ref-select-00 5
+
+setp mux_control_word.in0  0x0081
+setp mux_control_word.in1  0x0081
+setp mux_control_word.in2  0x00C9
+setp mux_control_word.in3  0x00C3
+
+net spindle-cw                  => mux_control_word.sel0
+net spindle-enable              => mux_control_word.sel1
+
+net control_word_float          <= mux_control_word.out     => conv_control_word.in
+net control_word_u32            <= conv_control_word.out    => hm2_modbus.0.vfd.control-word
+
+setp hm2_modbus.0.vfd.control-word-enable 1
+
+#################################################
+# Read these values from the VFD. 
+#  at-speed is status & (1<<5).
+#
+net spindle-load-percent        <= hm2_modbus.0.vfd.percent-load-00
+net spindle-frequency-out       <= hm2_modbus.0.vfd.motor-frequency-00
+
+net status-word                 <= hm2_modbus.0.vfd.status-word-00  =>  status_slice.in
+
+net drive-ok                    <= status_slice.out-00
+net at-speed                    <= status_slice.out-05
+
+# net drive-active                <= status_slice.out-01
+# net zero-speed                  <= status_slice.out-02
+# net at-below-min-speed          <= status_slice.out-03
+# net below-set-speed             <= status_slice.out-04
+# net above-set-speed             <= status_slice.out-06
+# net load-reached                <= status_slice.out-07
+# net drive-at-current-limit      <= status_slice.out-08
+# net regenerating                <= status_slice.out-09
+# net dynamic-brake-alarm         <= status_slice.out-10
+# net braking-resistor-alarm      <= status_slice.out-11
+# net direction-commanded         <= status_slice.out-12
+# net direction-running           <= status_slice.out-13
+# net mains-loss-detected         <= status_slice.out-14
+
