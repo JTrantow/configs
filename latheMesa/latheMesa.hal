@@ -7,6 +7,11 @@ loadrt hostmot2
 loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=3 num_stepgens=4 sserial_port_0=00xxxx" 
 setp   [MESA](CARD0).watchdog.timeout_ns 5000000
 
+#
+# This would be better located in LatheSpindle.hal but needs to get added to thread between mesa read and write.
+#
+loadrt hm2_modbus ports=hm2_7i96.0.pktuart.0 mbccbs=CommanderSK.mbccb
+
 loadrt pid names=pid.x,pid.z
 
 addf [MESA](CARD0).read       servo-thread
@@ -14,6 +19,7 @@ addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread
 addf pid.x.do-pid-calcs       servo-thread
 addf pid.z.do-pid-calcs       servo-thread
+addf hm2_modbus.0.process     servo-thread
 addf [MESA](CARD0).write      servo-thread
 
 #*******************

@@ -1,19 +1,31 @@
 #
-# Convrt signals for the vfd modbus.
+# Convert signals for the vfd modbus similar to what user level vfd driver provided.
 #
+
+#
+# Use a limit2 to limit the VFD max frequency. Without a limit2, the vfd will ignore frequency commands above the limit.
+#
+loadrt limit2 names=vfd_limit
+addf vfd_limit servo-thread
+
+#
+# These limits should be read from VFD during init.
+#
+setp hm2_modbus.0.vfd.min-set-speed-00.scale 0.1
+setp hm2_modbus.0.vfd.max-set-speed-00.scale 0.1
+
+net min-vfd-f  <= hm2_modbus.0.vfd.min-set-speed-00.scaled    => vfd_limit.min 
+net max-vfd-f  <= hm2_modbus.0.vfd.max-set-speed-00.scaled    => vfd_limit.max 
+
+net spindle-frequency-geared => vfd_limit.in
 
 #
 # Use a mux to build up control word based on enable and forward bits.
+# TWO_PASS DIDN'T like MUX4 in two files?????
 #
-loadrt mux4 names=mux_control_word
+loadrt mux4 names=mux_control_word,joy_mux4
 addf mux_control_word servo-thread
 
-loadrt conv_float_u32 names=conv_control_word,conv_freq
-addf conv_control_word servo-thread
-addf conv_freq         servo-thread
-
-loadrt mult2 names=mult2_freq
-addf mult2_freq        servo-thread
 #
 # Unpack the control word to get the at-speed bit.
 # This gets multiple bit values with one register read and converts to bit types.
@@ -21,26 +33,12 @@ addf mult2_freq        servo-thread
 loadrt bitslice names=status_slice personality=6
 addf status_slice servo-thread
 
-
 #################################################
 # Write these values to the VFD.
 #
+setp hm2_modbus.0.vfd.ref-coarse-00.scale 10.0
 
-#
-# Work with U32
-#
-net spindle-frequency-geared    => mult2_freq.in0
-setp mult2_freq.in1 10.0
-net freq10                      <= mult2_freq.out   => conv_freq.in
-net freq10_U32                  <= conv_freq.out    => hm2_modbus.0.vfd.ref-coarse-00
-
-#
-# Work with HAL_FLOAT???
-#
-# setp hm2_modbus.0.vfd.ref-coarse-00.scale 10.0
-# net spindle-frequency-geared    => hm2_modbus.0.vfd.ref-coarse-00
-
-setp hm2_modbus.0.vfd.ref-select-00 5
+net spindle-f-limited       <= vfd_limit.out        => hm2_modbus.0.vfd.ref-coarse-00
 
 setp mux_control_word.in0  0x0081
 setp mux_control_word.in1  0x0081
@@ -50,22 +48,21 @@ setp mux_control_word.in3  0x00C3
 net spindle-cw                  => mux_control_word.sel0
 net spindle-enable              => mux_control_word.sel1
 
-net control_word_float          <= mux_control_word.out     => conv_control_word.in
-net control_word_u32            <= conv_control_word.out    => hm2_modbus.0.vfd.control-word
+net control_word_float          <= mux_control_word.out      => hm2_modbus.0.vfd.control-word-00
 
-setp hm2_modbus.0.vfd.control-word-enable 1
-
-#################################################
+#############################################
 # Read these values from the VFD. 
 #  at-speed is status & (1<<5).
 #
-net spindle-load-percent        <= hm2_modbus.0.vfd.percent-load-00
-net spindle-frequency-out       <= hm2_modbus.0.vfd.motor-frequency-00
+setp hm2_modbus.0.vfd.motor-frequency-00.scale 0.1
 
-net status-word                 <= hm2_modbus.0.vfd.status-word-00  =>  status_slice.in
+net spindle-load-percent          <= hm2_modbus.0.vfd.percent-load-00
+net motor-frequency-out           <= hm2_modbus.0.vfd.motor-frequency-00.scaled
 
-net drive-ok                    <= status_slice.out-00
-net at-speed                    <= status_slice.out-05
+net status-word                   <= hm2_modbus.0.vfd.status-word-00  =>  status_slice.in
+
+net vfd-drive-ok                  <= status_slice.out-00
+net spindle-at-speed              <= status_slice.out-05
 
 # net drive-active                <= status_slice.out-01
 # net zero-speed                  <= status_slice.out-02
@@ -80,4 +77,3 @@ net at-speed                    <= status_slice.out-05
 # net direction-commanded         <= status_slice.out-12
 # net direction-running           <= status_slice.out-13
 # net mains-loss-detected         <= status_slice.out-14
-

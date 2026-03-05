@@ -16,7 +16,9 @@ loadusr -W hal_input -KRAL Dual
 # This feature makes the joypad safer to use as you must hold a speed selection button while jogging.
 #
 loadrt or2 names=joy_or2_sel0,joy_or2_sel1
-loadrt mux4 names=joy_mux4
+
+
+#loadrt mux4 names=joy_mux4
 
 addf joy_or2_sel0 servo-thread
 addf joy_or2_sel1 servo-thread
