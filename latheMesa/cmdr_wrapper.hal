@@ -8,22 +8,30 @@
 loadrt limit2 names=vfd_limit
 addf vfd_limit servo-thread
 
+loadrt not names=not_spindle_on
+addf not_spindle_on servo-thread
+
 #
 # These limits should be read from VFD during init.
 #
-setp hm2_modbus.0.vfd.min-set-speed-00.scale 0.1
-setp hm2_modbus.0.vfd.max-set-speed-00.scale 0.1
+#setp hm2_modbus.0.vfd.min-set-speed-00.scale 0.1
+#setp hm2_modbus.0.vfd.max-set-speed-00.scale 0.1
 
-net min-vfd-f  <= hm2_modbus.0.vfd.min-set-speed-00.scaled    => vfd_limit.min 
-net max-vfd-f  <= hm2_modbus.0.vfd.max-set-speed-00.scaled    => vfd_limit.max 
+#net min-vfd-f  <= hm2_modbus.0.vfd.min-set-speed-00.scaled    => vfd_limit.min 
+#net max-vfd-f  <= hm2_modbus.0.vfd.max-set-speed-00.scaled    => vfd_limit.max 
+
+#
+# Should be reading values from VFD.
+#
+setp vfd_limit.max 70.0
+setp vfd_limit.min 5.0
 
 net spindle-frequency-geared => vfd_limit.in
 
 #
 # Use a mux to build up control word based on enable and forward bits.
-# TWO_PASS DIDN'T like MUX4 in two files?????
 #
-loadrt mux4 names=mux_control_word,joy_mux4
+loadrt mux4 names=mux_control_word
 addf mux_control_word servo-thread
 
 #
@@ -48,6 +56,25 @@ setp mux_control_word.in3  0x00C3
 net spindle-cw                  => mux_control_word.sel0
 net spindle-enable              => mux_control_word.sel1
 
+
+
+
+
+#
+# Communications were getting fouled up. Suspend modbus unless the spindle is enabled.
+# THIS DOESN'T WORK. Comes out of suspend, couple seconds delay, then goes into incrementing fault lock up.
+#
+#setp hm2_modbus.0.suspend true
+#net spindle-enable              => not_spindle_on.in
+#net spindle-off                 <= not_spindle_on.out    => hm2_modbus.0.suspend 
+setp hm2_modbus.0.suspend false
+
+
+
+
+
+
+
 net control_word_float          <= mux_control_word.out      => hm2_modbus.0.vfd.control-word-00
 
 #############################################
@@ -56,7 +83,7 @@ net control_word_float          <= mux_control_word.out      => hm2_modbus.0.vfd
 #
 setp hm2_modbus.0.vfd.motor-frequency-00.scale 0.1
 
-net spindle-load-percent          <= hm2_modbus.0.vfd.percent-load-00
+#net spindle-load-percent          <= hm2_modbus.0.vfd.percent-load-00
 net motor-frequency-out           <= hm2_modbus.0.vfd.motor-frequency-00.scaled
 
 net status-word                   <= hm2_modbus.0.vfd.status-word-00  =>  status_slice.in

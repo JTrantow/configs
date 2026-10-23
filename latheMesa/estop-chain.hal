@@ -40,7 +40,10 @@ net latch2-out <= estop-latch.2.ok-out => estop-latch.3.ok-in
 #
 #   Connect various inputs to the estop latch fault_in pins 
 #
-net estop-G540    => estop-latch.0.fault-in
+
+#net estop-G540    => estop-latch.0.fault-in
+
+
 #
 # --- Encoder faults ---
 #

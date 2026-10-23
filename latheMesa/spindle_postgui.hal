@@ -1,8 +1,20 @@
 # Include your customized HAL commands here
 # The commands in this file are run after the GUI starts.
 
+
+addf lowpass_spindle_rpm    servo-thread
+addf abs_rpm                servo-thread
+
+#
+# LOWPASS_GAIN is used to filter the encoder for automatic gear detection.
+# You may want to use a different gain for this gain used only for display.
+#
+setp lowpass_spindle_rpm.gain [SPINDLE_0]LOWPASS_GAIN
 #
 # gmoccapy gui.
 #
-net spindle-rpm                   => gmoccapy.spindle_feedback_bar
-net spindle-at-speed              => gmoccapy.spindle_at_speed_led
+net encoder-velocity-rpm                                    => lowpass_spindle_rpm.in   
+net spindle-rpm-signed      <= lowpass_spindle_rpm.out      => abs_rpm.in
+net spindle-rpm             <= abs_rpm.out                  => gmoccapy.spindle_feedback_bar
+
+net spindle-at-speed                                        => gmoccapy.spindle_at_speed_led

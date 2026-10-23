@@ -5,9 +5,12 @@
   CommanderSK only supports R_REGISTERS, W_REGISTERS, W_REGISTERS and function 23.
   Function 23 doesn't seem to be supported by hm2_modbus???
   Use command address of (menu*100 + param -1) 
+
+  Original code would lock up with bug at 38400 baud and default icdelay. Increasing icdelay]"40" allieviated the problem.
+  Decreasing baud may be better soluion.
 -->
 
-<mesamodbus baudrate="38400" parity="N" interval="1000" stopbits="2">
+<mesamodbus baudrate="38400" parity="N" interval="100000" stopbits="2" drivedelay="2" duplex="half" suspend="false" >
   <devices>
     <device name="vfd" address="0x01"/>
   </devices>
@@ -19,36 +22,61 @@
       <description> Select frequency reference </description>
       <data value="5"/>
     </command> 
-      <command device="vfd" address="642" function="W_REGISTER"> 
+    <command device="vfd" address="642" function="W_REGISTER"> 
       <description> Enable control word </description>
       <data value="1"/>
     </command>   
+
+    <!-- Where do initlist R_REGISTERS values end up??? 
+
+    <command device="vfd" address= "105" function="R_REGISTERS" count="1">
+      <description> Init max-set-speed read from VFD. </description>
+    </command>
+
+    <command device="vfd" address= "106" function="R_REGISTERS" count="1">
+      <description> Init min-set-speed read from VFD. </description>
+    </command>
+  -->
+
   </initlist>
 
   <commands>
-    
-    <!-- These reads only need to be done once, but I do need the values???? -->
-    
-    <command device="vfd" address= "105" function="R_REGISTERS" name="max-set-speed"    haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
-    <command device="vfd" address= "106" function="R_REGISTERS" name="min-set-speed"    haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
-
-    <!-- These are read continuously.
-         It would be nice if I could add scaling factors.
+    <!-- 
+          These reads only need to be done once, but I do need the values. 
     -->
-    <command device="vfd" address="1039"   function="R_REGISTERS" name="status-word"      haltype="HAL_U32"   modbustype="U_AB" count="1"/>
-    <command device="vfd" address= "500"   function="R_REGISTERS" name="motor-frequency"  haltype="HAL_FLOAT" modbustype="S_AB" count="1"/>
-    <command device="vfd" address= "419"   function="R_REGISTERS" name="percent-load"     haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
-<!--    
-    <command device="vfd" address= "505" function="R_REGISTERS" name="rated-frequency"  haltype="HAL_FLOAT" modbustype="U_AB" count="1" scale="0"/>
-    <command device="vfd" address= "506" function="R_REGISTERS" name="rated-amps"       haltype="HAL_FLOAT" modbustype="U_AB" count="1"/>
-    <command device="vfd" address= "507" function="R_REGISTERS" name="rated-rpm"        haltype="HAL_FLOAT" modbustype="U_AB" count="1" scale="0"/>
+    
+    <command device="vfd" address= "105" function="R_REGISTERS" name="max-set-speed"    haltype="HAL_FLOAT" modbustype="U_AB" count="1" interval="once"/>
+    <command device="vfd" address= "106" function="R_REGISTERS" name="min-set-speed"    haltype="HAL_FLOAT" modbustype="U_AB" count="1" interval="once"/>
 
-    <command device="vfd" address= "503"   function="R_REGISTERS" name="motor-speed"      haltype="HAL_FLOAT" modbustype="S_AB" count="1"/>    
-    <command device="vfd" address= "113"   function="R_REGISTERS" name="r-select"         haltype="HAL_U32" modbustype="U_AB" count="1"/>    
--->
-    <!-- WRITE these registers. -->
-
+    <command device="vfd" address= "505" function="R_REGISTERS" name="rated-frequency"  haltype="HAL_FLOAT" modbustype="U_AB" count="1" interval="once" scale="0"/>
+    <command device="vfd" address= "506" function="R_REGISTERS" name="rated-amps"       haltype="HAL_FLOAT" modbustype="U_AB" count="1" interval="once" />
+    <command device="vfd" address= "507" function="R_REGISTERS" name="rated-rpm"        haltype="HAL_FLOAT" modbustype="U_AB" count="1" interval="once" scale="0"/>
+    
+    <!-- 
+          These register are read continuously.
+          It would be nice if I could add scaling factors directly in this config file.
+    -->
+    <command device="vfd" address="1039" function="R_REGISTERS" name="status-word"      haltype="HAL_U32"   modbustype="U_AB" count="1" interval="100000"/>
+    <command device="vfd" address= "419" function="R_REGISTERS" name="percent-load"     haltype="HAL_FLOAT" modbustype="U_AB" count="1" interval="100000"/>
+    <command device="vfd" address= "500" function="R_REGISTERS" name="motor-frequency"  haltype="HAL_FLOAT" modbustype="S_AB" count="1" interval="100000"/>    
+    <!-- 
+          WRITE these registers whenever they change.
+    -->
     <command device="vfd" address= "117" function="W_REGISTERS" name="ref-coarse"       haltype="HAL_FLOAT" modbustype="S_AB" count="1"/>    
     <command device="vfd" address= "641" function="W_REGISTERS" name="control-word"     haltype="HAL_FLOAT" modbustype="U_AB" count="1" scale="0"/>    
   </commands>
 </mesamodbus>
+
+
+<!--    
+
+    <command device="vfd" address= "503" function="R_REGISTERS" name="motor-speed"      haltype="HAL_FLOAT" modbustype="S_AB" count="1"/>    
+
+    Debugging reads to verify writes are always working. 
+
+    <command device="vfd" address= "113" function="R_REGISTERS" name="r-select"         haltype="HAL_U32"   modbustype="U_AB" count="1"/>    
+    <command device="vfd" address= "642" function="R_REGISTERS" name="r-cwe"            haltype="HAL_U32"   modbustype="U_AB" count="1"/>    
+    <command device="vfd" address= "117" function="R_REGISTERS" name="r-r"              haltype="HAL_FLOAT" modbustype="S_AB" count="1"/>    
+    <command device="vfd" address= "641" function="R_REGISTERS" name="r-cw"             haltype="HAL_FLOAT" modbustype="U_AB" count="1" scale="0"/>    
+
+-->

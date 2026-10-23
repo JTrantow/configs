@@ -1,8 +1,5 @@
 # These files are loaded post GUI, in the order they appear
 
-#source custom_postgui.hal
-
-source spindle_postgui.hal
 
 #
 # Logitech Joypad
@@ -11,6 +8,10 @@ source joypad_jog_speed.hal
 source joypad_xz.hal
 source joypad_extras.hal
 
+#
+# GMOCCAPY spindle connections.
+#
+source spindle_postgui.hal
 #
 # GMOCCAPY Message connections.
 #

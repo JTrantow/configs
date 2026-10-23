@@ -3,7 +3,7 @@
 # (shows up after estop, not sure how to get the message before the estop is acknowledged)
 #
 
-net estop-driver        => gmoccapy.messages.estop-driver
+net estop-G540          => gmoccapy.messages.estop-G540
 net estop-VFD           => gmoccapy.messages.estop-VFD
 
 net estop-x-encoder     => gmoccapy.messages.estop-x-encoder

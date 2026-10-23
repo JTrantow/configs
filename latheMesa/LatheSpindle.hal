@@ -8,10 +8,9 @@
 # An encoder monitors the spindle position and velocity.
 #
 
-loadrt lowpass names=lowpass_spindle_f,lowpass_spindle_rpm
+loadrt lowpass names=lowpass_spindle_f
 loadrt invert names=invert_gr
 loadrt mult2 names=mult2_gr,mult2_f
-loadrt abs names=abs_rpm
 
 #
 # There are lot of ways to go from estimated gear ratio to scaling the spindle command to motor frequency needed by the VFD.
@@ -24,15 +23,11 @@ addf mult2_gr               servo-thread
 addf mult2_f                servo-thread
 addf lincurve_f             servo-thread
 addf lowpass_spindle_f      servo-thread
-addf lowpass_spindle_rpm    servo-thread
-addf abs_rpm                servo-thread
 
 #
 # lowpass_spindle_f is used for gear detection.
-# lowpass_spinlde_rpm is used for display, you might want this at different gain.
 #
 setp lowpass_spindle_f.gain [SPINDLE_0]LOWPASS_GAIN
-setp lowpass_spindle_rpm.gain [SPINDLE_0]LOWPASS_GAIN
 
 #
 # Use a personality of 2*number_of_gearing_ratios.
@@ -70,24 +65,25 @@ net encoder-f-low           => invert_gr.in
 net inv-spindle-f           <= invert_gr.out        => mult2_gr.in0
 
 net motor-frequency-out                             => mult2_gr.in1
-net gr-lookup-x             <= mult2_gr.out         => lincurve_f.in
+net gear-lookup             <= mult2_gr.out         => lincurve_f.in
 #
 # Use lincurve to select the current pulley ratio to convert spindle rpm command into a motor frequency command.
 #
-net spindle-frequency-cmd-abs                       => mult2_f.in0
-net gearratio                   <= lincurve_f.out => mult2_f.in1
+net gear-scalar             <= lincurve_f.out       => mult2_f.in0
+net spindle-f-cmd                                   => mult2_f.in1
 
 
 net spindle-frequency-geared    <=  mult2_f.out
 
-
 # 
 # Connect vfd signals to the spindle.0 component.
 #
-net spindle-frequency-cmd-abs  <=  spindle.0.speed-out-rps-abs 
+net spindle-f-cmd              <=  spindle.0.speed-out-rps-abs
 net spindle-enable             <=  spindle.0.on
 net spindle-cw                 <=  spindle.0.forward
 net spindle-at-speed           =>  spindle.0.at-speed
+net encoder-position           =>  spindle.0.revs
+net encoder-velocity-rpm       =>  spindle.0.speed-in
 net spindle-index-enable       <=  spindle.0.index-enable
 
 #
@@ -116,15 +112,7 @@ setp    [MESA](CARD0).encoder.02.scale  [SPINDLE_0]ENCODER_SCALE
 net encoder-position        <=   [MESA](CARD0).encoder.02.position
 net spindle-index-enable    <=>  [MESA](CARD0).encoder.02.index-enable
 net encoder-velocity-f      <=   [MESA](CARD0).encoder.02.velocity      => lowpass_spindle_f.in
-net encoder-velocity-rpm    <=   [MESA](CARD0).encoder.02.velocity-rpm  => lowpass_spindle_rpm.in   
+net encoder-velocity-rpm    <=   [MESA](CARD0).encoder.02.velocity-rpm  
 
 net encoder-f-low           <= lowpass_spindle_f.out                  
-net spindle-rpm-signed      <= lowpass_spindle_rpm.out                  => abs_rpm.in
-net spindle-rpm             <= abs_rpm.out
 
-#
-# ---setup spindle control signals---
-#
-net encoder-position            =>  spindle.0.revs
-net encoder-velocity            =>  spindle.0.speed-in
-net spindle-at-speed            =>  spindle.0.at-speed
