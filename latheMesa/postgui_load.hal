@@ -1,0 +1,15 @@
+#
+# Some GUIs support halfiles that are processed after the GUI is started in order to connect hal pins that are created by the GUI. When using a postgui halfile with TWOPASS processing, include all loadrt items for components added by postgui halfiles in a separate halfile that is processed before the GUI. 
+# This seems to confuse the TWO_PASS if you load with names in the postgui files, so load here.
+
+#
+# Joypad components.
+#
+loadrt or2 names=joy_or2_sel0,joy_or2_sel1
+loadrt mux4 names=joy_mux4
+
+#
+# Filtering spindle-rpm for gmoccapy components.
+#
+loadrt lowpass names=lowpass_spindle_rpm
+loadrt abs names=abs_rpm
